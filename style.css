@@ -16,7 +16,7 @@ body {
   margin: auto;
   padding: 40px 20px;
 }
-/* HEADER */
+
 /* HEADER */
 .header {
   background: #000;
@@ -144,6 +144,12 @@ nav a:hover {
 
 .card:hover {
   transform: translateY(-6px);
+  border-color: #1affb0;
+  box-shadow: 0 10px 25px rgba(26, 255, 176, 0.15);
+}
+
+/* CTA */
+.cta {
   background: linear-gradient(180deg, #020617, #000);
   text-align: center;
 }
