@@ -52,9 +52,10 @@ nav a:hover {
 }
 
 .hero-content h1 {
-  font-size: 48px;
-  margin: 20px 0;
+  font-size: 54px;
+  line-height: 1.2;
 }
+
 
 .hero-content p {
   max-width: 600px;
@@ -107,10 +108,11 @@ nav a:hover {
   margin-bottom: 10px;
 }
 
-.section-subtitle {
-  color: #9ca3af;
-  margin-bottom: 40px;
+.section-title {
+  font-size: 38px;
+  letter-spacing: 0.5px;
 }
+
 
 /* CARDS */
 .cards {
@@ -167,4 +169,23 @@ nav a:hover {
 
 .footer h4 {
   margin-bottom: 10px;
+}
+
+/* MICRO INTERACCIONES */
+.card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  border-color: #1affb0;
+  box-shadow: 0 10px 25px rgba(26, 255, 176, 0.15);
+}
+
+.btn {
+  transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
 }
