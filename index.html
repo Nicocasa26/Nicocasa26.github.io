@@ -16,22 +16,16 @@
     <nav>
       <a href="#inicio">Inicio</a>
       <a href="#servicios">Servicios</a>
-      <a href="#normativa">Marco normativo</a>
       <a href="#contacto">Contacto</a>
     </nav>
   </div>
 </header>
 
-<!-- HERO (SIN reveal) -->
-<section class="hero" id="inicio">
+<!-- HERO -->
+<section class="hero reveal" id="inicio">
   <div class="container hero-content">
     <span class="badge">Profesionales en Seguridad</span>
-
-    <h1>
-      CONEMAT<br>
-      Consultora de Seguridad e Higiene
-    </h1>
-
+    <h1>CONEMAT<br>Consultora de Seguridad e Higiene</h1>
     <p>
       Consultoría especializada en higiene y seguridad laboral.
       Cumplimiento normativo, prevención de riesgos y capacitación profesional.
@@ -99,22 +93,6 @@
   </div>
 </section>
 
-<!-- MARCO NORMATIVO -->
-<section class="section dark reveal" id="normativa">
-  <div class="container">
-    <h2 class="section-title">Marco normativo</h2>
-
-    <div class="cards">
-      <div class="card"><h4>Ley 19.587</h4><p>Ley de Higiene y Seguridad en el Trabajo</p></div>
-      <div class="card"><h4>Decreto 351/79</h4><p>Reglamentación de la Ley 19.587</p></div>
-      <div class="card"><h4>Ley 24.557</h4><p>Ley de Riesgos del Trabajo</p></div>
-      <div class="card"><h4>Res. SRT 61/2023</h4><p>Servicios de Higiene y Seguridad</p></div>
-      <div class="card"><h4>Res. SRT 905/15</h4><p>Programa de Prevención</p></div>
-      <div class="card"><h4>Decreto 911/96</h4><p>Seguridad en la Industria de la Construcción</p></div>
-    </div>
-  </div>
-</section>
-
 <!-- FOOTER -->
 <footer class="footer" id="contacto">
   <div class="container footer-content">
@@ -136,22 +114,23 @@
   <div class="modal-content">
     <span class="close" onclick="closeForm()">&times;</span>
     <h2>Solicitar presupuesto</h2>
-    <form action="https://formspree.io/f/xwvvpvvn" method="POST">
-   <input type="text" name="name" placeholder="Nombre y Apellido" required>
 
-  <input type="email" name="email" placeholder="Correo electrónico" required>
+    <form id="contactForm">
+      <input type="text" name="name" placeholder="Nombre y Apellido" required>
+      <input type="email" name="email" placeholder="Correo electrónico" required>
+      <input type="tel" name="phone" placeholder="Teléfono" required>
+      <textarea name="message" placeholder="Consulta" required></textarea>
 
-  <input type="tel" name="phone" placeholder="Teléfono" required>
+      <button type="submit" class="btn primary">
+        Enviar consulta
+      </button>
+    </form>
 
-  <textarea name="message" placeholder="Consulta" required></textarea>
-
-  <!-- Anti spam -->
-  <input type="hidden" name="_captcha" value="false">
-
-  <button type="submit" class="btn primary">
-    Enviar consulta
-  </button>
-</form>
+    <div id="formSuccess" style="display:none; text-align:center; margin-top:20px;">
+      <h3>✅ Mensaje enviado</h3>
+      <p>Nos contactaremos pronto.</p>
+      <button class="btn secondary" onclick="closeForm()">Cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -161,25 +140,46 @@
 function openForm() {
   document.getElementById("formModal").style.display = "flex";
 }
+
 function closeForm() {
   document.getElementById("formModal").style.display = "none";
+  document.getElementById("contactForm").reset();
+  document.getElementById("contactForm").style.display = "block";
+  document.getElementById("formSuccess").style.display = "none";
 }
 
 // Scroll reveal
-document.addEventListener("DOMContentLoaded", () => {
-  const reveals = document.querySelectorAll(".reveal");
-  const obs = new IntersectionObserver(
-    entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add("active");
-          obs.unobserve(e.target);
-        }
-      });
-    },
-    { threshold: 0.15 }
-  );
-  reveals.forEach(r => obs.observe(r));
+const reveals = document.querySelectorAll(".reveal");
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add("active");
+  });
+}, { threshold: 0.15 });
+reveals.forEach(r => obs.observe(r));
+
+// Formspree AJAX
+const form = document.getElementById("contactForm");
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const formData = new FormData(form);
+
+  fetch("https://formspree.io/f/xwvvpvvn", {
+    method: "POST",
+    body: formData,
+    headers: { "Accept": "application/json" }
+  })
+  .then(response => {
+    if (response.ok) {
+      form.style.display = "none";
+      document.getElementById("formSuccess").style.display = "block";
+    } else {
+      alert("Ocurrió un error. Intentá nuevamente.");
+    }
+  })
+  .catch(() => {
+    alert("Error de conexión. Intentá más tarde.");
+  });
 });
 </script>
 
