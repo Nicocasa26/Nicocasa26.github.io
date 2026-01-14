@@ -13,12 +13,16 @@
 <header class="header">
   <div class="container header-content">
     <img src="logo-black.png" alt="CONEMAT Seguridad e Higiene" class="logo">
-   <nav>
-  <a href="#inicio">Inicio</a>
-  <a href="#servicios">Servicios</a>
-  <a href="https://wa.me/5491160538420" target="_blank">Contacto</a>
-</nav>
-
+    <nav>
+      <a href="#inicio">Inicio</a>
+      <a href="#servicios">Servicios</a>
+      <a 
+        href="https://wa.me/5491160538420?text=Hola%2C%20quisiera%20consultar%20por%20servicios%20de%20Higiene%20y%20Seguridad%20para%20mi%20empresa."
+        target="_blank"
+      >
+        Contacto
+      </a>
+    </nav>
   </div>
 </header>
 
@@ -38,8 +42,15 @@
     </p>
 
     <div class="hero-buttons">
-      <button class="btn primary" onclick="openForm()">Solicitar presupuesto</button>
-      <a href="https://wa.me/5491160538420" target="_blank" class="btn secondary">
+      <button class="btn primary" onclick="openForm()">
+        Solicitar presupuesto
+      </button>
+
+      <a 
+        href="https://wa.me/5491160538420?text=Hola%2C%20quisiera%20consultar%20por%20servicios%20de%20Higiene%20y%20Seguridad%20para%20mi%20empresa."
+        target="_blank"
+        class="btn secondary"
+      >
         Contactar por WhatsApp
       </a>
     </div>
@@ -121,7 +132,7 @@
   </div>
 </footer>
 
-<!-- MODAL -->
+<!-- MODAL (formulario se mantiene igual) -->
 <div id="formModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeForm()">&times;</span>
@@ -133,13 +144,24 @@
       <input type="tel" name="phone" placeholder="Teléfono" required>
       <textarea name="message" placeholder="Consulta" required></textarea>
 
-      <button type="submit" class="btn primary">Enviar consulta</button>
-      <p id="formSuccess" class="form-success">Mensaje enviado. Te contactaremos pronto.</p>
+      <button type="submit" class="btn primary">
+        Enviar consulta
+      </button>
+
+      <p id="formSuccess" class="form-success">
+        Mensaje enviado. Te contactaremos pronto.
+      </p>
     </form>
   </div>
 </div>
 
-<a href="https://wa.me/5491160538420" target="_blank" class="whatsapp-float">WhatsApp</a>
+<a 
+  href="https://wa.me/5491160538420?text=Hola%2C%20quisiera%20consultar%20por%20servicios%20de%20Higiene%20y%20Seguridad%20para%20mi%20empresa."
+  target="_blank"
+  class="whatsapp-float"
+>
+  WhatsApp
+</a>
 
 <script>
 function openForm(){document.getElementById("formModal").style.display="flex"}
