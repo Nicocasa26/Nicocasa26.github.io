@@ -4,6 +4,16 @@
   <meta charset="UTF-8" />
   <title>CONEMAT | Seguridad e Higiene</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VN94MLJEGK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VN94MLJEGK');
+  </script>
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -16,12 +26,7 @@
     <nav>
       <a href="#inicio">Inicio</a>
       <a href="#servicios">Servicios</a>
-      <a 
-        href="https://wa.me/5491160538420?text=Hola%2C%20quisiera%20consultar%20por%20servicios%20de%20Higiene%20y%20Seguridad%20para%20mi%20empresa."
-        target="_blank"
-      >
-        Contacto
-      </a>
+      <a href="https://wa.me/5491160538420" target="_blank">Contacto</a>
     </nav>
   </div>
 </header>
@@ -42,15 +47,8 @@
     </p>
 
     <div class="hero-buttons">
-      <button class="btn primary" onclick="openForm()">
-        Solicitar presupuesto
-      </button>
-
-      <a 
-        href="https://wa.me/5491160538420?text=Hola%2C%20quisiera%20consultar%20por%20servicios%20de%20Higiene%20y%20Seguridad%20para%20mi%20empresa."
-        target="_blank"
-        class="btn secondary"
-      >
+      <button class="btn primary" onclick="openForm()">Solicitar presupuesto</button>
+      <a href="https://wa.me/5491160538420" target="_blank" class="btn secondary">
         Contactar por WhatsApp
       </a>
     </div>
@@ -117,7 +115,7 @@
 </section>
 
 <!-- FOOTER -->
-<footer class="footer" id="contacto">
+<footer class="footer">
   <div class="container footer-content">
     <div>
       <h3>CONEMAT</h3>
@@ -132,40 +130,63 @@
   </div>
 </footer>
 
-<!-- MODAL (formulario se mantiene igual) -->
+<!-- MODAL FORMULARIO -->
 <div id="formModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeForm()">&times;</span>
     <h2>Solicitar presupuesto</h2>
 
-    <form id="contactForm">
+    <form id="contactForm" action="https://formspree.io/f/xwvvpvvn" method="POST">
       <input type="text" name="name" placeholder="Nombre y Apellido" required>
       <input type="email" name="email" placeholder="Correo electrónico" required>
       <input type="tel" name="phone" placeholder="Teléfono" required>
       <textarea name="message" placeholder="Consulta" required></textarea>
-
-      <button type="submit" class="btn primary">
-        Enviar consulta
-      </button>
-
-      <p id="formSuccess" class="form-success">
-        Mensaje enviado. Te contactaremos pronto.
-      </p>
+      <input type="hidden" name="_captcha" value="false">
+      <button type="submit" class="btn primary">Enviar consulta</button>
     </form>
+
+    <p id="formSuccess" style="display:none; margin-top:15px; color:#1affb0;">
+      ✅ Mensaje enviado. Te contactaremos a la brevedad.
+    </p>
   </div>
 </div>
 
-<a 
-  href="https://wa.me/5491160538420?text=Hola%2C%20quisiera%20consultar%20por%20servicios%20de%20Higiene%20y%20Seguridad%20para%20mi%20empresa."
-  target="_blank"
-  class="whatsapp-float"
->
-  WhatsApp
-</a>
+<a href="https://wa.me/5491160538420" target="_blank" class="whatsapp-float">WhatsApp</a>
 
 <script>
-function openForm(){document.getElementById("formModal").style.display="flex"}
-function closeForm(){document.getElementById("formModal").style.display="none"}
+function openForm(){
+  document.getElementById("formModal").style.display="flex";
+}
+function closeForm(){
+  document.getElementById("formModal").style.display="none";
+}
+
+// Envío sin salir del sitio
+const form = document.getElementById("contactForm");
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+  fetch(form.action, {
+    method: "POST",
+    body: new FormData(form),
+    headers: { 'Accept': 'application/json' }
+  }).then(response => {
+    if(response.ok){
+      form.reset();
+      document.getElementById("formSuccess").style.display = "block";
+
+      // Evento Analytics
+      gtag('event', 'form_submit', {
+        event_category: 'Contacto',
+        event_label: 'Formulario Presupuesto'
+      });
+
+      setTimeout(() => {
+        closeForm();
+        document.getElementById("formSuccess").style.display = "none";
+      }, 2500);
+    }
+  });
+});
 
 // Scroll reveal
 const reveals=document.querySelectorAll(".reveal");
@@ -173,26 +194,6 @@ const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("active")});
 },{threshold:0.15});
 reveals.forEach(r=>obs.observe(r));
-
-// Formspree AJAX
-const form = document.getElementById("contactForm");
-const successMsg = document.getElementById("formSuccess");
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const data = new FormData(form);
-
-  const response = await fetch("https://formspree.io/f/xwvvpvvn", {
-    method: "POST",
-    body: data,
-    headers: { "Accept": "application/json" }
-  });
-
-  if (response.ok) {
-    form.reset();
-    successMsg.style.display = "block";
-  }
-});
 </script>
 
 </body>
