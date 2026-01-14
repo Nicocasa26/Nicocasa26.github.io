@@ -136,13 +136,22 @@
   <div class="modal-content">
     <span class="close" onclick="closeForm()">&times;</span>
     <h2>Solicitar presupuesto</h2>
-    <form action="mailto:conemat.arg@yahoo.com" method="POST" enctype="text/plain">
-      <input type="text" name="Nombre" placeholder="Nombre y Apellido" required>
-      <input type="email" name="Email" placeholder="Correo electrónico" required>
-      <input type="tel" name="Telefono" placeholder="Teléfono" required>
-      <textarea name="Consulta" placeholder="Consulta" required></textarea>
-      <button type="submit" class="btn primary">Enviar consulta</button>
-    </form>
+    <form action="https://formspree.io/f/mvzzgzgq" method="POST">
+   <input type="text" name="name" placeholder="Nombre y Apellido" required>
+
+  <input type="email" name="email" placeholder="Correo electrónico" required>
+
+  <input type="tel" name="phone" placeholder="Teléfono" required>
+
+  <textarea name="message" placeholder="Consulta" required></textarea>
+
+  <!-- Anti spam -->
+  <input type="hidden" name="_captcha" value="false">
+
+  <button type="submit" class="btn primary">
+    Enviar consulta
+  </button>
+</form>
   </div>
 </div>
 
