@@ -22,7 +22,7 @@
   </div>
 </header>
 
-<!-- HERO (SIN reveal) -->
+<!-- HERO -->
 <section class="hero" id="inicio">
   <div class="container hero-content">
     <span class="badge">Profesionales en Seguridad</span>
@@ -94,7 +94,7 @@
   </div>
 </section>
 
-<!-- MARCO NORMATIVO (MISMO DISEÑO QUE SERVICIOS) -->
+<!-- MARCO NORMATIVO -->
 <section class="section dark reveal" id="normativa">
   <div class="container">
     <h2 class="section-title">Marco normativo</h2>
@@ -108,21 +108,12 @@
       <div class="card"><h4>LEY 24.557</h4><p>Ley de Riesgos del Trabajo.</p></div>
       <div class="card"><h4>RESOLUCIÓN SRT 905/15</h4><p>Programa de Prevención.</p></div>
       <div class="card"><h4>RESOLUCIÓN SRT 61/2023</h4><p>Servicios de Higiene y Seguridad.</p></div>
-      <div class="card"><h4>DECRETO 911/96</h4><p>Seguridad e Higiene en la Industria de la Construcción.</p></div>
+      <div class="card"><h4>DECRETO 911/96</h4><p>Seguridad e Higiene en la Construcción.</p></div>
     </div>
   </div>
 </section>
 
-<!-- CTA -->
-<section class="cta reveal">
-  <div class="container">
-    <h2>Presentación lista para clientes</h2>
-    <p>Este material puede utilizarse como carta de presentación institucional.</p>
-    <a href="#contacto" class="btn primary">Contactanos ahora</a>
-  </div>
-</section>
-
-<!-- FOOTER -->
+<!-- FOOTER / CONTACTO -->
 <footer class="footer" id="contacto">
   <div class="container footer-content">
     <div>
@@ -134,6 +125,9 @@
       <p>📞 +54 9 11 6053-8420</p>
       <p>✉ conemat.arg@yahoo.com</p>
       <p>📍 Buenos Aires</p>
+      <a href="https://wa.me/5491160538420" target="_blank" class="btn primary" style="margin-top:10px;display:inline-block">
+        Contactanos por WhatsApp
+      </a>
     </div>
   </div>
 </footer>
@@ -162,10 +156,4 @@ function closeForm(){document.getElementById("formModal").style.display="none"}
 // Scroll reveal
 const reveals=document.querySelectorAll(".reveal");
 const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("active")});
-},{threshold:0.15});
-reveals.forEach(r=>obs.observe(r));
-</script>
-
-</body>
-</html>
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("active"
