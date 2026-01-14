@@ -22,11 +22,16 @@
   </div>
 </header>
 
-<!-- HERO -->
+<!-- HERO (SIN reveal) -->
 <section class="hero" id="inicio">
   <div class="container hero-content">
     <span class="badge">Profesionales en Seguridad</span>
-    <h1>CONEMAT<br>Consultora de Seguridad e Higiene</h1>
+
+    <h1>
+      CONEMAT<br>
+      Consultora de Seguridad e Higiene
+    </h1>
+
     <p>
       Consultoría especializada en higiene y seguridad laboral.
       Cumplimiento normativo, prevención de riesgos y capacitación profesional.
@@ -98,22 +103,19 @@
 <section class="section dark reveal" id="normativa">
   <div class="container">
     <h2 class="section-title">Marco normativo</h2>
-    <p class="section-subtitle">
-      Legislación vigente aplicable a Seguridad e Higiene en el Trabajo
-    </p>
 
-    <div class="cards services">
-      <div class="card"><h4>LEY 19.587</h4><p>Higiene y Seguridad en el Trabajo.</p></div>
-      <div class="card"><h4>DECRETO 351/79</h4><p>Reglamentación de la Ley 19.587.</p></div>
-      <div class="card"><h4>LEY 24.557</h4><p>Ley de Riesgos del Trabajo.</p></div>
-      <div class="card"><h4>RESOLUCIÓN SRT 905/15</h4><p>Programa de Prevención.</p></div>
-      <div class="card"><h4>RESOLUCIÓN SRT 61/2023</h4><p>Servicios de Higiene y Seguridad.</p></div>
-      <div class="card"><h4>DECRETO 911/96</h4><p>Seguridad e Higiene en la Construcción.</p></div>
+    <div class="cards">
+      <div class="card"><h4>Ley 19.587</h4><p>Ley de Higiene y Seguridad en el Trabajo</p></div>
+      <div class="card"><h4>Decreto 351/79</h4><p>Reglamentación de la Ley 19.587</p></div>
+      <div class="card"><h4>Ley 24.557</h4><p>Ley de Riesgos del Trabajo</p></div>
+      <div class="card"><h4>Res. SRT 61/2023</h4><p>Servicios de Higiene y Seguridad</p></div>
+      <div class="card"><h4>Res. SRT 905/15</h4><p>Programa de Prevención</p></div>
+      <div class="card"><h4>Decreto 911/96</h4><p>Seguridad en la Industria de la Construcción</p></div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER / CONTACTO -->
+<!-- FOOTER -->
 <footer class="footer" id="contacto">
   <div class="container footer-content">
     <div>
@@ -125,9 +127,6 @@
       <p>📞 +54 9 11 6053-8420</p>
       <p>✉ conemat.arg@yahoo.com</p>
       <p>📍 Buenos Aires</p>
-      <a href="https://wa.me/5491160538420" target="_blank" class="btn primary" style="margin-top:10px;display:inline-block">
-        Contactanos por WhatsApp
-      </a>
     </div>
   </div>
 </footer>
@@ -150,10 +149,30 @@
 <a href="https://wa.me/5491160538420" target="_blank" class="whatsapp-float">WhatsApp</a>
 
 <script>
-function openForm(){document.getElementById("formModal").style.display="flex"}
-function closeForm(){document.getElementById("formModal").style.display="none"}
+function openForm() {
+  document.getElementById("formModal").style.display = "flex";
+}
+function closeForm() {
+  document.getElementById("formModal").style.display = "none";
+}
 
 // Scroll reveal
-const reveals=document.querySelectorAll(".reveal");
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("active"
+document.addEventListener("DOMContentLoaded", () => {
+  const reveals = document.querySelectorAll(".reveal");
+  const obs = new IntersectionObserver(
+    entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add("active");
+          obs.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.15 }
+  );
+  reveals.forEach(r => obs.observe(r));
+});
+</script>
+
+</body>
+</html>
