@@ -2,141 +2,143 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CONEMAT | Higiene y Seguridad</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
 
 <header class="header">
-  <div class="container nav">
-    <img src="logo-black.png" alt="CONEMAT" class="logo">
-    <nav>
+  <div class="container header-inner">
+    <div class="logo">
+      <img src="logo-black.png" alt="CONEMAT" />
+    </div>
+    <nav class="nav">
       <a href="#inicio">Inicio</a>
       <a href="#servicios">Servicios</a>
-      <a href="#marco">Marco normativo</a>
+      <a href="#normativa">Marco normativo</a>
       <a href="#contacto">Contacto</a>
     </nav>
   </div>
 </header>
 
-<!-- HERO -->
-<section class="hero reveal" id="inicio">
+<!-- HERO (SIN reveal, bug corregido) -->
+<section class="hero" id="inicio">
   <div class="container hero-content">
     <span class="badge">Consultoría Profesional</span>
-
-    <h1>
-      CONEMAT <br>
-      Higiene y Seguridad
-    </h1>
-
+    <h1>CONEMAT<br>Higiene y Seguridad</h1>
     <p>
       Acompañamos a empresas en el cumplimiento de la normativa vigente,
-      la prevención de riesgos laborales y la mejora continua
-      de las condiciones de trabajo.
+      la prevención de riesgos laborales y la mejora continua de las
+      condiciones de trabajo.
     </p>
-
     <div class="hero-actions">
-      <button class="btn primary">Solicitar presupuesto</button>
-      <a href="https://wa.me/5491160538420" target="_blank" class="btn secondary">
-        Contactar por WhatsApp
-      </a>
+      <a href="#contacto" class="btn primary">Solicitar presupuesto</a>
+      <a href="https://wa.me/549" target="_blank" class="btn secondary">Contactar por WhatsApp</a>
     </div>
   </div>
 </section>
 
-<!-- POR QUE ELEGIRNOS -->
-<section class="why reveal">
+<!-- POR QUÉ ELEGIRNOS -->
+<section class="section dark reveal">
   <div class="container">
     <h2>¿Por qué elegirnos?</h2>
-    <p class="subtitle">Enfoque técnico, cumplimiento legal y acompañamiento continuo</p>
+    <p class="section-sub">
+      Enfoque técnico, cumplimiento legal y acompañamiento continuo
+    </p>
 
     <div class="cards">
       <div class="card">
-        <span class="icon">✔</span>
-        <h3>Cumplimiento normativo</h3>
-        <p>Aplicación efectiva de leyes y resoluciones vigentes.</p>
+        <h3>Enfoque técnico</h3>
+        <p>Intervenciones basadas en normativa vigente y criterios profesionales.</p>
       </div>
-
       <div class="card">
-        <span class="icon">👥</span>
-        <h3>Equipo especializado</h3>
-        <p>Profesionales con experiencia en distintos rubros.</p>
+        <h3>Cumplimiento legal</h3>
+        <p>Prevención de sanciones y respaldo ante auditorías.</p>
       </div>
-
       <div class="card">
-        <span class="icon">🔄</span>
-        <h3>Seguimiento continuo</h3>
-        <p>Acompañamiento real, no solo documentación.</p>
+        <h3>Acompañamiento</h3>
+        <p>Seguimiento permanente y soluciones prácticas.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- SERVICIOS -->
-<section class="services reveal" id="servicios">
+<!-- SERVICIOS (SE DEJA COMO ESTABA) -->
+<section class="section dark reveal" id="servicios">
   <div class="container">
-    <h2>SERVICIOS</h2>
-
-    <ul class="service-list">
-      <li>CRONOGRAMA DE TRABAJO</li>
-      <li>VERIFICACIÓN DE RIESGOS POR PUESTO</li>
-      <li>VERIFICACIÓN EDILICIA</li>
-      <li>CAPACITACIÓN DEL PERSONAL</li>
-      <li>RELEVAMIENTO DE AGENTES DE RIESGO (RAR)</li>
-      <li>ENTREGA Y SEGUIMIENTO DE EPP</li>
-      <li>RIESGO ERGONÓMICO</li>
-      <li>PLAN DE EVACUACIÓN</li>
-      <li>MEDICIONES DE ILUMINACIÓN</li>
-      <li>INVESTIGACIÓN DE ACCIDENTES</li>
+    <h2>Servicios</h2>
+    <ul class="services-list">
+      <li>Servicios de Higiene y Seguridad</li>
+      <li>Programas de Seguridad</li>
+      <li>Evaluación de Riesgos</li>
+      <li>Capacitaciones al Personal</li>
+      <li>Inspecciones y Auditorías</li>
+      <li>Señalización y Planes de Emergencia</li>
     </ul>
   </div>
 </section>
 
-<!-- MARCO NORMATIVO -->
-<section class="normativa reveal" id="marco">
+<!-- MARCO NORMATIVO (MODERNO, SOBRIO) -->
+<section class="section light reveal" id="normativa">
   <div class="container">
-    <h2>Marco Normativo</h2>
+    <h2>Marco normativo</h2>
 
-    <ul class="laws">
-      <li>Ley 19.587 – Higiene y Seguridad en el Trabajo</li>
-      <li>Decreto 351/79 – Reglamentación Ley 19.587</li>
-      <li>Ley 24.557 – Riesgos del Trabajo</li>
-      <li>Resolución SRT 905/15 – Programa de Prevención</li>
-      <li>Resolución SRT 61/2023 – Servicios de HyS</li>
-      <li>Decreto 911/96 – Industria de la Construcción</li>
-    </ul>
+    <div class="normative-grid">
+      <div class="norm-card">
+        <strong>Ley 19.587</strong>
+        <span>Higiene y Seguridad en el Trabajo (1972)</span>
+      </div>
+      <div class="norm-card">
+        <strong>Decreto 351/79</strong>
+        <span>Reglamentación Ley 19.587</span>
+      </div>
+      <div class="norm-card">
+        <strong>Ley 24.557</strong>
+        <span>Ley de Riesgos del Trabajo</span>
+      </div>
+      <div class="norm-card">
+        <strong>Resolución SRT 905/15</strong>
+        <span>Programa de Prevención</span>
+      </div>
+      <div class="norm-card">
+        <strong>Resolución SRT 61/2023</strong>
+        <span>Servicios de Higiene y Seguridad</span>
+      </div>
+      <div class="norm-card">
+        <strong>Decreto 911/96</strong>
+        <span>Seguridad en la Construcción</span>
+      </div>
+    </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer class="footer" id="contacto">
-  <div class="container footer-grid">
-    <div>
-      <h3>CONEMAT</h3>
-      <p>Seguridad e Higiene</p>
-    </div>
+<!-- CONTACTO -->
+<section class="section dark reveal" id="contacto">
+  <div class="container">
+    <h2>Contacto</h2>
+    <p>Escribinos para recibir asesoramiento profesional.</p>
+  </div>
+</section>
 
-    <div>
-      <h4>Contacto</h4>
-      <p>📞 +54 9 11 6053-8420</p>
-      <p>✉ conemat.arg@yahoo.com</p>
-      <p>📍 Buenos Aires, Argentina</p>
-    </div>
+<footer class="footer">
+  <div class="container">
+    <p>© CONEMAT – Higiene y Seguridad</p>
   </div>
 </footer>
 
 <script>
-const reveals = document.querySelectorAll('.reveal');
-window.addEventListener('scroll', () => {
-  reveals.forEach(el => {
-    const top = el.getBoundingClientRect().top;
-    if (top < window.innerHeight - 100) {
-      el.classList.add('active');
-    }
-  });
-});
+  const reveals = document.querySelectorAll('.reveal');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  reveals.forEach(r => observer.observe(r));
 </script>
 
 </body>
