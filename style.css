@@ -1,4 +1,8 @@
-*{box-sizing:border-box;margin:0;padding:0}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0
+}
 
 body{
   font-family:Arial,Helvetica,sans-serif;
@@ -24,11 +28,31 @@ body{
   align-items:center
 }
 .logo{height:56px}
+
 nav a{
   color:#9ef7d5;
   margin-left:20px;
   text-decoration:none;
   font-weight:500
+}
+
+/* BOTÓN PLATAFORMA */
+.btn-plataforma{
+  margin-left:20px;
+  padding:8px 16px;
+  border-radius:8px;
+  background:#1affb0;
+  color:#000 !important;
+  font-weight:700;
+  text-decoration:none;
+  transition:all .2s ease;
+  border:1px solid transparent
+}
+
+.btn-plataforma:hover{
+  background:#14d79a;
+  transform:translateY(-1px);
+  border-color:#1affb0
 }
 
 /* HERO */
@@ -84,9 +108,15 @@ nav a{
 .hero-buttons{margin-top:10px}
 
 /* SECTIONS */
-.section.dark{background:#020617;padding-top:40px}
+.section.dark{
+  background:#020617;
+  padding-top:40px
+}
 .section-title{font-size:36px}
-.section-subtitle{color:#9ca3af;margin-bottom:30px}
+.section-subtitle{
+  color:#9ca3af;
+  margin-bottom:30px
+}
 
 /* CARDS */
 .cards{
