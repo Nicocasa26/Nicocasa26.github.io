@@ -221,7 +221,8 @@ async function cargarCapacitacionesAsignadas() {
   }
 
   data.forEach(c => {
-    const link = `${window.location.origin}/capacitacion.html?token=${c.link_publico}`;
+   const link = `${window.location.origin}/capacitaciones/capacitacion.html?token=${c.link_publico}`;
+
 
     tbody.innerHTML += `
       <tr>
