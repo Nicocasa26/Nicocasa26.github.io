@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Empresas | CONEMAT</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 6px 10px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    .activa {
+      color: green;
+      font-weight: bold;
+    }
+
+    .form-box {
+      margin-top: 20px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      width: 400px;
+      display: none;
+    }
+
+    .form-box input {
+      width: 100%;
+      padding: 6px;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Empresas</h1>
+
+  <button onclick="volver()">← Volver</button>
+  <button onclick="mostrarFormulario()">+ Agregar empresa</button>
+
+  <!-- FORMULARIO -->
+  <div class="form-box" id="formEmpresa">
+    <h3>Nueva empresa</h3>
+
+    <input type="text" id="nombre" placeholder="Nombre" />
+    <input type="text" id="direccion" placeholder="Dirección" />
+    <input type="text" id="contacto" placeholder="Contacto" />
+
+    <button onclick="guardarEmpresa()">Guardar</button>
+    <button onclick="ocultarFormulario()">Cancelar</button>
+  </div>
+
+  <!-- TABLA -->
+  <table>
+    <thead>
+      <tr>
+        <th>Empresa</th>
+        <th>Dirección</th>
+        <th>Contacto</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody id="tablaEmpresas">
+      <tr><td colspan="5">Cargando empresas...</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase;
+
+    const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function volver() {
+      window.location.href = "index.html";
+    }
+
+    function mostrarFormulario() {
+      document.getElementById("formEmpresa").style.display = "block";
+    }
+
+    function ocultarFormulario() {
+      document.getElementById("formEmpresa").style.display = "none";
+      document.getElementById("nombre").value = "";
+      document.getElementById("direccion").value = "";
+      document.getElementById("contacto").value = "";
+    }
+
+    async function cargarEmpresas() {
+      const tbody = document.getElementById("tablaEmpresas");
+      tbody.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
+
+      const { data, error } = await client
+        .from("empresas")
+        .select("*")
+        .order("nombre");
+
+      if (error) {
+        console.error(error);
+        tbody.innerHTML = "<tr><td colspan='5'>Error al cargar empresas</td></tr>";
+        return;
+      }
+
+      if (data.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='5'>No hay empresas cargadas</td></tr>";
+        return;
+      }
+
+      tbody.innerHTML = "";
+
+      data.forEach(e => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${e.nombre}</td>
+            <td>${e.direccion ?? ""}</td>
+            <td>${e.contacto ?? ""}</td>
+            <td class="activa">${e.activa ? "Activa" : "Inactiva"}</td>
+            <td>
+              <button onclick="verEmpresa('${e.id}')">Ver</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function verEmpresa(id) {
+      window.location.href = `empresa_detalle.html?id=${id}`;
+    }
+
+    async function guardarEmpresa() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const direccion = document.getElementById("direccion").value.trim();
+      const contacto = document.getElementById("contacto").value.trim();
+
+      if (!nombre) {
+        alert("El nombre es obligatorio");
+        return;
+      }
+
+      const { error } = await client
+        .from("empresas")
+        .insert([{
+          nombre,
+          direccion,
+          contacto,
+          fecha_inicio: new Date().toISOString().split("T")[0],
+          activa: true
+        }]);
+
+      if (error) {
+        console.error(error);
+        alert("Error al guardar empresa");
+        return;
+      }
+
+      ocultarFormulario();
+      cargarEmpresas();
+    }
+
+    cargarEmpresas();
+  </script>
+
+</body>
+</html>
