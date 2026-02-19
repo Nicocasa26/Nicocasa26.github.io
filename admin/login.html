@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Admin | CONEMAT</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      width: 350px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #0d6efd;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Panel Admin</h2>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Contraseña" required>
+    <button type="submit">Ingresar</button>
+  </form>
+
+  <div id="mensaje"></div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+const { createClient } = supabase;
+const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const form = document.getElementById("loginForm");
+const mensaje = document.getElementById("mensaje");
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const { data, error } = await client.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    mensaje.innerHTML = "<div class='error'>Credenciales incorrectas</div>";
+    return;
+  }
+
+  window.location.href = "index.html";
+});
+</script>
+
+</body>
+</html>
