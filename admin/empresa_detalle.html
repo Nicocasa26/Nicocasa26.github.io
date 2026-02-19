@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Empresa | CONEMAT</title>
+
+  <!-- SUPABASE -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f5f6f7;
+    }
+
+    h1, h2 {
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    th {
+      background: #e0e0e0;
+    }
+
+    .box {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<button onclick="volver()">← Volver</button>
+
+<h1 id="empresaNombre">Empresa</h1>
+
+<div class="box" id="empresaInfo"></div>
+
+<!-- ASIGNAR CAPACITACIÓN -->
+<div class="box">
+  <h2>Asignar capacitación</h2>
+
+  <label>Capacitación base</label><br>
+  <select id="capacitacionBase"></select><br><br>
+
+  <label>Fecha inicio</label><br>
+  <input type="date" id="fechaInicio"><br><br>
+
+  <label>Fecha vencimiento</label><br>
+  <input type="date" id="fechaVencimiento"><br><br>
+
+  <button onclick="asignarCapacitacion()">Asignar</button>
+</div>
+
+<!-- CAPACITACIONES ASIGNADAS -->
+<div class="box">
+  <h2>Capacitaciones asignadas</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Capacitación</th>
+        <th>Inicio</th>
+        <th>Vencimiento</th>
+        <th>Estado</th>
+        <th>Asistentes</th>
+        <th>Link público</th>
+      </tr>
+    </thead>
+    <tbody id="tablaCapacitaciones">
+      <tr><td colspan="6">Cargando...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+/* ================= SUPABASE ================= */
+const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+const { createClient } = supabase;
+const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ================= PARAMS ================= */
+const params = new URLSearchParams(window.location.search);
+const empresaId = params.get("id");
+
+/* ================= FUNCIONES ================= */
+function volver() {
+  window.location.href = "empresas.html";
+}
+
+function generarUUID() {
+  return crypto.randomUUID();
+}
+
+/* ================= CARGAR EMPRESA ================= */
+async function cargarEmpresa() {
+  const { data, error } = await client
+    .from("empresas")
+    .select("*")
+    .eq("id", empresaId)
+    .single();
+
+  if (error) {
+    alert("Error al cargar empresa");
+    console.error(error);
+    return;
+  }
+
+  document.getElementById("empresaNombre").innerText = data.nombre;
+
+  document.getElementById("empresaInfo").innerHTML = `
+    <b>Dirección:</b> ${data.direccion ?? "-"}<br>
+    <b>Contacto:</b> ${data.contacto ?? "-"}<br>
+    <b>Estado:</b> ${data.activa ? "Activa" : "Inactiva"}
+  `;
+}
+
+/* ================= CARGAR CAPACITACIONES BASE ================= */
+async function cargarCapacitacionesBase() {
+  const { data, error } = await client
+    .from("capacitaciones_base")
+    .select("*")
+    .eq("activa", true);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const select = document.getElementById("capacitacionBase");
+  select.innerHTML = "";
+
+  data.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.id;
+    opt.textContent = c.nombre;
+    select.appendChild(opt);
+  });
+}
+
+/* ================= ASIGNAR CAPACITACIÓN ================= */
+async function asignarCapacitacion() {
+  const capacitacionBaseId = document.getElementById("capacitacionBase").value;
+  const fechaInicio = document.getElementById("fechaInicio").value;
+  const fechaVencimiento = document.getElementById("fechaVencimiento").value;
+
+  if (!fechaInicio || !fechaVencimiento) {
+    alert("Completá las fechas");
+    return;
+  }
+
+  const linkPublico = generarUUID();
+
+  const { error } = await client
+    .from("capacitaciones_empresas")
+    .insert([{
+      empresa_id: empresaId,
+      capacitacion_base_id: capacitacionBaseId,
+      fecha_inicio: fechaInicio,
+      fecha_vencimiento: fechaVencimiento,
+      estado: "vigente",
+      link_publico: linkPublico
+    }]);
+
+  if (error) {
+    alert("Error al asignar capacitación");
+    console.error(error);
+    return;
+  }
+
+  cargarCapacitacionesAsignadas();
+}
+
+/* ================= CARGAR CAPACITACIONES ASIGNADAS ================= */
+async function cargarCapacitacionesAsignadas() {
+  const { data, error } = await client
+    .from("capacitaciones_empresas")
+    .select(`
+      id,
+      fecha_inicio,
+      fecha_vencimiento,
+      estado,
+      link_publico,
+      capacitaciones_base ( nombre )
+    `)
+    .eq("empresa_id", empresaId);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const tbody = document.getElementById("tablaCapacitaciones");
+  tbody.innerHTML = "";
+
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="6">Sin capacitaciones asignadas</td></tr>`;
+    return;
+  }
+
+  data.forEach(c => {
+    const link = `${window.location.origin}/capacitacion.html?token=${c.link_publico}`;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${c.capacitaciones_base.nombre}</td>
+        <td>${c.fecha_inicio}</td>
+        <td>${c.fecha_vencimiento}</td>
+        <td>${c.estado}</td>
+        <td>
+          <button onclick="verAsistentes('${c.id}')">Asistentes</button>
+        </td>
+        <td>
+          <button onclick="copiarLink('${link}')">Copiar link</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function copiarLink(link) {
+  navigator.clipboard.writeText(link);
+  alert("Link copiado");
+}
+
+function verAsistentes(capacitacionEmpresaId) {
+  window.location.href = `asistentes.html?capacitacion_empresa_id=${capacitacionEmpresaId}`;
+}
+
+/* ================= INIT ================= */
+cargarEmpresa();
+cargarCapacitacionesBase();
+cargarCapacitacionesAsignadas();
+</script>
+
+</body>
+</html>
