@@ -230,16 +230,22 @@ const doc=new jsPDF()
 
 const fecha=new Date().toLocaleDateString("es-AR")
 
-doc.setFillColor(220,220,220)
-doc.rect(10,10,190,18,"F")
+const logo=new Image()
+logo.src="../logo-black.png"
 
-doc.setFontSize(14)
+logo.onload=function(){
+
+doc.addImage(logo,"PNG",15,10,40,15)
+
+/* TITULO */
+
+doc.setFontSize(16)
 doc.setFont(undefined,"bold")
 
 doc.text(
-"REGISTRO DE ACTIVIDADES DE CAPACITACIÓN",
+"REGISTRO DE CAPACITACIÓN",
 105,
-21,
+18,
 {align:"center"}
 )
 
@@ -247,20 +253,26 @@ doc.setFontSize(9)
 doc.setFont(undefined,"normal")
 
 doc.text(
-"Ley 19.587/72 – Decreto Reglamentario 351/79",
+"Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",
 105,
-27,
+24,
 {align:"center"}
 )
 
-doc.setFontSize(10)
+doc.setDrawColor(180)
+doc.line(10,30,200,30)
+
+/* DATOS */
+
+doc.setFontSize(11)
 
 doc.text(`EMPRESA: ${empresa}`,12,40)
-doc.text(`TEMA: ${capacitacion}`,12,47)
-doc.text(`INSTRUCTOR: Casanova Nicolás`,12,54)
+doc.text(`CAPACITACIÓN: ${capacitacion}`,12,48)
 
-doc.text(`DURACIÓN: 40 min`,120,47)
-doc.text(`FECHA: ${fecha}`,120,54)
+doc.text(`INSTRUCTOR: Casanova Nicolás`,12,56)
+doc.text(`FECHA: ${fecha}`,140,56)
+
+/* TABLA */
 
 const rows=asistentes.map((a,i)=>[
 i+1,
@@ -271,26 +283,51 @@ a.puesto,
 ])
 
 doc.autoTable({
+
 startY:65,
-head:[["Nº","APELLIDO Y NOMBRE","DNI","PUESTO","FIRMA"]],
+
+head:[[
+"Nº",
+"APELLIDO Y NOMBRE",
+"DNI",
+"PUESTO",
+"FIRMA"
+]],
+
 body:rows,
-styles:{fontSize:9}
+
+styles:{
+fontSize:9
+},
+
+headStyles:{
+fillColor:[40,40,40]
+}
+
 })
 
 /* FIRMA */
 
-const finalY = doc.lastAutoTable.finalY + 15
+const finalY=doc.lastAutoTable.finalY+15
 
-const firma = new Image()
-firma.src = "Firma nicolas nueva.jpg"
+const firma=new Image()
+firma.src="Firma nicolas nueva.jpg"
 
-firma.onload = function(){
+firma.onload=function(){
 
 doc.addImage(firma,"JPEG",140,finalY,50,25)
 
-doc.text("Instructor Responsable",140,finalY+30)
+doc.setFontSize(10)
+
+doc.text(
+"Casanova Nicolás\nLic. Higiene y Seguridad",
+140,
+finalY+32
+)
 
 doc.save(`${empresa} - ${capacitacion}.pdf`)
+
+}
 
 }
 
