@@ -1,194 +1,236 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Empresas | CONEMAT</title>
+<meta charset="UTF-8">
+<title>Empresas | CONEMAT</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    h1 {
-      margin-bottom: 10px;
-    }
+<style>
 
-    button {
-      padding: 6px 10px;
-      margin-right: 5px;
-      cursor: pointer;
-    }
+body{
+font-family:Arial;
+padding:30px;
+background:#f5f6f7;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+button{
+padding:6px 10px;
+margin-right:5px;
+cursor:pointer;
+}
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
+margin-top:20px;
+}
 
-    th {
-      background: #eee;
-    }
+th,td{
+border:1px solid #ccc;
+padding:8px;
+font-size:14px;
+}
 
-    .activa {
-      color: green;
-      font-weight: bold;
-    }
+th{
+background:#e5e7eb;
+}
 
-    .form-box {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      width: 400px;
-      display: none;
-    }
+.ver{
+background:#2563eb;
+color:white;
+border:none;
+}
 
-    .form-box input {
-      width: 100%;
-      padding: 6px;
-      margin-bottom: 10px;
-    }
-  </style>
+.edit{
+background:#f59e0b;
+color:white;
+border:none;
+}
+
+.delete{
+background:#dc2626;
+color:white;
+border:none;
+}
+
+</style>
+
 </head>
+
 <body>
 
-  <h1>Empresas</h1>
+<h2>Empresas</h2>
 
-  <button onclick="volver()">← Volver</button>
-  <button onclick="mostrarFormulario()">+ Agregar empresa</button>
+<button onclick="volver()">← Volver</button>
+<button onclick="agregarEmpresa()">+ Agregar empresa</button>
 
-  <!-- FORMULARIO -->
-  <div class="form-box" id="formEmpresa">
-    <h3>Nueva empresa</h3>
+<table>
 
-    <input type="text" id="nombre" placeholder="Nombre" />
-    <input type="text" id="direccion" placeholder="Dirección" />
-    <input type="text" id="contacto" placeholder="Contacto" />
+<thead>
+<tr>
+<th>Empresa</th>
+<th>Dirección</th>
+<th>Contacto</th>
+<th>Estado</th>
+<th>Acción</th>
+</tr>
+</thead>
 
-    <button onclick="guardarEmpresa()">Guardar</button>
-    <button onclick="ocultarFormulario()">Cancelar</button>
-  </div>
+<tbody id="tabla"></tbody>
 
-  <!-- TABLA -->
-  <table>
-    <thead>
-      <tr>
-        <th>Empresa</th>
-        <th>Dirección</th>
-        <th>Contacto</th>
-        <th>Estado</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody id="tablaEmpresas">
-      <tr><td colspan="5">Cargando empresas...</td></tr>
-    </tbody>
-  </table>
+</table>
 
-  <!-- SUPABASE -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script>
-    const { createClient } = supabase;
+<script>
 
-    const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+const SUPABASE_URL="https://brdekhbqophvcobhxdgc.supabase.co"
+const SUPABASE_KEY="TU_PUBLIC_KEY_AQUI"
 
-    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const {createClient}=supabase
+const client=createClient(SUPABASE_URL,SUPABASE_KEY)
 
-    function volver() {
-      window.location.href = "index.html";
-    }
+/* NAV */
 
-    function mostrarFormulario() {
-      document.getElementById("formEmpresa").style.display = "block";
-    }
+function volver(){
+window.location.href="index.html"
+}
 
-    function ocultarFormulario() {
-      document.getElementById("formEmpresa").style.display = "none";
-      document.getElementById("nombre").value = "";
-      document.getElementById("direccion").value = "";
-      document.getElementById("contacto").value = "";
-    }
+/* CARGAR EMPRESAS */
 
-    async function cargarEmpresas() {
-      const tbody = document.getElementById("tablaEmpresas");
-      tbody.innerHTML = "<tr><td colspan='5'>Cargando...</td></tr>";
+async function cargarEmpresas(){
 
-      const { data, error } = await client
-        .from("empresas")
-        .select("*")
-        .order("nombre");
+const {data}=await client
+.from("empresas")
+.select("*")
+.order("nombre")
 
-      if (error) {
-        console.error(error);
-        tbody.innerHTML = "<tr><td colspan='5'>Error al cargar empresas</td></tr>";
-        return;
-      }
+const tabla=document.getElementById("tabla")
+tabla.innerHTML=""
 
-      if (data.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='5'>No hay empresas cargadas</td></tr>";
-        return;
-      }
+data.forEach(e=>{
 
-      tbody.innerHTML = "";
+tabla.innerHTML+=`
+<tr>
 
-      data.forEach(e => {
-        tbody.innerHTML += `
-          <tr>
-            <td>${e.nombre}</td>
-            <td>${e.direccion ?? ""}</td>
-            <td>${e.contacto ?? ""}</td>
-            <td class="activa">${e.activa ? "Activa" : "Inactiva"}</td>
-            <td>
-              <button onclick="verEmpresa('${e.id}')">Ver</button>
-            </td>
-          </tr>
-        `;
-      });
-    }
+<td>${e.nombre}</td>
 
-    function verEmpresa(id) {
-      window.location.href = `empresa_detalle.html?id=${id}`;
-    }
+<td>${e.direccion}</td>
 
-    async function guardarEmpresa() {
-      const nombre = document.getElementById("nombre").value.trim();
-      const direccion = document.getElementById("direccion").value.trim();
-      const contacto = document.getElementById("contacto").value.trim();
+<td>${e.contacto}</td>
 
-      if (!nombre) {
-        alert("El nombre es obligatorio");
-        return;
-      }
+<td style="color:green;font-weight:bold">Activa</td>
 
-      const { error } = await client
-        .from("empresas")
-        .insert([{
-          nombre,
-          direccion,
-          contacto,
-          fecha_inicio: new Date().toISOString().split("T")[0],
-          activa: true
-        }]);
+<td>
 
-      if (error) {
-        console.error(error);
-        alert("Error al guardar empresa");
-        return;
-      }
+<button class="ver" onclick="verEmpresa('${e.id}')">
+Ver
+</button>
 
-      ocultarFormulario();
-      cargarEmpresas();
-    }
+<button class="edit" onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion}','${e.contacto}')">
+Editar
+</button>
 
-    cargarEmpresas();
-  </script>
+<button class="delete" onclick="eliminarEmpresa('${e.id}')">
+Eliminar
+</button>
+
+</td>
+
+</tr>
+`
+
+})
+
+}
+
+/* VER EMPRESA */
+
+function verEmpresa(id){
+
+window.location.href=`empresa_detalle.html?id=${id}`
+
+}
+
+/* AGREGAR */
+
+async function agregarEmpresa(){
+
+const nombre=prompt("Nombre empresa")
+if(!nombre) return
+
+const direccion=prompt("Dirección")
+if(!direccion) return
+
+const contacto=prompt("Contacto")
+if(!contacto) return
+
+await client
+.from("empresas")
+.insert({
+nombre,
+direccion,
+contacto
+})
+
+cargarEmpresas()
+
+}
+
+/* EDITAR */
+
+async function editarEmpresa(id,nombre,direccion,contacto){
+
+const nuevoNombre=prompt("Nombre empresa",nombre)
+if(!nuevoNombre) return
+
+const nuevaDireccion=prompt("Dirección",direccion)
+if(!nuevaDireccion) return
+
+const nuevoContacto=prompt("Contacto",contacto)
+if(!nuevoContacto) return
+
+const {error}=await client
+.from("empresas")
+.update({
+nombre:nuevoNombre,
+direccion:nuevaDireccion,
+contacto:nuevoContacto
+})
+.eq("id",id)
+
+if(error){
+alert("Error al actualizar")
+return
+}
+
+cargarEmpresas()
+
+}
+
+/* ELIMINAR */
+
+async function eliminarEmpresa(id){
+
+if(!confirm("¿Eliminar empresa?")) return
+
+const {error}=await client
+.from("empresas")
+.delete()
+.eq("id",id)
+
+if(error){
+alert("Error al eliminar")
+return
+}
+
+cargarEmpresas()
+
+}
+
+cargarEmpresas()
+
+</script>
 
 </body>
 </html>
