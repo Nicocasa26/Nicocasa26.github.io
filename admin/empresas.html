@@ -55,6 +55,12 @@ color:white;
 border:none;
 }
 
+#buscarEmpresa{
+padding:8px;
+width:250px;
+margin-top:10px;
+}
+
 </style>
 
 </head>
@@ -65,6 +71,14 @@ border:none;
 
 <button onclick="volver()">← Volver</button>
 <button onclick="agregarEmpresa()">+ Agregar empresa</button>
+
+<br><br>
+
+<input 
+id="buscarEmpresa"
+placeholder="Buscar empresa..."
+onkeyup="buscarEmpresa()"
+>
 
 <table>
 
@@ -87,28 +101,37 @@ border:none;
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
-const {createClient}=supabase
-const client=createClient(SUPABASE_URL,SUPABASE_KEY)
+const { createClient } = supabase
+const client = createClient(SUPABASE_URL,SUPABASE_KEY)
 
-/* NAV */
+let empresas=[]
 
 function volver(){
-window.location.href="index.html"
-}
 
-/* CARGAR EMPRESAS */
+window.location.href="index.html"
+
+}
 
 async function cargarEmpresas(){
 
-const {data}=await client
+const { data } = await client
 .from("empresas")
 .select("*")
 .order("nombre")
 
+empresas=data
+
+renderEmpresas(empresas)
+
+}
+
+function renderEmpresas(lista){
+
 const tabla=document.getElementById("tabla")
+
 tabla.innerHTML=""
 
-data.forEach(e=>{
+lista.forEach(e=>{
 
 tabla.innerHTML+=`
 <tr>
@@ -119,19 +142,24 @@ tabla.innerHTML+=`
 
 <td>${e.contacto}</td>
 
-<td style="color:green;font-weight:bold">Activa</td>
+<td style="color:green;font-weight:bold">
+Activa
+</td>
 
 <td>
 
-<button class="ver" onclick="verEmpresa('${e.id}')">
+<button class="ver"
+onclick="verEmpresa('${e.id}')">
 Ver
 </button>
 
-<button class="edit" onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion}','${e.contacto}')">
+<button class="edit"
+onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion}','${e.contacto}')">
 Editar
 </button>
 
-<button class="delete" onclick="eliminarEmpresa('${e.id}')">
+<button class="delete"
+onclick="eliminarEmpresa('${e.id}','${e.nombre}')">
 Eliminar
 </button>
 
@@ -144,15 +172,30 @@ Eliminar
 
 }
 
-/* VER EMPRESA */
+function buscarEmpresa(){
+
+const texto=document
+.getElementById("buscarEmpresa")
+.value
+.toLowerCase()
+
+const filtradas=empresas.filter(e =>
+
+e.nombre.toLowerCase().includes(texto) ||
+e.direccion.toLowerCase().includes(texto) ||
+e.contacto.toLowerCase().includes(texto)
+
+)
+
+renderEmpresas(filtradas)
+
+}
 
 function verEmpresa(id){
 
 window.location.href=`empresa_detalle.html?id=${id}`
 
 }
-
-/* AGREGAR */
 
 async function agregarEmpresa(){
 
@@ -177,8 +220,6 @@ cargarEmpresas()
 
 }
 
-/* EDITAR */
-
 async function editarEmpresa(id,nombre,direccion,contacto){
 
 const nuevoNombre=prompt("Nombre empresa",nombre)
@@ -190,7 +231,7 @@ if(!nuevaDireccion) return
 const nuevoContacto=prompt("Contacto",contacto)
 if(!nuevoContacto) return
 
-const {error}=await client
+await client
 .from("empresas")
 .update({
 nombre:nuevoNombre,
@@ -199,30 +240,50 @@ contacto:nuevoContacto
 })
 .eq("id",id)
 
-if(error){
-alert("Error al actualizar")
-return
-}
-
 cargarEmpresas()
 
 }
 
-/* ELIMINAR */
+async function eliminarEmpresa(id,nombre){
 
-async function eliminarEmpresa(id){
+const { data:capacitaciones } = await client
+.from("capacitaciones_empresas")
+.select("id")
+.eq("empresa_id",id)
 
-if(!confirm("¿Eliminar empresa?")) return
+let totalCapacitaciones=capacitaciones.length
+let totalAsistentes=0
 
-const {error}=await client
+for(let c of capacitaciones){
+
+const { data:asis } = await client
+.from("asistentes")
+.select("id")
+.eq("capacitacion_id",c.id)
+
+totalAsistentes+=asis.length
+
+}
+
+const confirmar=confirm(
+
+`¿Eliminar empresa "${nombre}"?
+
+Esto eliminará también:
+
+Capacitaciones: ${totalCapacitaciones}
+Asistentes: ${totalAsistentes}
+
+Esta acción NO se puede deshacer.`
+
+)
+
+if(!confirmar) return
+
+await client
 .from("empresas")
 .delete()
 .eq("id",id)
-
-if(error){
-alert("Error al eliminar")
-return
-}
 
 cargarEmpresas()
 
