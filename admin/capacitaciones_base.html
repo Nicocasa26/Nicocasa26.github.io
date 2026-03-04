@@ -22,12 +22,10 @@ cursor:pointer;
 }
 
 .card{
-
 background:white;
 padding:20px;
 margin-bottom:25px;
 border-radius:8px;
-
 }
 
 iframe{
@@ -84,10 +82,17 @@ window.location.href="index.html"
 
 async function cargarCapacitaciones(){
 
-const { data } = await client
+const { data, error } = await client
 .from("capacitaciones_base")
 .select("*")
-.order("titulo")
+.order("nombre")
+
+if(error){
+
+console.log("Error cargando capacitaciones:",error)
+return
+
+}
 
 const contenedor=document.getElementById("contenedor")
 
@@ -95,37 +100,45 @@ contenedor.innerHTML=""
 
 data.forEach(c=>{
 
-const video = c.youtube.replace("watch?v=","embed/")
+let video=""
+
+if(c.youtube){
+
+video=c.youtube.replace("watch?v=","embed/")
+
+}
 
 contenedor.innerHTML+=`
 
 <div class="card">
 
-<h3>${c.titulo}</h3>
+<h3>${c.nombre}</h3>
 
 <p>
-${c.descripcion}<br>
-Duración: ${c.duracion} minutos<br>
+
+${c.descripcion ?? ""}<br>
+Duración: ${c.duracion ?? ""} minutos<br>
 Estado: <span style="color:green">Activa</span>
+
 </p>
 
 <button class="edit"
 onclick="editarCapacitacion(
 '${c.id}',
-'${c.titulo}',
-'${c.descripcion}',
-'${c.youtube}',
-'${c.duracion}'
+'${c.nombre}',
+'${c.descripcion ?? ""}',
+'${c.youtube ?? ""}',
+'${c.duracion ?? ""}'
 )">
 Editar
 </button>
 
 <button class="delete"
-onclick="borrarCapacitacion('${c.id}','${c.titulo}')">
+onclick="borrarCapacitacion('${c.id}','${c.nombre}')">
 Eliminar
 </button>
 
-<iframe src="${video}"></iframe>
+${video ? `<iframe src="${video}"></iframe>` : ""}
 
 </div>
 
@@ -140,8 +153,8 @@ Eliminar
 
 async function nuevaCapacitacion(){
 
-const titulo=prompt("Título capacitación")
-if(!titulo) return
+const nombre=prompt("Nombre capacitación")
+if(!nombre) return
 
 const descripcion=prompt("Descripción")
 if(!descripcion) return
@@ -155,10 +168,12 @@ if(!duracion) return
 await client
 .from("capacitaciones_base")
 .insert({
-titulo,
+
+nombre,
 descripcion,
 youtube,
 duracion
+
 })
 
 cargarCapacitaciones()
@@ -168,10 +183,10 @@ cargarCapacitaciones()
 
 /* EDITAR */
 
-async function editarCapacitacion(id,titulo,descripcion,youtube,duracion){
+async function editarCapacitacion(id,nombre,descripcion,youtube,duracion){
 
-const nuevoTitulo=prompt("Título",titulo)
-if(!nuevoTitulo) return
+const nuevoNombre=prompt("Nombre",nombre)
+if(!nuevoNombre) return
 
 const nuevaDescripcion=prompt("Descripción",descripcion)
 if(!nuevaDescripcion) return
@@ -186,7 +201,7 @@ await client
 .from("capacitaciones_base")
 .update({
 
-titulo:nuevoTitulo,
+nombre:nuevoNombre,
 descripcion:nuevaDescripcion,
 youtube:nuevoYoutube,
 duracion:nuevaDuracion
@@ -201,11 +216,11 @@ cargarCapacitaciones()
 
 /* BORRAR */
 
-async function borrarCapacitacion(id,titulo){
+async function borrarCapacitacion(id,nombre){
 
 const confirmar=confirm(
 
-`¿Eliminar capacitación "${titulo}"?
+`¿Eliminar capacitación "${nombre}"?
 
 Si esta capacitación está asignada a empresas,
 también se eliminarán sus registros.`
@@ -222,6 +237,7 @@ await client
 cargarCapacitaciones()
 
 }
+
 
 cargarCapacitaciones()
 
