@@ -9,6 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
 <style>
+
 body{
 font-family:Arial;
 padding:30px;
@@ -49,6 +50,7 @@ background:#dc2626;
 color:white;
 border:none;
 }
+
 </style>
 
 </head>
@@ -61,6 +63,7 @@ border:none;
 <button onclick="generarPDF()">Generar PDF</button>
 
 <table>
+
 <thead>
 <tr>
 <th>#</th>
@@ -72,6 +75,7 @@ border:none;
 </thead>
 
 <tbody id="tabla"></tbody>
+
 </table>
 
 <script>
@@ -251,10 +255,11 @@ doc.text(
 
 doc.setFontSize(10)
 
-doc.text(`TEMA: ${capacitacion}`,12,40)
-doc.text(`INSTRUCTOR: Casanova Nicolás`,12,47)
-doc.text(`DURACIÓN: 40 min`,12,54)
+doc.text(`EMPRESA: ${empresa}`,12,40)
+doc.text(`TEMA: ${capacitacion}`,12,47)
+doc.text(`INSTRUCTOR: Casanova Nicolás`,12,54)
 
+doc.text(`DURACIÓN: 40 min`,120,47)
 doc.text(`FECHA: ${fecha}`,120,54)
 
 const rows=asistentes.map((a,i)=>[
@@ -272,7 +277,22 @@ body:rows,
 styles:{fontSize:9}
 })
 
+/* FIRMA */
+
+const finalY = doc.lastAutoTable.finalY + 15
+
+const firma = new Image()
+firma.src = "Firma nicolas nueva.jpg"
+
+firma.onload = function(){
+
+doc.addImage(firma,"JPEG",140,finalY,50,25)
+
+doc.text("Instructor Responsable",140,finalY+30)
+
 doc.save(`${empresa} - ${capacitacion}.pdf`)
+
+}
 
 }
 
