@@ -17,6 +17,13 @@
       margin-bottom: 20px;
     }
 
+    button {
+      padding: 8px 14px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 20px;
+    }
+
     .card {
       background: #fff;
       border: 1px solid #ddd;
@@ -47,10 +54,22 @@
       margin-top: 10px;
     }
 
-    button {
-      padding: 8px 14px;
-      cursor: pointer;
-      margin-bottom: 20px;
+    /* FORMULARIO */
+
+    .form-box {
+      display: none;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 30px;
+      max-width: 500px;
+    }
+
+    .form-box input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -59,10 +78,31 @@
 <h1>Capacitaciones Base</h1>
 
 <button onclick="volver()">← Volver</button>
+<button onclick="mostrarFormulario()">+ Agregar capacitación</button>
+
+<!-- FORMULARIO NUEVA CAPACITACIÓN -->
+
+<div class="form-box" id="formCapacitacion">
+
+  <h3>Nueva capacitación</h3>
+
+  <input type="text" id="titulo" placeholder="Título de la capacitación">
+
+  <input type="text" id="descripcion" placeholder="Descripción">
+
+  <input type="number" id="duracion" placeholder="Duración en minutos">
+
+  <input type="text" id="video" placeholder="Link de YouTube">
+
+  <button onclick="guardarCapacitacion()">Guardar</button>
+  <button onclick="cancelar()">Cancelar</button>
+
+</div>
 
 <div id="contenedor"></div>
 
 <script>
+
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
@@ -71,55 +111,137 @@ const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const contenedor = document.getElementById("contenedor");
 
-function volver() {
-  window.location.href = "index.html";
+/* ================== NAVEGACIÓN ================== */
+
+function volver(){
+  window.location.href="index.html";
 }
 
-function youtubeEmbed(url) {
-  if (!url) return "";
-  const id = url.split("youtu.be/")[1] || url.split("v=")[1];
+/* ================== FORMULARIO ================== */
+
+function mostrarFormulario(){
+  document.getElementById("formCapacitacion").style.display="block";
+}
+
+function cancelar(){
+  document.getElementById("formCapacitacion").style.display="none";
+
+  document.getElementById("titulo").value="";
+  document.getElementById("descripcion").value="";
+  document.getElementById("duracion").value="";
+  document.getElementById("video").value="";
+}
+
+/* ================== YOUTUBE EMBED ================== */
+
+function youtubeEmbed(url){
+
+  if(!url) return "";
+
+  const id =
+    url.includes("youtu.be")
+    ? url.split("youtu.be/")[1]
+    : url.split("v=")[1];
+
   return `https://www.youtube.com/embed/${id}`;
 }
 
-async function cargarCapacitaciones() {
-  const { data, error } = await client
-    .from("capacitaciones_base")
-    .select("*")
-    .order("created_at", { ascending: false });
+/* ================== GUARDAR ================== */
 
-  if (error) {
-    contenedor.innerHTML = "Error al cargar capacitaciones";
-    console.error(error);
-    return;
-  }
+async function guardarCapacitacion(){
 
-  if (!data.length) {
-    contenedor.innerHTML = "No hay capacitaciones cargadas.";
-    return;
-  }
+const titulo = document.getElementById("titulo").value.trim();
+const descripcion = document.getElementById("descripcion").value.trim();
+const duracion = document.getElementById("duracion").value;
+const video = document.getElementById("video").value.trim();
 
-  contenedor.innerHTML = "";
-
-  data.forEach(cap => {
-    contenedor.innerHTML += `
-      <div class="card">
-        <h3>${cap.nombre}</h3>
-
-        <div class="meta">
-          ${cap.descripcion || ""}
-          <br>
-          Duración: ${cap.duracion_minutos} minutos
-          <br>
-          Estado: <span class="estado">${cap.activa ? "Activa" : "Inactiva"}</span>
-        </div>
-
-        <iframe src="${youtubeEmbed(cap.url_video)}" allowfullscreen></iframe>
-      </div>
-    `;
-  });
+if(!titulo || !video){
+alert("Título y video son obligatorios");
+return;
 }
 
+const { error } = await client
+.from("capacitaciones_base")
+.insert([{
+nombre: titulo,
+descripcion: descripcion,
+duracion_minutos: duracion,
+url_video: video,
+activa: true
+}])
+
+if(error){
+console.error(error);
+alert("Error al guardar capacitación");
+return;
+}
+
+alert("Capacitación creada");
+
+cancelar();
+
 cargarCapacitaciones();
+
+}
+
+/* ================== CARGAR CAPACITACIONES ================== */
+
+async function cargarCapacitaciones(){
+
+const { data, error } = await client
+.from("capacitaciones_base")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(error){
+console.error(error);
+contenedor.innerHTML="Error al cargar capacitaciones";
+return;
+}
+
+if(!data.length){
+contenedor.innerHTML="No hay capacitaciones cargadas.";
+return;
+}
+
+contenedor.innerHTML="";
+
+data.forEach(cap=>{
+
+contenedor.innerHTML+=`
+
+<div class="card">
+
+<h3>${cap.nombre}</h3>
+
+<div class="meta">
+
+${cap.descripcion || ""}
+
+<br>
+
+Duración: ${cap.duracion_minutos || "-"} minutos
+
+<br>
+
+Estado: <span class="estado">${cap.activa ? "Activa":"Inactiva"}</span>
+
+</div>
+
+<iframe src="${youtubeEmbed(cap.url_video)}" allowfullscreen></iframe>
+
+</div>
+
+`;
+
+});
+
+}
+
+/* ================== INIT ================== */
+
+cargarCapacitaciones();
+
 </script>
 
 </body>
