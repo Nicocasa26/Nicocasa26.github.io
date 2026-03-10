@@ -122,7 +122,7 @@ contenedor.innerHTML+=`
 <p>
 
 ${c.descripcion ?? ""}<br>
-Duración: ${c.duracion ?? ""} minutos<br>
+duracion_minutos: ${c.duracion ?? ""} minutos<br>
 Estado: <span style="color:green">Activa</span>
 
 </p>
@@ -168,7 +168,7 @@ const youtube=prompt("Link YouTube")
 if(!youtube) return
 
 const duracion=prompt("Duración en minutos")
-if(!duracion) return
+if(!duracion_minutos) return
 
 const { error } = await client
 .from("capacitaciones_base")
@@ -177,7 +177,7 @@ const { error } = await client
 nombre,
 descripcion,
 youtube,
-duracion
+duracion_minutos
 }
 ])
 
@@ -207,7 +207,7 @@ if(!nuevaDescripcion) return
 const nuevoYoutube=prompt("Link YouTube",youtube)
 if(!nuevoYoutube) return
 
-const nuevaDuracion=prompt("Duración",duracion)
+const nuevaDuracion=prompt("Duración",duracion_minutos)
 if(!nuevaDuracion) return
 
 const { error } = await client
@@ -217,7 +217,7 @@ const { error } = await client
 nombre:nuevoNombre,
 descripcion:nuevaDescripcion,
 youtube:nuevoYoutube,
-duracion:nuevaDuracion
+duracion_minutos:nuevaDuracion
 
 })
 .eq("id",id)
