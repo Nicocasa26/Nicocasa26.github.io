@@ -1,247 +1,334 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Capacitación | CONEMAT</title>
+<meta charset="UTF-8">
+<title>Capacitación | CONEMAT</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
-      padding: 40px;
-    }
+<style>
 
-    .card {
-      max-width: 720px;
-      margin: auto;
-      background: #ffffff;
-      padding: 30px;
-      border-radius: 8px;
-      text-align: center;
-    }
+body{
+font-family:Arial;
+background:#f4f6f8;
+padding:40px;
+}
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
+.card{
+max-width:720px;
+margin:auto;
+background:#ffffff;
+padding:30px;
+border-radius:8px;
+text-align:center;
+}
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #0d6efd;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-size: 15px;
-      margin-top: 10px;
-    }
+input{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+font-size:14px;
+}
 
-    iframe {
-      width: 100%;
-      height: 315px;
-      border: none;
-      margin-top: 20px;
-    }
+button{
+width:100%;
+padding:12px;
+background:#0d6efd;
+color:white;
+border:none;
+cursor:pointer;
+font-size:15px;
+margin-top:10px;
+}
 
-    .error {
-      color: #b91c1c;
-      margin-top: 15px;
-      font-weight: bold;
-    }
+iframe{
+width:100%;
+height:315px;
+border:none;
+margin-top:20px;
+}
 
-    .success {
-      background: #d4edda;
-      padding: 12px;
-      border-radius: 6px;
-      color: #155724;
-      margin-top: 15px;
-    }
+.error{
+color:#b91c1c;
+margin-top:15px;
+font-weight:bold;
+}
 
-    .legal {
-      font-size: 0.85em;
-      margin-top: 10px;
-      color: #555;
-      text-align: left;
-    }
+.success{
+background:#d4edda;
+padding:12px;
+border-radius:6px;
+color:#155724;
+margin-top:15px;
+}
 
-    hr {
-      margin: 25px 0;
-    }
-  </style>
+.legal{
+font-size:0.85em;
+margin-top:10px;
+color:#555;
+text-align:left;
+}
+
+hr{
+margin:25px 0;
+}
+
+canvas{
+border:1px solid #ccc;
+background:white;
+width:100%;
+height:150px;
+margin-top:10px;
+}
+
+</style>
 </head>
+
 <body>
 
 <div class="card" id="contenido">
-  <p>Cargando capacitación...</p>
+<p>Cargando capacitación...</p>
 </div>
 
 <script>
+
 /* ================= SUPABASE ================= */
-const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-const { createClient } = supabase;
-const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const SUPABASE_URL="https://brdekhbqophvcobhxdgc.supabase.co"
+const SUPABASE_KEY="sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn"
+
+const {createClient}=supabase
+const client=createClient(SUPABASE_URL,SUPABASE_KEY)
 
 /* ================= PARAMS ================= */
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
-const contenedor = document.getElementById("contenido");
+
+const params=new URLSearchParams(window.location.search)
+const token=params.get("token")
+const contenedor=document.getElementById("contenido")
 
 /* ================= STATE ================= */
-let capacitacionEmpresaId = null;
-let empresaNombre = "";
-let videoURL = "";
-let tituloCapacitacion = "";
+
+let capacitacionEmpresaId=null
+let empresaNombre=""
+let videoURL=""
+let tituloCapacitacion=""
+let signaturePad=null
 
 /* ================= HELPERS ================= */
-function youtubeEmbed(url) {
-  const id = url.includes("youtu.be")
-    ? url.split("youtu.be/")[1]
-    : url.split("v=")[1];
-  return `https://www.youtube.com/embed/${id}`;
+
+function youtubeEmbed(url){
+
+const id=url.includes("youtu.be")
+?url.split("youtu.be/")[1]
+:url.split("v=")[1]
+
+return `https://www.youtube.com/embed/${id}`
+
 }
 
 /* ================= CARGA ================= */
-async function cargarCapacitacion() {
 
-  if (!token) {
-    contenedor.innerHTML = "<p class='error'>Link inválido.</p>";
-    return;
-  }
+async function cargarCapacitacion(){
 
-  const { data, error } = await client
-    .from("capacitaciones_empresas")
-    .select(`
-      id,
-      finalizada,
-      fecha_vencimiento,
-      empresas ( nombre ),
-      capacitaciones_base ( nombre, url_video )
-    `)
-    .eq("link_publico", token)
-    .single();
+if(!token){
+contenedor.innerHTML="<p class='error'>Link inválido.</p>"
+return
+}
 
-  if (error || !data) {
-    contenedor.innerHTML = "<p class='error'>Capacitación no encontrada.</p>";
-    return;
-  }
+const {data,error}=await client
+.from("capacitaciones_empresas")
+.select(`
+id,
+finalizada,
+fecha_vencimiento,
+empresas ( nombre ),
+capacitaciones_base ( nombre, url_video )
+`)
+.eq("link_publico",token)
+.single()
 
-  if (data.finalizada) {
-    contenedor.innerHTML = `
-      <h2>Capacitación finalizada</h2>
-      <p>Esta capacitación ya fue cerrada.</p>
-      <p>Para más información, comuníquese con su empresa.</p>
-    `;
-    return;
-  }
+if(error||!data){
+contenedor.innerHTML="<p class='error'>Capacitación no encontrada.</p>"
+return
+}
 
-  capacitacionEmpresaId = data.id;
-  empresaNombre = data.empresas.nombre;
-  videoURL = data.capacitaciones_base.url_video;
-  tituloCapacitacion = data.capacitaciones_base.nombre;
+if(data.finalizada){
+contenedor.innerHTML=`
+<h2>Capacitación finalizada</h2>
+<p>Esta capacitación ya fue cerrada.</p>
+`
+return
+}
 
-  mostrarFormulario(data.fecha_vencimiento);
+capacitacionEmpresaId=data.id
+empresaNombre=data.empresas.nombre
+videoURL=data.capacitaciones_base.url_video
+tituloCapacitacion=data.capacitaciones_base.nombre
+
+mostrarFormulario(data.fecha_vencimiento)
+
 }
 
 /* ================= FORMULARIO ================= */
-function mostrarFormulario(vencimiento) {
-  contenedor.innerHTML = `
-    <h2>${tituloCapacitacion} – CONEMAT</h2>
-    <p><strong>Empresa:</strong> ${empresaNombre}</p>
-    <p><strong>Vigente hasta:</strong> ${vencimiento}</p>
 
-    <hr>
+function mostrarFormulario(vencimiento){
 
-    <h3>Registro obligatorio</h3>
+contenedor.innerHTML=`
 
-    <input type="text" id="nombre" placeholder="Apellido y Nombre">
-    <input type="text" id="dni" placeholder="DNI (7 u 8 dígitos)">
-    <input type="text" id="puesto" placeholder="Puesto / Tarea">
+<h2>${tituloCapacitacion} – CONEMAT</h2>
+<p><strong>Empresa:</strong> ${empresaNombre}</p>
+<p><strong>Vigente hasta:</strong> ${vencimiento}</p>
 
-    <div class="legal">
-      <input type="checkbox" id="declaracion">
-      Declaro que los datos ingresados son verídicos y que participé de la capacitación.
-    </div>
+<hr>
 
-    <button onclick="registrar()">Registrar y acceder</button>
+<h3>Registro obligatorio</h3>
 
-    <div id="mensaje"></div>
-  `;
+<input type="text" id="nombre" placeholder="Apellido y Nombre">
+<input type="text" id="dni" placeholder="DNI (7 u 8 dígitos)">
+<input type="text" id="puesto" placeholder="Puesto / Tarea">
+
+<div class="legal">
+<input type="checkbox" id="declaracion">
+Declaro que los datos ingresados son verídicos y que participé de la capacitación.
+</div>
+
+<h4>Firma</h4>
+
+<canvas id="firmaCanvas"></canvas>
+
+<button type="button" onclick="limpiarFirma()">
+Limpiar firma
+</button>
+
+<button onclick="registrar()">Registrar y acceder</button>
+
+<div id="mensaje"></div>
+
+`
+
+const canvas=document.getElementById("firmaCanvas")
+signaturePad=new SignaturePad(canvas)
+
+}
+
+/* ================= FIRMA ================= */
+
+function limpiarFirma(){
+
+signaturePad.clear()
+
+}
+
+function obtenerFirma(){
+
+if(signaturePad.isEmpty()){
+
+alert("Debe firmar antes de registrarse")
+return null
+
+}
+
+return signaturePad.toDataURL()
+
 }
 
 /* ================= REGISTRAR ================= */
-async function registrar() {
-  const nombre = document.getElementById("nombre").value.trim();
-  const dni = document.getElementById("dni").value.trim().replace(/\D/g, "");
-  const puesto = document.getElementById("puesto").value.trim();
-  const declaracion = document.getElementById("declaracion").checked;
-  const mensaje = document.getElementById("mensaje");
 
-  mensaje.innerHTML = "";
+async function registrar(){
 
-  if (!nombre || !dni || !puesto || !declaracion) {
-    mensaje.innerHTML = "<div class='error'>Complete todos los campos.</div>";
-    return;
-  }
+const nombre=document.getElementById("nombre").value.trim()
+const dni=document.getElementById("dni").value.trim().replace(/\D/g,"")
+const puesto=document.getElementById("puesto").value.trim()
+const declaracion=document.getElementById("declaracion").checked
+const mensaje=document.getElementById("mensaje")
 
-  if (dni.length < 7 || dni.length > 8) {
-    mensaje.innerHTML = "<div class='error'>DNI inválido.</div>";
-    return;
-  }
+mensaje.innerHTML=""
 
-  const { data: existente } = await client
-    .from("asistentes")
-    .select("nombre")
-    .eq("dni", dni)
-    .eq("capacitacion_id", capacitacionEmpresaId)
-    .maybeSingle();
+if(!nombre||!dni||!puesto||!declaracion){
 
-  if (existente) {
-    mensaje.innerHTML = `
-      <div class="error">
-        ${existente.nombre} ya se encuentra registrado en esta capacitación.
-      </div>
-    `;
-    return;
-  }
+mensaje.innerHTML="<div class='error'>Complete todos los campos.</div>"
+return
 
-  const { error } = await client.from("asistentes").insert([{
-    nombre,
-    dni,
-    puesto,
-    empresa: empresaNombre,
-    capacitacion_id: capacitacionEmpresaId,
-    declaracion_aceptada: true
-  }]);
+}
 
-  if (error) {
-    mensaje.innerHTML = "<div class='error'>Error al registrar.</div>";
-    return;
-  }
+if(dni.length<7||dni.length>8){
 
-  mostrarVideo();
+mensaje.innerHTML="<div class='error'>DNI inválido.</div>"
+return
+
+}
+
+const firma=obtenerFirma()
+
+if(!firma){
+return
+}
+
+const {data:existente}=await client
+.from("asistentes")
+.select("nombre")
+.eq("dni",dni)
+.eq("capacitacion_id",capacitacionEmpresaId)
+.maybeSingle()
+
+if(existente){
+
+mensaje.innerHTML=`
+<div class="error">
+${existente.nombre} ya se encuentra registrado en esta capacitación.
+</div>
+`
+return
+
+}
+
+const {error}=await client.from("asistentes").insert([{
+
+nombre,
+dni,
+puesto,
+empresa:empresaNombre,
+capacitacion_id:capacitacionEmpresaId,
+declaracion_aceptada:true,
+firma:firma
+
+}])
+
+if(error){
+
+mensaje.innerHTML="<div class='error'>Error al registrar.</div>"
+return
+
+}
+
+mostrarVideo()
+
 }
 
 /* ================= VIDEO ================= */
-function mostrarVideo() {
-  contenedor.innerHTML = `
-    <h2>${tituloCapacitacion} – CONEMAT</h2>
-    <p><strong>Empresa:</strong> ${empresaNombre}</p>
 
-    <iframe src="${youtubeEmbed(videoURL)}" allowfullscreen></iframe>
+function mostrarVideo(){
 
-    <div class="success">
-      Registro confirmado. Puede visualizar la capacitación.
-    </div>
-  `;
+contenedor.innerHTML=`
+
+<h2>${tituloCapacitacion} – CONEMAT</h2>
+<p><strong>Empresa:</strong> ${empresaNombre}</p>
+
+<iframe src="${youtubeEmbed(videoURL)}" allowfullscreen></iframe>
+
+<div class="success">
+Registro confirmado. Puede visualizar la capacitación.
+</div>
+
+`
+
 }
 
 /* ================= INIT ================= */
-cargarCapacitacion();
+
+cargarCapacitacion()
+
 </script>
 
 </body>
