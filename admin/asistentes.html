@@ -235,7 +235,9 @@ logo.src="../logo-black.png"
 
 logo.onload=function(){
 
-doc.addImage(logo,"PNG",15,10,35,0)
+/* LOGO */
+
+doc.addImage(logo,"PNG",15,10,40,15)
 
 /* TITULO */
 
@@ -244,33 +246,35 @@ doc.setFont(undefined,"bold")
 
 doc.text(
 "REGISTRO DE CAPACITACIÓN",
-105,
-22,
-{align:"center"}
+60,
+18
 )
 
-doc.setFontSize(9)
+/* SUBTITULO */
+
+doc.setFontSize(10)
 doc.setFont(undefined,"normal")
 
 doc.text(
 "Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",
-105,
-28,
-{align:"center"}
+60,
+25
 )
 
+/* LINEA */
+
 doc.setDrawColor(180)
-doc.line(10,35,200,35)
+doc.line(15,32,195,32)
 
 /* DATOS */
 
 doc.setFontSize(11)
 
-doc.text(`EMPRESA: ${empresa}`,12,45)
-doc.text(`CAPACITACIÓN: ${capacitacion}`,12,53)
+doc.text(`EMPRESA: ${empresa}`,15,42)
+doc.text(`CAPACITACIÓN: ${capacitacion}`,15,50)
 
-doc.text(`INSTRUCTOR: Casanova Nicolás`,12,61)
-doc.text(`FECHA: ${fecha}`,140,61)
+doc.text(`INSTRUCTOR: Casanova Nicolás`,15,58)
+doc.text(`FECHA: ${fecha}`,140,58)
 
 /* TABLA */
 
@@ -284,7 +288,7 @@ a.puesto,
 
 doc.autoTable({
 
-startY:70,
+startY:68,
 
 head:[[
 "Nº",
