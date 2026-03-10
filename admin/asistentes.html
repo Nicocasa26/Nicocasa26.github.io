@@ -235,11 +235,7 @@ logo.src="../logo-black.png"
 
 logo.onload=function(){
 
-/* LOGO (NO CAMBIAMOS TAMAÑO) */
-
 doc.addImage(logo,"PNG",15,10,35,0)
-
-/* TITULO */
 
 doc.setFontSize(16)
 doc.setFont(undefined,"bold")
@@ -251,8 +247,6 @@ doc.text(
 {align:"center"}
 )
 
-/* SUBTITULO */
-
 doc.setFontSize(9)
 doc.setFont(undefined,"normal")
 
@@ -263,16 +257,8 @@ doc.text(
 {align:"center"}
 )
 
-
-
-/* LINEA DIVISORA  */
-
-
-
 doc.setDrawColor(180)
 doc.line(10,65,200,65)
-
-/* DATOS */
 
 doc.setFontSize(11)
 
@@ -316,7 +302,29 @@ fillColor:[40,40,40]
 
 })
 
-/* FIRMA */
+/* INSERTAR FIRMAS */
+
+asistentes.forEach((a,i)=>{
+
+if(a.firma){
+
+const row=doc.lastAutoTable.body[i]
+const cell=row.cells[4]
+
+doc.addImage(
+a.firma,
+"PNG",
+cell.x+2,
+cell.y+2,
+20,
+8
+)
+
+}
+
+})
+
+/* FIRMA INSTRUCTOR */
 
 const finalY=doc.lastAutoTable.finalY+15
 
