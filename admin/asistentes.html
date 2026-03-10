@@ -265,18 +265,20 @@ doc.text(
 
 /* LINEA DIVISORA (BAJADA) */
 
+/* LINEA DIVISORA (BAJADA MUCHO MAS) */
+
 doc.setDrawColor(180)
-doc.line(10,40,200,40)
+doc.line(10,55,200,55)
 
 /* DATOS */
 
 doc.setFontSize(11)
 
-doc.text(`EMPRESA: ${empresa}`,12,50)
-doc.text(`CAPACITACIÓN: ${capacitacion}`,12,58)
+doc.text(`EMPRESA: ${empresa}`,12,65)
+doc.text(`CAPACITACIÓN: ${capacitacion}`,12,73)
 
-doc.text(`INSTRUCTOR: Casanova Nicolás`,12,66)
-doc.text(`FECHA: ${fecha}`,140,66)
+doc.text(`INSTRUCTOR: Casanova Nicolás`,12,81)
+doc.text(`FECHA: ${fecha}`,140,81)
 
 /* TABLA */
 
@@ -290,7 +292,7 @@ a.puesto,
 
 doc.autoTable({
 
-startY:75,
+startY:95,
 
 head:[[
 "Nº",
