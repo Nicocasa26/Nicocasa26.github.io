@@ -206,13 +206,13 @@ window.location.href=`empresa_detalle.html?id=${id}`
 
 async function agregarEmpresa(){
 
-const nombre=prompt("Nombre empresa")
+const nombre = prompt("Nombre empresa")
 if(!nombre) return
 
-const direccion=prompt("Dirección")
+const direccion = prompt("Dirección")
 if(!direccion) return
 
-const contacto=prompt("Contacto")
+const contacto = prompt("Contacto")
 if(!contacto) return
 
 const { error } = await client
@@ -221,7 +221,8 @@ const { error } = await client
 {
 nombre,
 direccion,
-contacto
+contacto,
+fecha_inicio: new Date()
 }
 ])
 
