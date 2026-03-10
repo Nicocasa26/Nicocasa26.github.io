@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
 <title>Empresas | CONEMAT</title>
 
@@ -101,46 +102,51 @@ onkeyup="buscarEmpresa()"
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
-const { createClient } = supabase
-const client = createClient(SUPABASE_URL,SUPABASE_KEY)
+const { createClient } = supabase;
+const client = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let empresas=[]
+let empresas = [];
 
 function volver(){
-
-window.location.href="index.html"
-
+window.location.href="index.html";
 }
 
 async function cargarEmpresas(){
 
-const { data } = await client
+const { data, error } = await client
 .from("empresas")
 .select("*")
-.order("nombre")
+.order("nombre");
 
-empresas=data
+if(error){
+console.error(error);
+alert(error.message);
+return;
+}
 
-renderEmpresas(empresas)
+empresas = data || [];
+
+renderEmpresas(empresas);
 
 }
 
 function renderEmpresas(lista){
 
-const tabla=document.getElementById("tabla")
+const tabla = document.getElementById("tabla");
 
-tabla.innerHTML=""
+tabla.innerHTML="";
 
 lista.forEach(e=>{
 
 tabla.innerHTML+=`
+
 <tr>
 
-<td>${e.nombre}</td>
+<td>${e.nombre || ""}</td>
 
-<td>${e.direccion}</td>
+<td>${e.direccion || ""}</td>
 
-<td>${e.contacto}</td>
+<td>${e.contacto || ""}</td>
 
 <td style="color:green;font-weight:bold">
 Activa
@@ -166,6 +172,7 @@ Eliminar
 </td>
 
 </tr>
+
 `
 
 })
@@ -177,13 +184,13 @@ function buscarEmpresa(){
 const texto=document
 .getElementById("buscarEmpresa")
 .value
-.toLowerCase()
+.toLowerCase();
 
 const filtradas=empresas.filter(e =>
 
-e.nombre.toLowerCase().includes(texto) ||
-e.direccion.toLowerCase().includes(texto) ||
-e.contacto.toLowerCase().includes(texto)
+(e.nombre || "").toLowerCase().includes(texto) ||
+(e.direccion || "").toLowerCase().includes(texto) ||
+(e.contacto || "").toLowerCase().includes(texto)
 
 )
 
@@ -208,13 +215,21 @@ if(!direccion) return
 const contacto=prompt("Contacto")
 if(!contacto) return
 
-await client
+const { error } = await client
 .from("empresas")
-.insert({
+.insert([
+{
 nombre,
 direccion,
 contacto
-})
+}
+])
+
+if(error){
+console.error(error)
+alert(error.message)
+return
+}
 
 cargarEmpresas()
 
@@ -231,7 +246,7 @@ if(!nuevaDireccion) return
 const nuevoContacto=prompt("Contacto",contacto)
 if(!nuevoContacto) return
 
-await client
+const { error } = await client
 .from("empresas")
 .update({
 nombre:nuevoNombre,
@@ -239,6 +254,12 @@ direccion:nuevaDireccion,
 contacto:nuevoContacto
 })
 .eq("id",id)
+
+if(error){
+console.error(error)
+alert(error.message)
+return
+}
 
 cargarEmpresas()
 
@@ -251,17 +272,17 @@ const { data:capacitaciones } = await client
 .select("id")
 .eq("empresa_id",id)
 
-let totalCapacitaciones=capacitaciones.length
-let totalAsistentes=0
+let totalCapacitaciones = capacitaciones?.length || 0
+let totalAsistentes = 0
 
-for(let c of capacitaciones){
+for(let c of capacitaciones || []){
 
 const { data:asis } = await client
 .from("asistentes")
 .select("id")
 .eq("capacitacion_id",c.id)
 
-totalAsistentes+=asis.length
+totalAsistentes += asis?.length || 0
 
 }
 
@@ -280,10 +301,16 @@ Esta acción NO se puede deshacer.`
 
 if(!confirmar) return
 
-await client
+const { error } = await client
 .from("empresas")
 .delete()
 .eq("id",id)
+
+if(error){
+console.error(error)
+alert(error.message)
+return
+}
 
 cargarEmpresas()
 
