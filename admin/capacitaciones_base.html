@@ -72,13 +72,10 @@ const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 const { createClient } = supabase
 const client = createClient(SUPABASE_URL,SUPABASE_KEY)
 
-
 /* VOLVER */
 
 function volver(){
-
 window.location.href="index.html"
-
 }
 
 
@@ -92,25 +89,20 @@ const { data, error } = await client
 .order("nombre")
 
 if(error){
-
-console.log("Error cargando capacitaciones:",error)
+console.log(error)
 alert(error.message)
 return
-
 }
 
 const contenedor=document.getElementById("contenedor")
-
 contenedor.innerHTML=""
 
 data.forEach(c=>{
 
 let video=""
 
-if(c.youtube){
-
-video=c.youtube.replace("watch?v=","embed/")
-
+if(c.url_video){
+video=c.url_video.replace("watch?v=","embed/")
 }
 
 contenedor.innerHTML+=`
@@ -120,11 +112,9 @@ contenedor.innerHTML+=`
 <h3>${c.nombre}</h3>
 
 <p>
-
 ${c.descripcion ?? ""}<br>
-duracion_minutos: ${c.duracion ?? ""} minutos<br>
+Duración: ${c.duracion_minutos ?? ""} minutos<br>
 Estado: <span style="color:green">Activa</span>
-
 </p>
 
 <button class="edit"
@@ -132,8 +122,8 @@ onclick="editarCapacitacion(
 '${c.id}',
 '${c.nombre}',
 '${c.descripcion ?? ""}',
-'${c.youtube ?? ""}',
-'${c.duracion ?? ""}'
+'${c.url_video ?? ""}',
+'${c.duracion_minutos ?? ""}'
 )">
 Editar
 </button>
@@ -164,29 +154,27 @@ if(!nombre) return
 const descripcion=prompt("Descripción")
 if(!descripcion) return
 
-const youtube=prompt("Link YouTube")
-if(!youtube) return
+const video=prompt("Link YouTube")
+if(!video) return
 
 const duracion=prompt("Duración en minutos")
-if(!duracion_minutos) return
+if(!duracion) return
 
 const { error } = await client
 .from("capacitaciones_base")
 .insert([
 {
-nombre,
-descripcion,
-youtube,
-duracion_minutos
+nombre:nombre,
+descripcion:descripcion,
+url_video:video,
+duracion_minutos:duracion
 }
 ])
 
 if(error){
-
-console.log("Error insert:",error)
+console.log(error)
 alert(error.message)
 return
-
 }
 
 cargarCapacitaciones()
@@ -196,7 +184,7 @@ cargarCapacitaciones()
 
 /* EDITAR */
 
-async function editarCapacitacion(id,nombre,descripcion,youtube,duracion){
+async function editarCapacitacion(id,nombre,descripcion,video,duracion){
 
 const nuevoNombre=prompt("Nombre",nombre)
 if(!nuevoNombre) return
@@ -204,10 +192,10 @@ if(!nuevoNombre) return
 const nuevaDescripcion=prompt("Descripción",descripcion)
 if(!nuevaDescripcion) return
 
-const nuevoYoutube=prompt("Link YouTube",youtube)
-if(!nuevoYoutube) return
+const nuevoVideo=prompt("Link YouTube",video)
+if(!nuevoVideo) return
 
-const nuevaDuracion=prompt("Duración",duracion_minutos)
+const nuevaDuracion=prompt("Duración",duracion)
 if(!nuevaDuracion) return
 
 const { error } = await client
@@ -216,18 +204,16 @@ const { error } = await client
 
 nombre:nuevoNombre,
 descripcion:nuevaDescripcion,
-youtube:nuevoYoutube,
+url_video:nuevoVideo,
 duracion_minutos:nuevaDuracion
 
 })
 .eq("id",id)
 
 if(error){
-
-console.log("Error update:",error)
+console.log(error)
 alert(error.message)
 return
-
 }
 
 cargarCapacitaciones()
@@ -243,7 +229,7 @@ const confirmar=confirm(
 
 `¿Eliminar capacitación "${nombre}"?
 
-Si esta capacitación está asignada a empresas,
+Si esta capacitación está asignada a empresas
 también se eliminarán sus registros.`
 
 )
@@ -256,11 +242,9 @@ const { error } = await client
 .eq("id",id)
 
 if(error){
-
-console.log("Error delete:",error)
+console.log(error)
 alert(error.message)
 return
-
 }
 
 cargarCapacitaciones()
