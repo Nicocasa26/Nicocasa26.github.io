@@ -207,8 +207,24 @@ Limpiar firma
 
 `
 
-const canvas=document.getElementById("firmaCanvas")
-signaturePad=new SignaturePad(canvas)
+const canvas = document.getElementById("firmaCanvas")
+
+function ajustarCanvas(){
+
+const ratio = Math.max(window.devicePixelRatio || 1, 1)
+
+canvas.width = canvas.offsetWidth * ratio
+canvas.height = canvas.offsetHeight * ratio
+
+canvas.getContext("2d").scale(ratio, ratio)
+
+}
+
+ajustarCanvas()
+
+signaturePad = new SignaturePad(canvas)
+
+window.addEventListener("resize", ajustarCanvas)
 
 }
 
