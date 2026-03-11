@@ -293,7 +293,8 @@ head:[[
 body:rows,
 
 styles:{
-fontSize:9
+fontSize:9,
+minCellHeight:18
 },
 
 headStyles:{
@@ -314,10 +315,10 @@ const cell=row.cells[4]
 doc.addImage(
 a.firma,
 "PNG",
-cell.x+2,
-cell.y+2,
-20,
-8
+cell.x+3,
+cell.y+3,
+28,
+12
 )
 
 }
@@ -341,6 +342,17 @@ doc.text(
 "Casanova Nicolás\nLic. Higiene y Seguridad",
 140,
 finalY+32
+)
+
+/* DISCLAIMER */
+
+doc.setFontSize(8)
+
+doc.text(
+"Esta capacitación fue brindada de forma virtual. Los participantes registrados declararon haber participado y visualizar el contenido de la capacitación.",
+105,
+280,
+{align:"center",maxWidth:180}
 )
 
 doc.save(`${empresa} - ${capacitacion}.pdf`)
