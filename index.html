@@ -1,201 +1,204 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Dashboard | CONEMAT</title>
+  <meta charset="UTF-8" />
+  <title>CONEMAT | Seguridad e Higiene</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-}
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VN94MLJEGK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VN94MLJEGK');
+  </script>
 
-/* HEADER */
-.header {
-  background: white;
-  padding: 20px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-
-.header h1 {
-  margin: 0;
-  font-size: 22px;
-}
-
-.logout {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 10px 16px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-/* CONTENIDO */
-.container {
-  padding: 40px;
-}
-
-/* KPIs */
-.kpis {
-  display: flex;
-  gap: 20px;
-  margin-bottom: 40px;
-}
-
-.kpi {
-  flex: 1;
-  background: white;
-  padding: 25px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-.kpi h2 {
-  margin: 0;
-  font-size: 28px;
-  color: #2563eb;
-}
-
-.kpi p {
-  margin: 5px 0 0;
-  color: #666;
-}
-
-/* CARDS */
-.cards {
-  display: flex;
-  gap: 20px;
-}
-
-.card {
-  flex: 1;
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transition: 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-}
-
-.card h3 {
-  margin-top: 0;
-}
-
-.card p {
-  color: #666;
-}
-
-.card button {
-  margin-top: 15px;
-  padding: 10px 14px;
-  border: none;
-  border-radius: 6px;
-  background: #2563eb;
-  color: white;
-  cursor: pointer;
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .kpis, .cards {
-    flex-direction: column;
-  }
-}
-</style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
 <!-- HEADER -->
-<div class="header">
-  <h1>Panel de Control – CONEMAT</h1>
-  <button class="logout">Cerrar sesión</button>
-</div>
+<header class="header">
+  <div class="container header-content">
+    <img src="logo-black.png" alt="CONEMAT Seguridad e Higiene" class="logo">
 
-<!-- CONTENIDO -->
-<div class="container">
+    <nav>
+      <a href="#inicio">Inicio</a>
+      <a href="#servicios">Servicios</a>
+      <a href="https://wa.me/5491160538420" target="_blank">Contacto</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- KPIs -->
-  <div class="kpis">
-    <div class="kpi">
-      <h2 id="totalEmpresas">0</h2>
-      <p>Empresas</p>
-    </div>
+<!-- HERO -->
+<section class="hero reveal" id="inicio">
+  <div class="container hero-content">
+    <span class="badge">Profesionales en Seguridad</span>
 
-    <div class="kpi">
-      <h2 id="totalCapacitaciones">0</h2>
-      <p>Capacitaciones</p>
-    </div>
+    <h1>
+      CONEMAT<br>
+      Consultora de Seguridad e Higiene
+    </h1>
 
-    <div class="kpi">
-      <h2 id="totalAsistentes">0</h2>
-      <p>Asistentes</p>
+    <p>
+      Consultoría especializada en higiene y seguridad laboral.
+      Cumplimiento normativo, prevención de riesgos y capacitación profesional.
+    </p>
+
+    <div class="hero-buttons">
+      <button class="btn primary" onclick="openForm()">Solicitar presupuesto</button>
+
+      <a href="https://wa.me/5491160538420" target="_blank" class="btn secondary">
+        Contactar por WhatsApp
+      </a>
     </div>
   </div>
+</section>
 
-  <!-- CARDS -->
-  <div class="cards">
+<!-- POR QUÉ -->
+<section class="section dark reveal">
+  <div class="container">
+    <h2 class="section-title">¿Por qué elegirnos?</h2>
+    <p class="section-subtitle">
+      Soluciones profesionales orientadas a resultados y cumplimiento normativo
+    </p>
 
-    <div class="card">
-      <h3>🏢 Empresas</h3>
-      <p>Alta y gestión de empresas clientes.</p>
-      <button onclick="location.href='empresas.html'">Ver empresas</button>
+    <div class="cards">
+      <div class="card">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z"/>
+        </svg>
+        <h3>CUMPLIMIENTO NORMATIVO</h3>
+        <p>Cumplimiento integral de las resoluciones y exigencias de la SRT.</p>
+      </div>
+
+      <div class="card">
+        <svg viewBox="0 0 24 24">
+          <path d="M16 11c1.7 0 3-1.3 3-3S17.7 5 16 5s-3 1.3-3 3 1.3 3 3 3zM8 11c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3z"/>
+        </svg>
+        <h3>EQUIPO ESPECIALIZADO</h3>
+        <p>Profesionales con experiencia real en múltiples rubros.</p>
+      </div>
+
+      <div class="card">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 3h18v18H3z"/>
+        </svg>
+        <h3>SEGUIMIENTO CONTINUO</h3>
+        <p>Acompañamiento técnico y actualización permanente.</p>
+      </div>
     </div>
-
-    <div class="card">
-      <h3>🎓 Capacitaciones base</h3>
-      <p>Videos disponibles para asignar.</p>
-      <button onclick="location.href='capacitaciones.html'">Ver capacitaciones</button>
-    </div>
-
-    <div class="card">
-      <h3>📊 Capacitaciones realizadas</h3>
-      <p>Seguimiento de capacitaciones.</p>
-      <button disabled>Próximamente</button>
-    </div>
-
   </div>
+</section>
 
+<!-- SERVICIOS -->
+<section class="section reveal" id="servicios">
+  <div class="container">
+    <h2 class="section-title">Nuestros Servicios</h2>
+    <p class="section-subtitle">
+      Presentación clara para evaluación técnica y comercial
+    </p>
+
+    <div class="cards services">
+      <div class="card"><h4>CRONOGRAMA DE TRABAJO</h4><p>Planificación anual de acciones de seguridad e higiene.</p></div>
+      <div class="card"><h4>VERIFICACIÓN DE RIESGOS POR PUESTO</h4><p>Identificación y actualización de riesgos laborales.</p></div>
+      <div class="card"><h4>VERIFICACIÓN EDILICIA</h4><p>Control de condiciones edilicias y de seguridad.</p></div>
+      <div class="card"><h4>CAPACITACIÓN DEL PERSONAL</h4><p>Capacitación en riesgos generales y específicos.</p></div>
+      <div class="card"><h4>RAR</h4><p>Relevamiento y seguimiento anual de agentes de riesgo.</p></div>
+      <div class="card"><h4>EPP</h4><p>Gestión de EPP según Res. SRT 299/11.</p></div>
+      <div class="card"><h4>ERGONOMÍA</h4><p>Evaluación según Res. SRT 295/03.</p></div>
+      <div class="card"><h4>PLAN DE EVACUACIÓN</h4><p>Planos, simulacros y capacitaciones.</p></div>
+      <div class="card"><h4>ILUMINACIÓN</h4><p>Mediciones y control de niveles lumínicos.</p></div>
+      <div class="card"><h4>INVESTIGACIÓN DE ACCIDENTES</h4><p>Análisis causal y acciones preventivas.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container footer-content">
+    <div>
+      <h3>CONEMAT</h3>
+      <p>Seguridad e Higiene Laboral</p>
+      <p>© 2026 CONEMAT</p>
+    </div>
+    <div>
+      <p>📞 +54 9 11 6053-8420</p>
+      <p>✉ conemat.arg@yahoo.com</p>
+      <p>📍 Buenos Aires</p>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL FORM -->
+<div id="formModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeForm()">&times;</span>
+    <h2>Solicitar presupuesto</h2>
+
+    <form id="contactForm" action="https://formspree.io/f/xwvvpvvn" method="POST">
+      <input type="text" name="name" placeholder="Nombre y Apellido" required>
+      <input type="email" name="email" placeholder="Correo electrónico" required>
+      <input type="tel" name="phone" placeholder="Teléfono" required>
+      <textarea name="message" placeholder="Consulta" required></textarea>
+
+      <input type="hidden" name="_captcha" value="false">
+
+      <button type="submit" class="btn primary">Enviar consulta</button>
+    </form>
+
+    <div id="formSuccess" style="display:none;text-align:center;">
+      <h3>Mensaje enviado</h3>
+      <p>Nos contactaremos a la brevedad.</p>
+      <button class="btn secondary" onclick="closeForm()">Cerrar</button>
+    </div>
+  </div>
 </div>
 
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<a href="https://wa.me/5491160538420" target="_blank" class="whatsapp-float">WhatsApp</a>
 
+<!-- SCRIPTS -->
 <script>
-const supabase = supabase.createClient(
-  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-);
+  function openForm(){
+    document.getElementById("formModal").style.display="flex";
+    document.getElementById("contactForm").style.display="block";
+    document.getElementById("formSuccess").style.display="none";
+  }
 
-// KPIs dinámicos
-async function cargarKPIs() {
+  function closeForm(){
+    document.getElementById("formModal").style.display="none";
+  }
 
-  const { count: empresas } = await supabase
-    .from("empresas")
-    .select("*", { count: "exact", head: true });
+  // Formspree submit without leaving page
+  const form = document.getElementById("contactForm");
+  form.addEventListener("submit", async function(e){
+    e.preventDefault();
+    const response = await fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { "Accept": "application/json" }
+    });
 
-  const { count: capacitaciones } = await supabase
-    .from("capacitaciones")
-    .select("*", { count: "exact", head: true });
+    if(response.ok){
+      form.style.display="none";
+      document.getElementById("formSuccess").style.display="block";
+      form.reset();
+    }
+  });
 
-  const { count: asistentes } = await supabase
-    .from("asistentes")
-    .select("*", { count: "exact", head: true });
+  // REVEAL FIX (CLAVE)
+  const reveals = document.querySelectorAll(".reveal");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("active");
+      }
+    });
+  }, { threshold: 0.15 });
 
-  document.getElementById("totalEmpresas").innerText = empresas || 0;
-  document.getElementById("totalCapacitaciones").innerText = capacitaciones || 0;
-  document.getElementById("totalAsistentes").innerText = asistentes || 0;
-}
-
-cargarKPIs();
+  reveals.forEach(r => observer.observe(r));
 </script>
 
 </body>
