@@ -28,6 +28,9 @@
       <a href="#inicio">Inicio</a>
       <a href="#servicios">Servicios</a>
       <a href="https://wa.me/5491160538420" target="_blank">Contacto</a>
+
+      <!-- BOTÓN PLATAFORMA -->
+      <a href="/admin/login.html" class="btn-plataforma">Plataforma</a>
     </nav>
   </div>
 </header>
@@ -171,7 +174,6 @@
     document.getElementById("formModal").style.display="none";
   }
 
-  // Formspree submit without leaving page
   const form = document.getElementById("contactForm");
   form.addEventListener("submit", async function(e){
     e.preventDefault();
@@ -188,7 +190,6 @@
     }
   });
 
-  // REVEAL FIX (CLAVE)
   const reveals = document.querySelectorAll(".reveal");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
