@@ -9,27 +9,52 @@
 <style>
 
 body{
-font-family:Arial;
-background:#f5f6f7;
-padding:40px;
-text-align:center;
+  font-family:Arial;
+  background:#f4f6f8;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
 
 .card{
-background:white;
-padding:30px;
-max-width:600px;
-margin:auto;
-border-radius:8px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+  background:white;
+  padding:30px;
+  border-radius:10px;
+  width:380px;
+  text-align:center;
+  box-shadow:0 5px 20px rgba(0,0,0,0.1);
 }
 
-.ok{color:green;font-weight:bold}
-.error{color:red}
+h2{
+  margin-bottom:10px;
+}
 
-ul{
-text-align:left;
-margin-top:15px;
+.ok{
+  color:green;
+  font-weight:bold;
+}
+
+.error{
+  color:red;
+  font-weight:bold;
+}
+
+.label{
+  font-weight:bold;
+}
+
+.asistentes{
+  margin-top:15px;
+  text-align:left;
+  font-size:14px;
+  max-height:200px;
+  overflow:auto;
+}
+
+.asistentes div{
+  padding:4px 0;
+  border-bottom:1px solid #eee;
 }
 
 </style>
@@ -42,7 +67,18 @@ margin-top:15px;
 
 <h2>Verificación de Capacitación</h2>
 
-<div id="resultado">Validando...</div>
+<div id="estado">Cargando...</div>
+
+<div id="contenido" style="display:none">
+
+<p><span class="label">Empresa:</span> <span id="empresa"></span></p>
+<p><span class="label">Capacitación:</span> <span id="capacitacion"></span></p>
+<p><span class="label">Fecha:</span> <span id="fecha"></span></p>
+
+<h4>Asistentes</h4>
+<div class="asistentes" id="lista"></div>
+
+</div>
 
 </div>
 
@@ -50,92 +86,78 @@ margin-top:15px;
 
 /* SUPABASE */
 
-const SUPABASE_URL="https://brdekhbqophvcobhxdgc.supabase.co"
-const SUPABASE_KEY="sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn"
+const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
 const {createClient}=supabase
 const client=createClient(SUPABASE_URL,SUPABASE_KEY)
 
-/* PARAMS */
+/* PARAM */
 
 const params=new URLSearchParams(window.location.search)
 const id=params.get("id")
 
-async function verificar(){
+/* INIT */
 
-/* VALIDAR ID */
+async function cargar(){
 
 if(!id){
-document.getElementById("resultado").innerHTML="<p class='error'>ID inválido</p>"
+document.getElementById("estado").innerHTML="<span class='error'>ID inválido</span>"
 return
 }
 
-/* TRAER CAPACITACIÓN */
+/* TRAER CAPACITACION */
 
 const {data,error}=await client
 .from("capacitaciones_empresas")
 .select(`
-empresas(nombre),
-capacitaciones_base(nombre),
-fecha_inicio
+  id,
+  fecha_inicio,
+  empresas(nombre),
+  capacitaciones_base(nombre)
 `)
 .eq("id",id)
 .single()
 
 if(error || !data){
-document.getElementById("resultado").innerHTML="<p class='error'>Capacitación no encontrada</p>"
+document.getElementById("estado").innerHTML="<span class='error'>Capacitación no encontrada</span>"
 return
 }
 
+/* MOSTRAR OK */
+
+document.getElementById("estado").innerHTML="<span class='ok'>✔ Capacitación válida</span>"
+document.getElementById("contenido").style.display="block"
+
+/* SET DATA */
+
+document.getElementById("empresa").innerText=data.empresas.nombre
+document.getElementById("capacitacion").innerText=data.capacitaciones_base.nombre
+document.getElementById("fecha").innerText=data.fecha_inicio
+
 /* TRAER ASISTENTES */
 
-const {data:asistentes,error:errAsistentes}=await client
+const {data:asistentes}=await client
 .from("asistentes")
 .select("nombre,dni")
 .eq("capacitacion_id",id)
 
-if(errAsistentes){
-document.getElementById("resultado").innerHTML="<p class='error'>Error cargando asistentes</p>"
+/* LISTAR */
+
+const lista=document.getElementById("lista")
+
+if(!asistentes || asistentes.length===0){
+lista.innerHTML="<div>No hay asistentes registrados</div>"
 return
 }
 
-/* ARMAR HTML */
-
-let html=`
-<p class="ok">✔ Capacitación válida</p>
-
-<p><b>Empresa:</b> ${data.empresas.nombre}</p>
-<p><b>Capacitación:</b> ${data.capacitaciones_base.nombre}</p>
-<p><b>Fecha:</b> ${data.fecha_inicio}</p>
-
-<h3>Asistentes</h3>
-`
-
-/* SI NO HAY ASISTENTES */
-
-if(!asistentes || asistentes.length === 0){
-
-html += `<p>No hay asistentes registrados</p>`
-
-} else {
-
-html += `<ul>`
-
 asistentes.forEach(a=>{
-html += `<li>${a.nombre} - DNI ${a.dni}</li>`
+lista.innerHTML+=`<div>${a.nombre} - DNI ${a.dni}</div>`
 })
 
-html += `</ul>`
-
 }
 
-document.getElementById("resultado").innerHTML=html
-
-}
-
-/* INIT */
-
-verificar()
+cargar()
 
 </script>
 
