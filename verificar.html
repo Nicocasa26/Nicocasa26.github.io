@@ -7,6 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 body{
 font-family:Arial;
 background:#f5f6f7;
@@ -20,10 +21,17 @@ padding:30px;
 max-width:600px;
 margin:auto;
 border-radius:8px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-.ok{color:green}
+.ok{color:green;font-weight:bold}
 .error{color:red}
+
+ul{
+text-align:left;
+margin-top:15px;
+}
+
 </style>
 
 </head>
@@ -40,21 +48,29 @@ border-radius:8px;
 
 <script>
 
+/* SUPABASE */
+
 const SUPABASE_URL="https://brdekhbqophvcobhxdgc.supabase.co"
 const SUPABASE_KEY="sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn"
 
 const {createClient}=supabase
 const client=createClient(SUPABASE_URL,SUPABASE_KEY)
 
+/* PARAMS */
+
 const params=new URLSearchParams(window.location.search)
 const id=params.get("id")
 
 async function verificar(){
 
+/* VALIDAR ID */
+
 if(!id){
 document.getElementById("resultado").innerHTML="<p class='error'>ID inválido</p>"
 return
 }
+
+/* TRAER CAPACITACIÓN */
 
 const {data,error}=await client
 .from("capacitaciones_empresas")
@@ -67,14 +83,23 @@ fecha_inicio
 .single()
 
 if(error || !data){
-document.getElementById("resultado").innerHTML="<p class='error'>No encontrado</p>"
+document.getElementById("resultado").innerHTML="<p class='error'>Capacitación no encontrada</p>"
 return
 }
 
-const {data:asistentes}=await client
+/* TRAER ASISTENTES */
+
+const {data:asistentes,error:errAsistentes}=await client
 .from("asistentes")
 .select("nombre,dni")
 .eq("capacitacion_id",id)
+
+if(errAsistentes){
+document.getElementById("resultado").innerHTML="<p class='error'>Error cargando asistentes</p>"
+return
+}
+
+/* ARMAR HTML */
 
 let html=`
 <p class="ok">✔ Capacitación válida</p>
@@ -84,18 +109,31 @@ let html=`
 <p><b>Fecha:</b> ${data.fecha_inicio}</p>
 
 <h3>Asistentes</h3>
-<ul>
 `
 
+/* SI NO HAY ASISTENTES */
+
+if(!asistentes || asistentes.length === 0){
+
+html += `<p>No hay asistentes registrados</p>`
+
+} else {
+
+html += `<ul>`
+
 asistentes.forEach(a=>{
-html+=`<li>${a.nombre} - DNI ${a.dni}</li>`
+html += `<li>${a.nombre} - DNI ${a.dni}</li>`
 })
 
-html+=`</ul>`
+html += `</ul>`
+
+}
 
 document.getElementById("resultado").innerHTML=html
 
 }
+
+/* INIT */
 
 verificar()
 
