@@ -11,7 +11,6 @@ body {
   background: #f4f6f8;
 }
 
-/* HEADER */
 .header {
   background: white;
   padding: 20px 40px;
@@ -35,12 +34,10 @@ body {
   border-radius: 6px;
 }
 
-/* CONTENIDO */
 .container {
   padding: 40px;
 }
 
-/* KPIs */
 .kpis {
   display: flex;
   gap: 20px;
@@ -66,7 +63,6 @@ body {
   color: #666;
 }
 
-/* CARDS */
 .cards {
   display: flex;
   gap: 20px;
@@ -85,14 +81,6 @@ body {
   transform: translateY(-4px);
 }
 
-.card h3 {
-  margin-top: 0;
-}
-
-.card p {
-  color: #666;
-}
-
 .card button {
   margin-top: 15px;
   padding: 10px 14px;
@@ -107,7 +95,6 @@ body {
   background: #1d4ed8;
 }
 
-/* RESPONSIVE */
 @media (max-width: 900px) {
   .kpis, .cards {
     flex-direction: column;
@@ -118,16 +105,13 @@ body {
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <h1>Panel de Control – CONEMAT</h1>
   <button class="logout" onclick="logout()">Cerrar sesión</button>
 </div>
 
-<!-- CONTENIDO -->
 <div class="container">
 
-  <!-- KPIs -->
   <div class="kpis">
     <div class="kpi">
       <h2 id="totalEmpresas">-</h2>
@@ -145,7 +129,6 @@ body {
     </div>
   </div>
 
-  <!-- CARDS -->
   <div class="cards">
 
     <div class="card">
@@ -157,7 +140,7 @@ body {
     <div class="card">
       <h3>🎓 Capacitaciones base</h3>
       <p>Videos disponibles para asignar.</p>
-      <button onclick="location.href='/admin/capacitaciones_base.html'">Ver capacitaciones</button>
+      <button onclick="location.href='capacitaciones_base.html'">Ver capacitaciones</button>
     </div>
 
     <div class="card">
@@ -170,49 +153,49 @@ body {
 
 </div>
 
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const supabase = supabase.createClient(
-  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-);
+
+// ✅ CONFIG CORRECTA
+const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // KPIs
 async function cargarKPIs() {
-
   try {
 
-    const { count: empresas } = await supabase
+    const emp = await supabaseClient
       .from("empresas")
       .select("*", { count: "exact", head: true });
 
-    const { count: capacitaciones } = await supabase
+    const cap = await supabaseClient
       .from("capacitaciones")
       .select("*", { count: "exact", head: true });
 
-    const { count: asistentes } = await supabase
+    const asi = await supabaseClient
       .from("asistentes")
       .select("*", { count: "exact", head: true });
 
-    document.getElementById("totalEmpresas").innerText = empresas ?? 0;
-    document.getElementById("totalCapacitaciones").innerText = capacitaciones ?? 0;
-    document.getElementById("totalAsistentes").innerText = asistentes ?? 0;
+    document.getElementById("totalEmpresas").innerText = emp.count ?? 0;
+    document.getElementById("totalCapacitaciones").innerText = cap.count ?? 0;
+    document.getElementById("totalAsistentes").innerText = asi.count ?? 0;
 
   } catch (error) {
-    console.error("Error KPIs:", error);
+    console.error("ERROR KPIs:", error);
   }
-
 }
 
 cargarKPIs();
 
 // LOGOUT
 async function logout() {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   window.location.href = "../index.html";
 }
+
 </script>
 
 </body>
