@@ -230,43 +230,65 @@ const doc=new jsPDF()
 
 const fecha=new Date().toLocaleDateString("es-AR")
 
+/* LOGO */
+
 const logo=new Image()
 logo.src="../logo-black.png"
 
 logo.onload=function(){
 
-doc.addImage(logo,"PNG",15,10,35,0)
+/* HEADER */
 
-doc.setFontSize(16)
-doc.setFont(undefined,"bold")
+doc.addImage(logo,"PNG",15,12,30,0)
 
-doc.text(
-"REGISTRO DE CAPACITACIÓN",
-105,
-24,
-{align:"center"}
-)
+doc.setFont("helvetica","bold")
+doc.setFontSize(18)
 
-doc.setFontSize(9)
-doc.setFont(undefined,"normal")
+doc.text("REGISTRO DE CAPACITACIÓN",105,20,{align:"center"})
+
+doc.setFont("helvetica","normal")
+doc.setFontSize(10)
+
+doc.setTextColor(100)
 
 doc.text(
 "Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",
 105,
-30,
+26,
 {align:"center"}
 )
 
-doc.setDrawColor(180)
-doc.line(10,65,200,65)
+/* LINEA */
 
-doc.setFontSize(11)
+doc.setDrawColor(200)
+doc.setLineWidth(0.5)
+doc.line(10,32,200,32)
 
-doc.text(`EMPRESA: ${empresa}`,12,75)
-doc.text(`CAPACITACIÓN: ${capacitacion}`,12,83)
+/* BLOQUE DATOS */
 
-doc.text(`INSTRUCTOR: Casanova Nicolás`,12,91)
-doc.text(`FECHA: ${fecha}`,140,91)
+let startY=45
+
+doc.setFontSize(9)
+doc.setTextColor(120)
+
+/* LABELS */
+
+doc.text("EMPRESA",12,startY)
+doc.text("CAPACITACIÓN",12,startY+8)
+
+doc.text("INSTRUCTOR",120,startY)
+doc.text("FECHA",120,startY+8)
+
+/* VALUES */
+
+doc.setFont("helvetica","bold")
+doc.setTextColor(0)
+
+doc.text(empresa,12,startY+4)
+doc.text(capacitacion,12,startY+12)
+
+doc.text("Casanova Nicolás",120,startY+4)
+doc.text(fecha,120,startY+12)
 
 /* TABLA */
 
@@ -280,7 +302,7 @@ a.puesto,
 
 doc.autoTable({
 
-startY:110,
+startY:startY+20,
 
 head:[[
 "Nº",
@@ -294,11 +316,20 @@ body:rows,
 
 styles:{
 fontSize:9,
-minCellHeight:18
+cellPadding:4,
+valign:"middle",
+lineColor:[220,220,220],
+lineWidth:0.2
 },
 
 headStyles:{
-fillColor:[40,40,40]
+fillColor:[240,240,240],
+textColor:[0,0,0],
+fontStyle:"bold"
+},
+
+columnStyles:{
+4:{cellWidth:35}
 }
 
 })
@@ -316,9 +347,9 @@ doc.addImage(
 a.firma,
 "PNG",
 cell.x+3,
-cell.y+3,
+cell.y+4,
 28,
-12
+10
 )
 
 }
@@ -327,42 +358,52 @@ cell.y+3,
 
 /* FIRMA INSTRUCTOR */
 
-const finalY=doc.lastAutoTable.finalY+15
+let finalY=doc.lastAutoTable.finalY+25
 
-const firma=new Image()
-firma.src="Firma nicolas nueva.jpg"
+/* línea */
 
-firma.onload=function(){
-
-doc.addImage(firma,"JPEG",140,finalY,50,25)
+doc.setDrawColor(150)
+doc.line(130,finalY,190,finalY)
 
 doc.setFontSize(10)
+doc.setFont("helvetica","bold")
 
 doc.text(
-"Casanova Nicolás\nLic. Higiene y Seguridad",
-140,
-finalY+32
+"Casanova Nicolás",
+160,
+finalY+6,
+{align:"center"}
+)
+
+doc.setFont("helvetica","normal")
+doc.setFontSize(9)
+
+doc.text(
+"Lic. Higiene y Seguridad",
+160,
+finalY+11,
+{align:"center"}
 )
 
 /* DISCLAIMER */
 
 doc.setFontSize(8)
+doc.setTextColor(120)
 
 doc.text(
-"Esta capacitación fue brindada de forma virtual. Los participantes registrados declararon haber participado y visualizar el contenido de la capacitación.",
+"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
 105,
-280,
+285,
 {align:"center",maxWidth:180}
 )
+
+/* EXPORT */
 
 doc.save(`${empresa} - ${capacitacion}.pdf`)
 
 }
 
 }
-
-}
-
 /* INIT */
 
 cargarContexto()
