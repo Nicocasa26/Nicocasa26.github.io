@@ -351,7 +351,14 @@ cell.y+4,
 
 /* FIRMA INSTRUCTOR */
 
-let finalY=doc.lastAutoTable.finalY+25
+let finalY = doc.lastAutoTable.finalY + 25
+
+// CONTROL DE SALTO DE PÁGINA
+
+if(finalY > 240){
+  doc.addPage()
+  finalY = 40
+}
 
 const firma=new Image()
 firma.src="Firma nicolas nueva.jpg"
@@ -379,10 +386,17 @@ doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"}) // 🔥 MATRÍCULA
 doc.setFontSize(8)
 doc.setTextColor(120)
 
+let disclaimerY = finalY + 40
+
+if(disclaimerY > 280){
+  doc.addPage()
+  disclaimerY = 40
+}
+
 doc.text(
 "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
 105,
-285,
+disclaimerY,
 {align:"center",maxWidth:180}
 )
 
