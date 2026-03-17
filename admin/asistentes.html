@@ -7,9 +7,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
-
 body{
 font-family:Arial;
 padding:30px;
@@ -50,7 +50,6 @@ background:#dc2626;
 color:white;
 border:none;
 }
-
 </style>
 
 </head>
@@ -63,7 +62,6 @@ border:none;
 <button onclick="generarPDF()">Generar PDF</button>
 
 <table>
-
 <thead>
 <tr>
 <th>#</th>
@@ -75,7 +73,6 @@ border:none;
 </thead>
 
 <tbody id="tabla"></tbody>
-
 </table>
 
 <script>
@@ -142,27 +139,14 @@ data.forEach((a,i)=>{
 
 tabla.innerHTML+=`
 <tr>
-
 <td>${i+1}</td>
-
 <td>${a.nombre}</td>
-
 <td>${a.dni}</td>
-
 <td>${a.puesto}</td>
-
 <td>
-
-<button class="edit" onclick="editar('${a.id}','${a.nombre}','${a.dni}','${a.puesto}')">
-Editar
-</button>
-
-<button class="delete" onclick="eliminar('${a.id}')">
-Eliminar
-</button>
-
+<button class="edit" onclick="editar('${a.id}','${a.nombre}','${a.dni}','${a.puesto}')">Editar</button>
+<button class="delete" onclick="eliminar('${a.id}')">Eliminar</button>
 </td>
-
 </tr>
 `
 
@@ -237,28 +221,19 @@ logo.onload=function(){
 
 /* HEADER */
 
-doc.addImage(logo,"PNG",15,8,25,0) // 🔥 SUBIDO (antes 12)
+doc.addImage(logo,"PNG",15,8,25,0)
 
 doc.setFont("helvetica","bold")
 doc.setFontSize(18)
-
 doc.text("REGISTRO DE CAPACITACIÓN",105,20,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
 doc.setTextColor(100)
 
-doc.text(
-"Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",
-105,
-26,
-{align:"center"}
-)
-
-/* LINEA */
+doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",105,26,{align:"center"})
 
 doc.setDrawColor(200)
-doc.setLineWidth(0.5)
 doc.line(10,34,200,34)
 
 /* DATOS */
@@ -270,7 +245,6 @@ doc.setTextColor(120)
 
 doc.text("EMPRESA",12,startY)
 doc.text("CAPACITACIÓN",12,startY+8)
-
 doc.text("INSTRUCTOR",120,startY)
 doc.text("FECHA",120,startY+8)
 
@@ -294,70 +268,31 @@ a.puesto,
 ])
 
 doc.autoTable({
-
 startY:startY+20,
-
-head:[[
-"Nº",
-"APELLIDO Y NOMBRE",
-"DNI",
-"PUESTO",
-"FIRMA"
-]],
-
+head:[["Nº","APELLIDO Y NOMBRE","DNI","PUESTO","FIRMA"]],
 body:rows,
-
-styles:{
-fontSize:9,
-cellPadding:4,
-valign:"middle",
-lineColor:[220,220,220],
-lineWidth:0.2
-},
-
-headStyles:{
-fillColor:[240,240,240],
-textColor:[0,0,0],
-fontStyle:"bold"
-},
-
-columnStyles:{
-4:{cellWidth:35}
-}
-
+styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[220,220,220],lineWidth:0.2},
+headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold"},
+columnStyles:{4:{cellWidth:35}}
 })
 
-/* FIRMAS ASISTENTES */
+/* FIRMAS */
 
 asistentes.forEach((a,i)=>{
-
 if(a.firma){
-
 const row=doc.lastAutoTable.body[i]
 const cell=row.cells[4]
-
-doc.addImage(
-a.firma,
-"PNG",
-cell.x+3,
-cell.y+4,
-28,
-10
-)
-
+doc.addImage(a.firma,"PNG",cell.x+3,cell.y+4,28,10)
 }
-
 })
 
-/* FIRMA INSTRUCTOR */
+/* FIRMA PROFESIONAL */
 
 let finalY = doc.lastAutoTable.finalY + 25
 
-// CONTROL DE SALTO DE PÁGINA
-
 if(finalY > 240){
-  doc.addPage()
-  finalY = 40
+doc.addPage()
+finalY = 40
 }
 
 const firma=new Image()
@@ -367,40 +302,66 @@ firma.onload=function(){
 
 doc.addImage(firma,"JPEG",140,finalY-20,45,20)
 
-doc.setDrawColor(150)
 doc.line(130,finalY,190,finalY)
 
 doc.setFontSize(10)
 doc.setFont("helvetica","bold")
-
 doc.text("Casanova Nicolás",160,finalY+6,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(9)
-
 doc.text("Lic. Higiene y Seguridad",160,finalY+11,{align:"center"})
-doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"}) // 🔥 MATRÍCULA
+doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"})
 
 /* DISCLAIMER */
-
-doc.setFontSize(8)
-doc.setTextColor(120)
 
 let disclaimerY = finalY + 40
 
 if(disclaimerY > 280){
-  doc.addPage()
-  disclaimerY = 40
+doc.addPage()
+disclaimerY = 40
 }
 
-doc.text(
-"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
-105,
-disclaimerY,
-{align:"center",maxWidth:180}
-)
+doc.setFontSize(8)
+doc.setTextColor(120)
+
+doc.text("Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",105,disclaimerY,{align:"center",maxWidth:180})
+
+/* QR */
+
+const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
+
+const qrContainer = document.createElement("div")
+qrContainer.style.display = "none"
+document.body.appendChild(qrContainer)
+
+new QRCode(qrContainer,{
+text:urlVerificacion,
+width:80,
+height:80
+})
+
+setTimeout(()=>{
+
+const qrCanvas=qrContainer.querySelector("canvas")
+const qrImage=qrCanvas.toDataURL("image/png")
+
+let qrY = disclaimerY - 30
+
+if(qrY < 20){
+doc.addPage()
+qrY = 40
+}
+
+doc.addImage(qrImage,"PNG",15,qrY,25,25)
+
+doc.setFontSize(7)
+doc.setTextColor(100)
+doc.text("Verificar autenticidad",27,qrY+30,{align:"center"})
 
 doc.save(`${empresa} - ${capacitacion}.pdf`)
+
+},300)
 
 }
 
