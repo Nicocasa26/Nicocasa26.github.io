@@ -243,20 +243,28 @@ for(let i=1;i<=pageCount;i++){
 
 doc.setPage(i)
 
+/* POSICIÓN BASE */
+const qrX = 15
+const qrY = 255
+
+const textX = 45
+const textY = 270
+
+/* QR */
+
+doc.addImage(qrImage,"PNG",qrX,qrY,25,25)
+
+/* TEXTO */
+
 doc.setFontSize(8)
 doc.setTextColor(120)
 
 doc.text(
 "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
-105,
-285,
-{align:"center",maxWidth:180}
+textX,
+textY,
+{maxWidth:150}
 )
-
-doc.addImage(qrImage,"PNG",15,255,25,25)
-
-doc.setFontSize(7)
-doc.text("Verificar autenticidad",27,285,{align:"center"})
 
 }
 
