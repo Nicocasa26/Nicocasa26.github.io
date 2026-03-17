@@ -230,8 +230,6 @@ const doc=new jsPDF()
 
 const fecha=new Date().toLocaleDateString("es-AR")
 
-/* LOGO */
-
 const logo=new Image()
 logo.src="../logo-black.png"
 
@@ -239,7 +237,7 @@ logo.onload=function(){
 
 /* HEADER */
 
-doc.addImage(logo,"PNG",15,12,30,0)
+doc.addImage(logo,"PNG",15,12,25,0) // MÁS CHICO
 
 doc.setFont("helvetica","bold")
 doc.setFontSize(18)
@@ -248,7 +246,6 @@ doc.text("REGISTRO DE CAPACITACIÓN",105,20,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
-
 doc.setTextColor(100)
 
 doc.text(
@@ -258,28 +255,24 @@ doc.text(
 {align:"center"}
 )
 
-/* LINEA */
+/* LINEA (BAJADA) */
 
 doc.setDrawColor(200)
 doc.setLineWidth(0.5)
-doc.line(10,32,200,32)
+doc.line(10,34,200,34)
 
-/* BLOQUE DATOS */
+/* DATOS */
 
-let startY=45
+let startY=48
 
 doc.setFontSize(9)
 doc.setTextColor(120)
-
-/* LABELS */
 
 doc.text("EMPRESA",12,startY)
 doc.text("CAPACITACIÓN",12,startY+8)
 
 doc.text("INSTRUCTOR",120,startY)
 doc.text("FECHA",120,startY+8)
-
-/* VALUES */
 
 doc.setFont("helvetica","bold")
 doc.setTextColor(0)
@@ -334,7 +327,7 @@ columnStyles:{
 
 })
 
-/* INSERTAR FIRMAS */
+/* FIRMAS ASISTENTES */
 
 asistentes.forEach((a,i)=>{
 
@@ -360,7 +353,12 @@ cell.y+4,
 
 let finalY=doc.lastAutoTable.finalY+25
 
-/* línea */
+const firma=new Image()
+firma.src="Firma nicolas nueva.jpg"
+
+firma.onload=function(){
+
+doc.addImage(firma,"JPEG",140,finalY-20,45,20)
 
 doc.setDrawColor(150)
 doc.line(130,finalY,190,finalY)
@@ -368,22 +366,12 @@ doc.line(130,finalY,190,finalY)
 doc.setFontSize(10)
 doc.setFont("helvetica","bold")
 
-doc.text(
-"Casanova Nicolás",
-160,
-finalY+6,
-{align:"center"}
-)
+doc.text("Casanova Nicolás",160,finalY+6,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(9)
 
-doc.text(
-"Lic. Higiene y Seguridad",
-160,
-finalY+11,
-{align:"center"}
-)
+doc.text("Lic. Higiene y Seguridad",160,finalY+11,{align:"center"})
 
 /* DISCLAIMER */
 
@@ -397,13 +385,14 @@ doc.text(
 {align:"center",maxWidth:180}
 )
 
-/* EXPORT */
-
 doc.save(`${empresa} - ${capacitacion}.pdf`)
 
 }
 
 }
+
+}
+
 /* INIT */
 
 cargarContexto()
