@@ -1,323 +1,256 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-
 <meta charset="UTF-8">
 <title>Empresas | CONEMAT</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-
-body{
-font-family:Arial;
-padding:30px;
-background:#f5f6f7;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
 }
 
-button{
-padding:6px 10px;
-margin-right:5px;
-cursor:pointer;
+.header {
+  background: white;
+  padding: 20px 40px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-table{
-width:100%;
-border-collapse:collapse;
-background:white;
-margin-top:20px;
+.container {
+  padding: 40px;
 }
 
-th,td{
-border:1px solid #ccc;
-padding:8px;
-font-size:14px;
+/* TOP BAR */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
-th{
-background:#e5e7eb;
+.topbar input {
+  padding: 10px;
+  width: 250px;
 }
 
-.ver{
-background:#2563eb;
-color:white;
-border:none;
+.topbar button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.edit{
-background:#f59e0b;
-color:white;
-border:none;
+/* TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.delete{
-background:#dc2626;
-color:white;
-border:none;
+th, td {
+  padding: 14px;
+  text-align: left;
 }
 
-#buscarEmpresa{
-padding:8px;
-width:250px;
-margin-top:10px;
+th {
+  background: #f1f5f9;
 }
 
+tr:hover {
+  background: #f9fafb;
+}
+
+/* BADGE */
+.badge {
+  padding: 5px 10px;
+  border-radius: 6px;
+  color: white;
+  font-size: 12px;
+}
+
+.activa {
+  background: #22c55e;
+}
+
+/* BOTONES */
+.actions button {
+  border: none;
+  padding: 6px 10px;
+  margin-right: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ver { background: #3b82f6; color: white; }
+.editar { background: #f59e0b; color: white; }
+.eliminar { background: #ef4444; color: white; }
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  width: 400px;
+}
+
+.modal input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.modal button {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+}
 </style>
-
 </head>
 
 <body>
 
-<h2>Empresas</h2>
+<div class="header">
+  <h2>Empresas</h2>
+</div>
 
-<button onclick="volver()">← Volver</button>
-<button onclick="agregarEmpresa()">+ Agregar empresa</button>
+<div class="container">
 
-<br><br>
+  <div class="topbar">
+    <input type="text" id="buscar" placeholder="Buscar empresa...">
+    <button onclick="abrirModal()">+ Nueva empresa</button>
+  </div>
 
-<input 
-id="buscarEmpresa"
-placeholder="Buscar empresa..."
-onkeyup="buscarEmpresa()"
->
+  <table>
+    <thead>
+      <tr>
+        <th>Empresa</th>
+        <th>Dirección</th>
+        <th>Contacto</th>
+        <th>Estado</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody id="tablaEmpresas"></tbody>
+  </table>
 
-<table>
+</div>
 
-<thead>
-<tr>
-<th>Empresa</th>
-<th>Dirección</th>
-<th>Contacto</th>
-<th>Estado</th>
-<th>Acción</th>
-</tr>
-</thead>
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Nueva Empresa</h3>
+    <input id="nombre" placeholder="Nombre">
+    <input id="direccion" placeholder="Dirección">
+    <input id="contacto" placeholder="Contacto">
+    <button onclick="guardarEmpresa()">Guardar</button>
+  </div>
+</div>
 
-<tbody id="tabla"></tbody>
-
-</table>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
-const { createClient } = supabase;
-const client = createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let empresas = [];
+// CARGAR EMPRESAS
+async function cargarEmpresas() {
 
-function volver(){
-window.location.href="index.html";
+  const { data } = await supabaseClient
+    .from("empresas")
+    .select("*");
+
+  mostrar(data);
 }
 
-async function cargarEmpresas(){
+function mostrar(data) {
 
-const { data, error } = await client
-.from("empresas")
-.select("*")
-.order("nombre");
+  const tabla = document.getElementById("tablaEmpresas");
+  tabla.innerHTML = "";
 
-if(error){
-console.error(error);
-alert(error.message);
-return;
+  data.forEach(e => {
+
+    tabla.innerHTML += `
+      <tr>
+        <td>${e.nombre}</td>
+        <td>${e.direccion}</td>
+        <td>${e.contacto}</td>
+        <td><span class="badge activa">Activa</span></td>
+        <td class="actions">
+          <button class="ver">Ver</button>
+          <button class="editar">Editar</button>
+          <button class="eliminar" onclick="eliminar('${e.id}')">Eliminar</button>
+        </td>
+      </tr>
+    `;
+  });
 }
 
-empresas = data || [];
+// BUSCADOR
+document.getElementById("buscar").addEventListener("input", async (e) => {
 
-renderEmpresas(empresas);
+  const valor = e.target.value;
 
+  const { data } = await supabaseClient
+    .from("empresas")
+    .select("*")
+    .ilike("nombre", `%${valor}%`);
+
+  mostrar(data);
+});
+
+// MODAL
+function abrirModal() {
+  document.getElementById("modal").style.display = "flex";
 }
 
-function renderEmpresas(lista){
+// GUARDAR
+async function guardarEmpresa() {
 
-const tabla = document.getElementById("tabla");
+  const nombre = document.getElementById("nombre").value;
+  const direccion = document.getElementById("direccion").value;
+  const contacto = document.getElementById("contacto").value;
 
-tabla.innerHTML="";
+  await supabaseClient.from("empresas").insert([
+    { nombre, direccion, contacto }
+  ]);
 
-lista.forEach(e=>{
-
-tabla.innerHTML+=`
-
-<tr>
-
-<td>${e.nombre || ""}</td>
-
-<td>${e.direccion || ""}</td>
-
-<td>${e.contacto || ""}</td>
-
-<td style="color:green;font-weight:bold">
-Activa
-</td>
-
-<td>
-
-<button class="ver"
-onclick="verEmpresa('${e.id}')">
-Ver
-</button>
-
-<button class="edit"
-onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion}','${e.contacto}')">
-Editar
-</button>
-
-<button class="delete"
-onclick="eliminarEmpresa('${e.id}','${e.nombre}')">
-Eliminar
-</button>
-
-</td>
-
-</tr>
-
-`
-
-})
-
+  document.getElementById("modal").style.display = "none";
+  cargarEmpresas();
 }
 
-function buscarEmpresa(){
+// ELIMINAR
+async function eliminar(id) {
 
-const texto=document
-.getElementById("buscarEmpresa")
-.value
-.toLowerCase();
+  if (!confirm("¿Eliminar empresa?")) return;
 
-const filtradas=empresas.filter(e =>
+  await supabaseClient
+    .from("empresas")
+    .delete()
+    .eq("id", id);
 
-(e.nombre || "").toLowerCase().includes(texto) ||
-(e.direccion || "").toLowerCase().includes(texto) ||
-(e.contacto || "").toLowerCase().includes(texto)
-
-)
-
-renderEmpresas(filtradas)
-
+  cargarEmpresas();
 }
 
-function verEmpresa(id){
-
-window.location.href=`empresa_detalle.html?id=${id}`
-
-}
-
-async function agregarEmpresa(){
-
-const nombre = prompt("Nombre empresa")
-if(!nombre) return
-
-const direccion = prompt("Dirección")
-if(!direccion) return
-
-const contacto = prompt("Contacto")
-if(!contacto) return
-
-const { error } = await client
-.from("empresas")
-.insert([
-{
-nombre,
-direccion,
-contacto,
-fecha_inicio: new Date()
-}
-])
-
-if(error){
-console.error(error)
-alert(error.message)
-return
-}
-
-cargarEmpresas()
-
-}
-
-async function editarEmpresa(id,nombre,direccion,contacto){
-
-const nuevoNombre=prompt("Nombre empresa",nombre)
-if(!nuevoNombre) return
-
-const nuevaDireccion=prompt("Dirección",direccion)
-if(!nuevaDireccion) return
-
-const nuevoContacto=prompt("Contacto",contacto)
-if(!nuevoContacto) return
-
-const { error } = await client
-.from("empresas")
-.update({
-nombre:nuevoNombre,
-direccion:nuevaDireccion,
-contacto:nuevoContacto
-})
-.eq("id",id)
-
-if(error){
-console.error(error)
-alert(error.message)
-return
-}
-
-cargarEmpresas()
-
-}
-
-async function eliminarEmpresa(id,nombre){
-
-const { data:capacitaciones } = await client
-.from("capacitaciones_empresas")
-.select("id")
-.eq("empresa_id",id)
-
-let totalCapacitaciones = capacitaciones?.length || 0
-let totalAsistentes = 0
-
-for(let c of capacitaciones || []){
-
-const { data:asis } = await client
-.from("asistentes")
-.select("id")
-.eq("capacitacion_id",c.id)
-
-totalAsistentes += asis?.length || 0
-
-}
-
-const confirmar=confirm(
-
-`¿Eliminar empresa "${nombre}"?
-
-Esto eliminará también:
-
-Capacitaciones: ${totalCapacitaciones}
-Asistentes: ${totalAsistentes}
-
-Esta acción NO se puede deshacer.`
-
-)
-
-if(!confirmar) return
-
-const { error } = await client
-.from("empresas")
-.delete()
-.eq("id",id)
-
-if(error){
-console.error(error)
-alert(error.message)
-return
-}
-
-cargarEmpresas()
-
-}
-
-cargarEmpresas()
+cargarEmpresas();
 
 </script>
 
