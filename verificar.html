@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Verificación | CONEMAT</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+font-family:Arial;
+background:#f5f6f7;
+padding:40px;
+text-align:center;
+}
+
+.card{
+background:white;
+padding:30px;
+max-width:600px;
+margin:auto;
+border-radius:8px;
+}
+
+.ok{color:green}
+.error{color:red}
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Verificación de Capacitación</h2>
+
+<div id="resultado">Validando...</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL="https://brdekhbqophvcobhxdgc.supabase.co"
+const SUPABASE_KEY="sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn"
+
+const {createClient}=supabase
+const client=createClient(SUPABASE_URL,SUPABASE_KEY)
+
+const params=new URLSearchParams(window.location.search)
+const id=params.get("id")
+
+async function verificar(){
+
+if(!id){
+document.getElementById("resultado").innerHTML="<p class='error'>ID inválido</p>"
+return
+}
+
+const {data,error}=await client
+.from("capacitaciones_empresas")
+.select(`
+empresas(nombre),
+capacitaciones_base(nombre),
+fecha_inicio
+`)
+.eq("id",id)
+.single()
+
+if(error || !data){
+document.getElementById("resultado").innerHTML="<p class='error'>No encontrado</p>"
+return
+}
+
+const {data:asistentes}=await client
+.from("asistentes")
+.select("nombre,dni")
+.eq("capacitacion_id",id)
+
+let html=`
+<p class="ok">✔ Capacitación válida</p>
+
+<p><b>Empresa:</b> ${data.empresas.nombre}</p>
+<p><b>Capacitación:</b> ${data.capacitaciones_base.nombre}</p>
+<p><b>Fecha:</b> ${data.fecha_inicio}</p>
+
+<h3>Asistentes</h3>
+<ul>
+`
+
+asistentes.forEach(a=>{
+html+=`<li>${a.nombre} - DNI ${a.dni}</li>`
+})
+
+html+=`</ul>`
+
+document.getElementById("resultado").innerHTML=html
+
+}
+
+verificar()
+
+</script>
+
+</body>
+</html>
