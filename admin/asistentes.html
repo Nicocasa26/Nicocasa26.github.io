@@ -214,12 +214,60 @@ const doc=new jsPDF()
 
 const fecha=new Date().toLocaleDateString("es-AR")
 
+/* GENERAR QR UNA SOLA VEZ */
+
+const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
+
+const qrContainer = document.createElement("div")
+qrContainer.style.display = "none"
+document.body.appendChild(qrContainer)
+
+new QRCode(qrContainer,{
+text:urlVerificacion,
+width:80,
+height:80
+})
+
+setTimeout(()=>{
+
+const qrCanvas=qrContainer.querySelector("canvas")
+const qrImage=qrCanvas.toDataURL("image/png")
+
+/* FUNCIÓN FOOTER */
+
+function agregarFooter(){
+
+const pageCount = doc.getNumberOfPages()
+
+for(let i=1;i<=pageCount;i++){
+
+doc.setPage(i)
+
+doc.setFontSize(8)
+doc.setTextColor(120)
+
+doc.text(
+"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+105,
+285,
+{align:"center",maxWidth:180}
+)
+
+doc.addImage(qrImage,"PNG",15,255,25,25)
+
+doc.setFontSize(7)
+doc.text("Verificar autenticidad",27,285,{align:"center"})
+
+}
+
+}
+
+/* CONTINUAR PDF */
+
 const logo=new Image()
 logo.src="../logo-black.png"
 
 logo.onload=function(){
-
-/* HEADER */
 
 doc.addImage(logo,"PNG",15,8,25,0)
 
@@ -233,7 +281,6 @@ doc.setTextColor(100)
 
 doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",105,26,{align:"center"})
 
-doc.setDrawColor(200)
 doc.line(10,34,200,34)
 
 /* DATOS */
@@ -313,59 +360,17 @@ doc.setFontSize(9)
 doc.text("Lic. Higiene y Seguridad",160,finalY+11,{align:"center"})
 doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"})
 
-/* DISCLAIMER */
+/* 🔥 AGREGAR FOOTER A TODAS LAS PÁGINAS */
 
-let disclaimerY = finalY + 40
-
-if(disclaimerY > 280){
-doc.addPage()
-disclaimerY = 40
-}
-
-doc.setFontSize(8)
-doc.setTextColor(120)
-
-doc.text("Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",105,disclaimerY,{align:"center",maxWidth:180})
-
-/* QR */
-
-const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
-
-const qrContainer = document.createElement("div")
-qrContainer.style.display = "none"
-document.body.appendChild(qrContainer)
-
-new QRCode(qrContainer,{
-text:urlVerificacion,
-width:80,
-height:80
-})
-
-setTimeout(()=>{
-
-const qrCanvas=qrContainer.querySelector("canvas")
-const qrImage=qrCanvas.toDataURL("image/png")
-
-let qrY = disclaimerY - 30
-
-if(qrY < 20){
-doc.addPage()
-qrY = 40
-}
-
-doc.addImage(qrImage,"PNG",15,qrY,25,25)
-
-doc.setFontSize(7)
-doc.setTextColor(100)
-doc.text("Verificar autenticidad",27,qrY+30,{align:"center"})
+agregarFooter()
 
 doc.save(`${empresa} - ${capacitacion}.pdf`)
 
+}
+
+}
+
 },300)
-
-}
-
-}
 
 }
 
