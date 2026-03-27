@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <title>Empresas | CONEMAT</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 body { margin:0; font-family: Arial; background:#f4f6f8; }
 
@@ -127,7 +129,7 @@ tr:hover { background:#f9fafb; }
 <!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-content">
-    <h3>Nueva Empresa</h3>
+    <h3 id="modalTitulo">Nueva Empresa</h3>
     <input id="nombre" placeholder="Nombre">
     <input id="direccion" placeholder="Dirección">
     <input id="contacto" placeholder="Contacto">
@@ -135,43 +137,49 @@ tr:hover { background:#f9fafb; }
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
+
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// CARGAR
+let editandoId = null;
+
+/* CARGAR */
 async function cargarEmpresas() {
-  const { data, error } = await supabaseClient
+
+  const { data, error } = await client
     .from("empresas")
-    .select("*");
+    .select("*")
+    .order("nombre");
 
   if (error) {
     console.error(error);
+    alert("Error al cargar empresas");
     return;
   }
 
   mostrar(data);
 }
 
-// MOSTRAR
+/* MOSTRAR */
 function mostrar(data) {
+
   const tabla = document.getElementById("tablaEmpresas");
   tabla.innerHTML = "";
 
   data.forEach(e => {
+
     tabla.innerHTML += `
       <tr>
         <td>${e.nombre}</td>
-        <td>${e.direccion}</td>
-        <td>${e.contacto}</td>
+        <td>${e.direccion ?? "-"}</td>
+        <td>${e.contacto ?? "-"}</td>
         <td><span class="badge activa">Activa</span></td>
         <td class="actions">
           <button class="ver" onclick="verEmpresa('${e.id}')">Ver</button>
-          <button class="editar" onclick="editarEmpresa('${e.id}')">Editar</button>
+          <button class="editar" onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion}','${e.contacto}')">Editar</button>
           <button class="eliminar" onclick="eliminarEmpresa('${e.id}')">Eliminar</button>
         </td>
       </tr>
@@ -179,11 +187,12 @@ function mostrar(data) {
   });
 }
 
-// BUSCAR
+/* BUSCAR */
 document.getElementById("buscar").addEventListener("input", async (e) => {
+
   const valor = e.target.value;
 
-  const { data } = await supabaseClient
+  const { data } = await client
     .from("empresas")
     .select("*")
     .ilike("nombre", `%${valor}%`);
@@ -191,12 +200,27 @@ document.getElementById("buscar").addEventListener("input", async (e) => {
   mostrar(data);
 });
 
-// MODAL
+/* MODAL */
 function abrirModal() {
+  editandoId = null;
+  document.getElementById("modalTitulo").innerText = "Nueva Empresa";
   document.getElementById("modal").style.display = "flex";
 }
 
-// GUARDAR
+/* EDITAR */
+function editarEmpresa(id,nombre,direccion,contacto) {
+
+  editandoId = id;
+
+  document.getElementById("modalTitulo").innerText = "Editar Empresa";
+  document.getElementById("modal").style.display = "flex";
+
+  document.getElementById("nombre").value = nombre;
+  document.getElementById("direccion").value = direccion ?? "";
+  document.getElementById("contacto").value = contacto ?? "";
+}
+
+/* GUARDAR */
 async function guardarEmpresa() {
 
   const nombre = document.getElementById("nombre").value;
@@ -205,36 +229,43 @@ async function guardarEmpresa() {
 
   if (!nombre) return alert("Nombre requerido");
 
-  await supabaseClient.from("empresas").insert([
-    { nombre, direccion, contacto }
-  ]);
+  if (editandoId) {
 
-  document.getElementById("modal").style.display = "none";
+    const { error } = await client
+      .from("empresas")
+      .update({ nombre, direccion, contacto })
+      .eq("id", editandoId);
 
-  // limpiar
-  document.getElementById("nombre").value = "";
-  document.getElementById("direccion").value = "";
-  document.getElementById("contacto").value = "";
+    if (error) {
+      alert("Error al actualizar");
+      return;
+    }
 
+  } else {
+
+    const { error } = await client
+      .from("empresas")
+      .insert([{ nombre, direccion, contacto }]);
+
+    if (error) {
+      alert("Error al crear");
+      return;
+    }
+
+  }
+
+  cerrarModal();
   cargarEmpresas();
 }
 
-// VER (link a detalle)
-function verEmpresa(id) {
-  window.location.href = `empresa_detalle.html?id=${id}`;
-}
-
-// EDITAR (por ahora simple)
-function editarEmpresa(id) {
-  alert("Editar próximamente");
-}
-
-// ELIMINAR
+/* ELIMINAR */
 async function eliminarEmpresa(id) {
 
-  if (!confirm("¿Eliminar empresa?")) return;
+  const confirmar = confirm("¿Eliminar empresa?");
 
-  const { error } = await supabaseClient
+  if (!confirmar) return;
+
+  const { error } = await client
     .from("empresas")
     .delete()
     .eq("id", id);
@@ -245,10 +276,26 @@ async function eliminarEmpresa(id) {
     return;
   }
 
+  alert("Empresa eliminada");
   cargarEmpresas();
 }
 
+/* VER */
+function verEmpresa(id) {
+  window.location.href = `empresa_detalle.html?id=${id}`;
+}
+
+/* CERRAR */
+function cerrarModal() {
+  document.getElementById("modal").style.display = "none";
+  document.getElementById("nombre").value = "";
+  document.getElementById("direccion").value = "";
+  document.getElementById("contacto").value = "";
+}
+
+/* INIT */
 cargarEmpresas();
+
 </script>
 
 </body>
