@@ -6,6 +6,25 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+  // Configuración de Supabase
+  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+  // Creamos la variable con el nombre que espera tu archivo auth.js
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  
+  // Creamos este alias para no romper tus funciones de abajo que usan 'client'
+  const client = supabaseClient;
+</script>
+
+<script src="auth.js"></script>
+
+<script>
+  // 3. Verificación inmediata de la sesión
+  checkAuth();
+</script>
+
 <style>
 body { margin:0; font-family: Arial; background:#f4f6f8; }
 
@@ -126,7 +145,6 @@ tr:hover { background:#f9fafb; }
 
 </div>
 
-<!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3 id="modalTitulo">Nueva Empresa</h3>
@@ -138,12 +156,7 @@ tr:hover { background:#f9fafb; }
 </div>
 
 <script>
-
-const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+// El cliente de Supabase ya fue inicializado arriba en el <head>
 let editandoId = null;
 
 /* CARGAR */
