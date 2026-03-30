@@ -5,6 +5,22 @@
 <title>Asistentes | CONEMAT</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const client = supabaseClient; // Alias para que no fallen tus funciones que usan 'client'
+</script>
+
+<script src="auth.js"></script>
+
+<script>
+  // 3. Verificación inmediata de la sesión
+  checkAuth();
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -76,14 +92,6 @@ border:none;
 </table>
 
 <script>
-
-/* SUPABASE */
-
-const SUPABASE_URL="https://brdekhbqophvcobhxdgc.supabase.co"
-const SUPABASE_KEY="sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn"
-
-const {createClient}=supabase
-const client=createClient(SUPABASE_URL,SUPABASE_KEY)
 
 /* PARAMS */
 
