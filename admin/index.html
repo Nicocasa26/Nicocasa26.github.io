@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <title>Dashboard | CONEMAT</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
+<script src="auth.js"></script>
+
+<script>
+  // 3. Verificación inmediata de la sesión
+  checkAuth();
+</script>
+
 <style>
 body {
   margin: 0;
@@ -120,12 +136,12 @@ body {
 
     <div class="kpi">
       <h2 id="totalCapacitaciones">-</h2>
-      <p>Capacitaciones</p>
+      <p>Capacitaciones Base</p>
     </div>
 
     <div class="kpi">
       <h2 id="totalAsistentes">-</h2>
-      <p>Asistentes</p>
+      <p>Asistentes Totales</p>
     </div>
   </div>
 
@@ -146,23 +162,14 @@ body {
     <div class="card">
       <h3>📊 Capacitaciones realizadas</h3>
       <p>Seguimiento de capacitaciones.</p>
-      <button disabled>Próximamente</button>
+      <button disabled title="Próximamente">Próximamente</button>
     </div>
 
   </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-
-// ✅ CONFIG CORRECTA
-const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
 // KPIs
 async function cargarKPIs() {
   try {
@@ -171,8 +178,9 @@ async function cargarKPIs() {
       .from("empresas")
       .select("*", { count: "exact", head: true });
 
+    // Cambiado a capacitaciones_base para que cuente tus videos
     const cap = await supabaseClient
-      .from("capacitaciones")
+      .from("capacitaciones_base")
       .select("*", { count: "exact", head: true });
 
     const asi = await supabaseClient
@@ -188,14 +196,8 @@ async function cargarKPIs() {
   }
 }
 
+// Inicializar KPIs
 cargarKPIs();
-
-// LOGOUT
-async function logout() {
-  await supabaseClient.auth.signOut();
-  window.location.href = "../index.html";
-}
-
 </script>
 
 </body>
