@@ -7,6 +7,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script>
+  // Configuración centralizada
+  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const client = supabaseClient; // Alias para tus funciones existentes
+</script>
+
+<script src="auth.js"></script>
+
+<script>
+  // 3. Verificación inmediata de la sesión
+  checkAuth();
+</script>
+
 <style>
 
 body{
@@ -63,14 +79,6 @@ border:none;
 <div id="contenedor"></div>
 
 <script>
-
-/* SUPABASE */
-
-const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-
-const { createClient } = supabase
-const client = createClient(SUPABASE_URL,SUPABASE_KEY)
 
 /* VOLVER */
 
