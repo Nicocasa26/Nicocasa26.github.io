@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Empresas | CONEMAT</title>
     
-    <!-- SDK de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Tu script de autenticación (Asegúrate de que la ruta sea correcta) -->
     <script src="auth.js"></script>
 
     <style>
@@ -26,7 +24,8 @@
             padding: 40px;
         }
 
-        /* DISEÑO DEL ENCABEZADO MODERNO */
+        .container { max-width: 1200px; margin: 0 auto; }
+
         .header-container {
             display: flex;
             align-items: center;
@@ -36,108 +35,60 @@
             border-bottom: 1px solid var(--border);
         }
 
-        /* BOTÓN VOLVER ESTILO APP */
         .btn-back {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            border-radius: 12px;
-            background: white;
-            color: #64748b;
-            border: 1px solid var(--border);
-            text-decoration: none;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center;
+            width: 45px; height: 45px; border-radius: 12px;
+            background: white; color: #64748b; border: 1px solid var(--border);
+            text-decoration: none; transition: all 0.2s ease;
         }
 
         .btn-back:hover {
-            background: #ffffff;
-            color: var(--primary);
-            border-color: var(--primary);
+            color: var(--primary); border-color: var(--primary);
             transform: translateX(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
+        h1 { margin: 0; font-size: 28px; }
 
-        /* CONTENEDOR PRINCIPAL */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* ESTILOS DE LA TABLA Y BOTONES (Basados en tu diseño previo) */
         .actions-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
         }
 
         .search-input {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            width: 300px;
+            padding: 10px 15px; border-radius: 8px;
+            border: 1px solid var(--border); width: 300px;
         }
 
         .btn-new {
-            background-color: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
+            background-color: var(--primary); color: white;
+            padding: 10px 20px; border-radius: 8px;
+            border: none; cursor: pointer; font-weight: 600;
         }
 
         table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-            border-radius: 12px;
-            overflow: hidden;
+            width: 100%; background: white; border-collapse: collapse;
+            border-radius: 12px; overflow: hidden;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         th {
-            background-color: #f1f5f9;
-            padding: 15px;
-            text-align: left;
-            font-size: 13px;
-            text-transform: uppercase;
-            color: #64748b;
+            background-color: #f1f5f9; padding: 15px;
+            text-align: left; font-size: 13px; color: #64748b;
         }
 
-        td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border);
-        }
+        td { padding: 15px; border-bottom: 1px solid var(--border); }
 
-        .badge {
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
+        .btn-action {
+            background: none; border: none; cursor: pointer;
+            font-weight: 600; margin-right: 10px;
         }
-
-        .badge-active { background: #dcfce7; color: #166534; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- ENCABEZADO CON BOTÓN VOLVER -->
         <header class="header-container">
-            <a href="index.html" class="btn-back" title="Volver al Menú Principal">
+            <a href="index.html" class="btn-back">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
@@ -146,45 +97,38 @@
             <h1>Gestión de Empresas</h1>
         </header>
 
-        <!-- BARRA DE ACCIONES -->
         <div class="actions-bar">
-            <input type="text" class="search-input" placeholder="Buscar empresa...">
-            <button class="btn-new" onclick="abrirModal()">+ Nueva empresa</button>
+            <input type="text" class="search-input" placeholder="Buscar empresa..." id="buscador">
+            <!-- Corregido: La función debe coincidir con la del script -->
+            <button class="btn-new" onclick="nuevaEmpresa()">+ Nueva empresa</button>
         </div>
 
-        <!-- TABLA DE EMPRESAS -->
         <table>
             <thead>
                 <tr>
                     <th>Empresa</th>
                     <th>Dirección</th>
                     <th>Contacto</th>
-                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody id="tabla-empresas">
-                <!-- Los datos se cargan dinámicamente aquí -->
-            </tbody>
+            <tbody id="tabla-empresas"></tbody>
         </table>
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE
         const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
         const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
         const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // 1. CARGAR EMPRESAS
         async function cargarEmpresas() {
             const { data: empresas, error } = await client
                 .from('empresas')
                 .select('*')
                 .order('nombre', { ascending: true });
 
-            if (error) {
-                console.error("Error cargando empresas:", error);
-                return;
-            }
+            if (error) return console.error(error);
 
             const tbody = document.getElementById('tabla-empresas');
             tbody.innerHTML = '';
@@ -195,19 +139,60 @@
                         <td style="font-weight: 600;">${emp.nombre}</td>
                         <td>${emp.direccion || '-'}</td>
                         <td>${emp.contacto || '-'}</td>
-                        <td><span class="badge badge-active">Activa</span></td>
                         <td>
-                            <button style="color: var(--primary); background:none; border:none; cursor:pointer;">Ver</button>
-                            <button style="color: #f59e0b; background:none; border:none; cursor:pointer; margin-left:10px;">Editar</button>
+                            <button class="btn-action" style="color: var(--primary);" onclick="verEmpresa('${emp.id}')">Ver</button>
+                            <button class="btn-action" style="color: #f59e0b;" onclick="editarEmpresa('${emp.id}', '${emp.nombre}', '${emp.direccion}', '${emp.contacto}')">Editar</button>
+                            <button class="btn-action" style="color: #dc2626;" onclick="borrarEmpresa('${emp.id}', '${emp.nombre}')">Eliminar</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        // Ejecutar al cargar la página
+        // 2. NUEVA EMPRESA
+        async function nuevaEmpresa() {
+            const nombre = prompt("Nombre de la empresa:");
+            if (!nombre) return;
+            const direccion = prompt("Dirección:");
+            const contacto = prompt("Nombre de contacto:");
+
+            const { error } = await client.from('empresas').insert([{ nombre, direccion, contacto }]);
+            
+            if (error) alert("Error: " + error.message);
+            else cargarEmpresas();
+        }
+
+        // 3. EDITAR EMPRESA
+        async function editarEmpresa(id, nombreAct, dirAct, contAct) {
+            const nuevoNombre = prompt("Nombre:", nombreAct);
+            if (!nuevoNombre) return;
+            const nuevaDir = prompt("Dirección:", dirAct);
+            const nuevoCont = prompt("Contacto:", contAct);
+
+            const { error } = await client.from('empresas')
+                .update({ nombre: nuevoNombre, direccion: nuevaDir, contacto: nuevoCont })
+                .eq('id', id);
+
+            if (error) alert(error.message);
+            else cargarEmpresas();
+        }
+
+        // 4. BORRAR EMPRESA
+        async function borrarEmpresa(id, nombre) {
+            if (!confirm(`¿Estás seguro de eliminar a ${nombre}?`)) return;
+            const { error } = await client.from('empresas').delete().eq('id', id);
+            
+            if (error) alert(error.message);
+            else cargarEmpresas();
+        }
+
+        // 5. VER EMPRESA (Lógica simple para redireccionar)
+        function verEmpresa(id) {
+            window.location.href = `detalle_empresa.html?id=${id}`;
+        }
+
         window.onload = () => {
-            if (typeof checkAuth === "function") checkAuth(); // Verificación de sesión
+            checkAuth();
             cargarEmpresas();
         };
     </script>
