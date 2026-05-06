@@ -186,10 +186,11 @@
             else cargarEmpresas();
         }
 
-        // 5. VER EMPRESA (Lógica simple para redireccionar)
-        function verEmpresa(id) {
-            window.location.href = `detalle_empresa.html?id=${id}`;
-        }
+      // 5. VER EMPRESA
+function verEmpresa(id) {
+   
+    window.location.href = `empresa_detalle.html?id=${id}`; 
+}
 
         window.onload = () => {
             checkAuth();
