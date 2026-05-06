@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<!-- ESTA LÍNEA ES CLAVE PARA QUE SE VEA EN CELULARES -->
+<!-- Meta clave para que el celular no deforme el diseño[cite: 1] -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verificación | CONEMAT</title>
 
@@ -15,9 +15,9 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh; /* Cambiado a min-height para evitar cortes */
+  min-height: 100vh;
   margin: 0;
-  padding: 20px; /* Espacio para que la tarjeta no toque los bordes */
+  padding: 20px;
   box-sizing: border-box;
 }
 
@@ -25,8 +25,8 @@ body {
   background: white;
   padding: 30px;
   border-radius: 12px;
-  width: 100%; /* Ancho completo en móviles */
-  max-width: 400px; /* Pero que no supere los 400px en PC */
+  width: 100%;
+  max-width: 400px;
   text-align: center;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
   box-sizing: border-box;
@@ -45,7 +45,7 @@ p {
   margin: 10px 0;
   line-height: 1.5;
   color: #334155;
-  word-wrap: break-word; /* Evita que textos largos rompan el diseño */
+  word-wrap: break-word;
 }
 
 h4 {
@@ -87,7 +87,7 @@ h4 {
 </div>
 
 <script>
-/* CONFIGURACIÓN SUPABASE[cite: 1, 9] */
+/* CONFIGURACIÓN SUPABASE */
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -105,7 +105,7 @@ async function cargar() {
   }
 
   try {
-    /* TRAER CAPACITACIÓN[cite: 9] */
+    /* TRAER CAPACITACIÓN CON RELACIONES[cite: 9] */
     const { data, error } = await client
       .from("capacitaciones_empresas")
       .select(`
@@ -118,18 +118,25 @@ async function cargar() {
       .single();
 
     if (error || !data) {
-      estadoDiv.innerHTML = "<span class='error'>Capacitación no encontrada o expirada</span>";
+      estadoDiv.innerHTML = "<span class='error'>Capacitación no encontrada</span>";
       return;
     }
 
     /* CARGAR ASISTENTES[cite: 9] */
-    const { data: asistentes, error: errAsis } = await client
+    const { data: asistentes } = await client
       .from("asistentes")
       .select("nombre,dni")
       .eq("capacitacion_id", id);
 
-    /* RENDERIZAR DATOS */
-    document.getElementById("empresa").innerText = data.empresas?.nombre || "N/A";
+    /* RENDERIZAR DATOS CON FIX PARA MÓVILES[cite: 1, 9] */
+    
+    // El fix: Manejamos si empresas viene como objeto o como array de un elemento
+    let nombreEmpresa = "N/A";
+    if (data.empresas) {
+      nombreEmpresa = Array.isArray(data.empresas) ? data.empresas[0]?.nombre : data.empresas.nombre;
+    }
+
+    document.getElementById("empresa").innerText = nombreEmpresa;
     document.getElementById("capacitacion").innerText = data.capacitaciones_base?.nombre || "N/A";
     document.getElementById("fecha").innerText = data.fecha_inicio || "-";
 
@@ -140,21 +147,21 @@ async function cargar() {
       lista.innerHTML = "<div>No hay asistentes registrados.</div>";
     } else {
       asistentes.forEach(a => {
-        lista.innerHTML += `<div><strong>${a.nombre}</strong><br>DNI: ${a.dni}</div>`;
+        lista.innerHTML += `<div><strong>${a.nombre}</strong> - DNI: ${a.dni}</div>`;
       });
     }
 
-    // Mostrar contenido y actualizar estado
+    // Mostrar contenido final
     estadoDiv.innerHTML = "<span class='ok'>✔ Capacitación válida</span>";
     contenidoDiv.style.display = "block";
 
   } catch (err) {
-    console.error("Error crítico:", err);
-    estadoDiv.innerHTML = "<span class='error'>Error de conexión al verificar</span>";
+    console.error("Error:", err);
+    estadoDiv.innerHTML = "<span class='error'>Error al conectar con la base de datos</span>";
   }
 }
 
-// Iniciar carga
+// Ejecución
 cargar();
 </script>
 
