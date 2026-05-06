@@ -7,26 +7,23 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  // Configuración de Supabase
+  // Configuración de Supabase[cite: 1, 9]
   const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
   const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
-  // Creamos la variable con el nombre que espera tu archivo auth.js
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  
-  // Creamos este alias para no romper tus funciones de abajo que usan 'client'
   const client = supabaseClient;
 </script>
 
 <script src="auth.js"></script>
 
 <script>
-  // 3. Verificación inmediata de la sesión
+  // Verificación inmediata de la sesión[cite: 1, 8]
   checkAuth();
 </script>
 
 <style>
-body { margin:0; font-family: Arial; background:#f4f6f8; }
+body { margin:0; font-family: Arial; background:#f4f6f8; color: #333; }
 
 .header {
   background:white;
@@ -45,6 +42,8 @@ body { margin:0; font-family: Arial; background:#f4f6f8; }
 .topbar input {
   padding:10px;
   width:250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 .topbar button {
@@ -54,6 +53,7 @@ body { margin:0; font-family: Arial; background:#f4f6f8; }
   padding:10px 14px;
   border-radius:6px;
   cursor:pointer;
+  font-weight: bold;
 }
 
 table {
@@ -62,11 +62,12 @@ table {
   background:white;
   border-radius:10px;
   overflow:hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
-th, td { padding:14px; }
+th, td { padding:14px; text-align: left; border-bottom: 1px solid #edf2f7; }
 
-th { background:#f1f5f9; }
+th { background:#f1f5f9; color: #475569; text-transform: uppercase; font-size: 12px; letter-spacing: 0.05em; }
 
 tr:hover { background:#f9fafb; }
 
@@ -75,6 +76,7 @@ tr:hover { background:#f9fafb; }
   border-radius:6px;
   color:white;
   font-size:12px;
+  font-weight: bold;
 }
 
 .activa { background:#22c55e; }
@@ -85,46 +87,64 @@ tr:hover { background:#f9fafb; }
   margin-right:5px;
   border-radius:6px;
   cursor:pointer;
+  transition: opacity 0.2s;
 }
+
+.actions button:hover { opacity: 0.8; }
 
 .ver { background:#3b82f6; color:white; }
 .editar { background:#f59e0b; color:white; }
 .eliminar { background:#ef4444; color:white; }
 
-/* MODAL */
+/* MODAL MEJORADO */
 .modal {
   display:none;
   position:fixed;
   top:0; left:0;
   width:100%; height:100%;
-  background:rgba(0,0,0,0.4);
+  background:rgba(0,0,0,0.6);
   justify-content:center;
   align-items:center;
+  z-index: 1000;
 }
 
 .modal-content {
   background:white;
-  padding:25px;
-  border-radius:10px;
+  padding:30px;
+  border-radius:12px;
   width:400px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
+.modal h3 { margin-top: 0; margin-bottom: 20px; color: #1e293b; }
+
 .modal input {
-  width:100%;
-  margin-bottom:10px;
-  padding:10px;
+  width: 100%;
+  box-sizing: border-box; /* Evita que el input se salga del cuadro */
+  margin-bottom: 15px;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
 }
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-save { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+.btn-cancel { background: #64748b; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
 </style>
 </head>
 
 <body>
 
 <div class="header">
-  <h2>Empresas</h2>
+  <h2>Gestión de Empresas</h2>
 </div>
 
 <div class="container">
-
   <div class="topbar">
     <input type="text" id="buscar" placeholder="Buscar empresa...">
     <button onclick="abrirModal()">+ Nueva empresa</button>
@@ -137,62 +157,69 @@ tr:hover { background:#f9fafb; }
         <th>Dirección</th>
         <th>Contacto</th>
         <th>Estado</th>
-        <th>Acción</th>
+        <th>Acciones</th>
       </tr>
     </thead>
-    <tbody id="tablaEmpresas"></tbody>
+    <tbody id="tablaEmpresas">
+      <tr><td colspan="5">Cargando empresas...</td></tr>
+    </tbody>
   </table>
-
 </div>
 
+<!-- MODAL -->
 <div class="modal" id="modal">
   <div class="modal-content">
     <h3 id="modalTitulo">Nueva Empresa</h3>
-    <input id="nombre" placeholder="Nombre">
-    <input id="direccion" placeholder="Dirección">
-    <input id="contacto" placeholder="Contacto">
-    <button onclick="guardarEmpresa()">Guardar</button>
+    <input id="nombre" type="text" placeholder="Nombre de la empresa (Obligatorio)">
+    <input id="direccion" type="text" placeholder="Dirección">
+    <input id="contacto" type="text" placeholder="Nombre de contacto / Tel">
+    
+    <div class="modal-buttons">
+        <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-save" id="btnGuardar" onclick="guardarEmpresa()">Guardar</button>
+    </div>
   </div>
 </div>
 
 <script>
-// El cliente de Supabase ya fue inicializado arriba en el <head>
 let editandoId = null;
 
-/* CARGAR */
+/* CARGAR EMPRESAS[cite: 9] */
 async function cargarEmpresas() {
+  try {
+    const { data, error } = await client
+      .from("empresas")
+      .select("*")
+      .order("nombre");
 
-  const { data, error } = await client
-    .from("empresas")
-    .select("*")
-    .order("nombre");
-
-  if (error) {
-    console.error(error);
-    alert("Error al cargar empresas");
-    return;
+    if (error) throw error;
+    mostrar(data);
+  } catch (err) {
+    console.error("Error cargando:", err);
+    alert("No se pudieron cargar las empresas.");
   }
-
-  mostrar(data);
 }
 
-/* MOSTRAR */
+/* MOSTRAR EN TABLA */
 function mostrar(data) {
-
   const tabla = document.getElementById("tablaEmpresas");
   tabla.innerHTML = "";
 
-  data.forEach(e => {
+  if (data.length === 0) {
+    tabla.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No se encontraron empresas.</td></tr>";
+    return;
+  }
 
+  data.forEach(e => {
     tabla.innerHTML += `
       <tr>
-        <td>${e.nombre}</td>
-        <td>${e.direccion ?? "-"}</td>
-        <td>${e.contacto ?? "-"}</td>
+        <td><strong>${e.nombre}</strong></td>
+        <td>${e.direccion || "-"}</td>
+        <td>${e.contacto || "-"}</td>
         <td><span class="badge activa">Activa</span></td>
         <td class="actions">
           <button class="ver" onclick="verEmpresa('${e.id}')">Ver</button>
-          <button class="editar" onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion}','${e.contacto}')">Editar</button>
+          <button class="editar" onclick="editarEmpresa('${e.id}','${e.nombre}','${e.direccion || ''}','${e.contacto || ''}')">Editar</button>
           <button class="eliminar" onclick="eliminarEmpresa('${e.id}')">Eliminar</button>
         </td>
       </tr>
@@ -200,115 +227,117 @@ function mostrar(data) {
   });
 }
 
-/* BUSCAR */
+/* BUSCADOR EN TIEMPO REAL */
 document.getElementById("buscar").addEventListener("input", async (e) => {
-
   const valor = e.target.value;
-
-  const { data } = await client
+  const { data, error } = await client
     .from("empresas")
     .select("*")
     .ilike("nombre", `%${valor}%`);
-
-  mostrar(data);
+  
+  if (!error) mostrar(data);
 });
 
-/* MODAL */
+/* MANEJO DE MODAL */
 function abrirModal() {
   editandoId = null;
   document.getElementById("modalTitulo").innerText = "Nueva Empresa";
   document.getElementById("modal").style.display = "flex";
+  document.getElementById("nombre").focus();
 }
 
-/* EDITAR */
-function editarEmpresa(id,nombre,direccion,contacto) {
-
-  editandoId = id;
-
-  document.getElementById("modalTitulo").innerText = "Editar Empresa";
-  document.getElementById("modal").style.display = "flex";
-
-  document.getElementById("nombre").value = nombre;
-  document.getElementById("direccion").value = direccion ?? "";
-  document.getElementById("contacto").value = contacto ?? "";
-}
-
-/* GUARDAR */
-async function guardarEmpresa() {
-
-  const nombre = document.getElementById("nombre").value;
-  const direccion = document.getElementById("direccion").value;
-  const contacto = document.getElementById("contacto").value;
-
-  if (!nombre) return alert("Nombre requerido");
-
-  if (editandoId) {
-
-    const { error } = await client
-      .from("empresas")
-      .update({ nombre, direccion, contacto })
-      .eq("id", editandoId);
-
-    if (error) {
-      alert("Error al actualizar");
-      return;
-    }
-
-  } else {
-
-    const { error } = await client
-      .from("empresas")
-      .insert([{ nombre, direccion, contacto }]);
-
-    if (error) {
-      alert("Error al crear");
-      return;
-    }
-
-  }
-
-  cerrarModal();
-  cargarEmpresas();
-}
-
-/* ELIMINAR */
-async function eliminarEmpresa(id) {
-
-  const confirmar = confirm("¿Eliminar empresa?");
-
-  if (!confirmar) return;
-
-  const { error } = await client
-    .from("empresas")
-    .delete()
-    .eq("id", id);
-
-  if (error) {
-    alert("Error al eliminar");
-    console.error(error);
-    return;
-  }
-
-  alert("Empresa eliminada");
-  cargarEmpresas();
-}
-
-/* VER */
-function verEmpresa(id) {
-  window.location.href = `empresa_detalle.html?id=${id}`;
-}
-
-/* CERRAR */
 function cerrarModal() {
   document.getElementById("modal").style.display = "none";
   document.getElementById("nombre").value = "";
   document.getElementById("direccion").value = "";
   document.getElementById("contacto").value = "";
+  editandoId = null;
+}
+
+/* EDITAR */
+function editarEmpresa(id, nombre, direccion, contacto) {
+  editandoId = id;
+  document.getElementById("modalTitulo").innerText = "Editar Empresa";
+  document.getElementById("nombre").value = nombre;
+  document.getElementById("direccion").value = direccion;
+  document.getElementById("contacto").value = contacto;
+  document.getElementById("modal").style.display = "flex";
+}
+
+/* GUARDAR (MEJORADO)[cite: 1, 9] */
+async function guardarEmpresa() {
+  const nombre = document.getElementById("nombre").value.trim();
+  const direccion = document.getElementById("direccion").value.trim();
+  const contacto = document.getElementById("contacto").value.trim();
+  const btn = document.getElementById("btnGuardar");
+
+  if (!nombre) {
+    alert("El nombre de la empresa es obligatorio.");
+    return;
+  }
+
+  // Bloqueamos el botón para evitar múltiples clics
+  btn.disabled = true;
+  btn.innerText = "Guardando...";
+
+  try {
+    let response;
+    if (editandoId) {
+      // Actualizar
+      response = await client
+        .from("empresas")
+        .update({ nombre, direccion, contacto })
+        .eq("id", editandoId);
+    } else {
+      // Crear nuevo
+      response = await client
+        .from("empresas")
+        .insert([{ nombre, direccion, contacto, activa: true }]);
+    }
+
+    if (response.error) throw response.error;
+
+    // Si todo sale bien
+    cerrarModal();
+    cargarEmpresas();
+
+  } catch (err) {
+    console.error("Error en Supabase:", err);
+    alert("Error de base de datos: " + (err.message || "Verificá los permisos RLS."));
+    // Cerramos el modal igual para que no se trabe la pantalla
+    cerrarModal(); 
+  } finally {
+    // Rehabilitamos el botón
+    btn.disabled = false;
+    btn.innerText = "Guardar";
+  }
+}
+
+/* ELIMINAR[cite: 9] */
+async function eliminarEmpresa(id) {
+  if (!confirm("¿Estás seguro de eliminar esta empresa? Se borrarán sus datos asociados.")) return;
+
+  const { error } = await client.from("empresas").delete().eq("id", id);
+
+  if (error) {
+    alert("No se pudo eliminar: " + error.message);
+  } else {
+    cargarEmpresas();
+  }
+}
+
+function verEmpresa(id) {
+  window.location.href = `empresa_detalle.html?id=${id}`;
+}
+
+/* CIERRE AL HACER CLIC FUERA DEL CUADRO */
+window.onclick = function(event) {
+  const modal = document.getElementById("modal");
+  if (event.target == modal) cerrarModal();
 }
 
 /* INIT */
 cargarEmpresas();
-
 </script>
 
 </body>
