@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<!-- Meta clave para que el celular no deforme el diseño[cite: 1] -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verificación | CONEMAT</title>
 
@@ -74,11 +73,11 @@ h4 {
 
 <div class="card">
   <h2>Verificación de Capacitación</h2>
-  <div id="estado">Cargando datos...</div>
+  <div id="estado">Cargando...</div>
 
   <div id="contenido" style="display:none">
-    <p><span class="label">Empresa:</span><br><span id="empresa"></span></p>
-    <p><span class="label">Capacitación:</span><br><span id="capacitacion"></span></p>
+    <p><span class="label">Empresa:</span><br><span id="empresa">Cargando...</span></p>
+    <p><span class="label">Capacitación:</span><br><span id="capacitacion">Cargando...</span></p>
     <p><span class="label">Fecha:</span> <span id="fecha"></span></p>
 
     <h4>Asistentes</h4>
@@ -87,7 +86,7 @@ h4 {
 </div>
 
 <script>
-/* CONFIGURACIÓN SUPABASE */
+/* CONFIGURACIÓN SUPABASE[cite: 1, 9] */
 const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -100,12 +99,12 @@ async function cargar() {
   const contenidoDiv = document.getElementById("contenido");
 
   if (!id) {
-    estadoDiv.innerHTML = "<span class='error'>ID de verificación no válido</span>";
+    estadoDiv.innerHTML = "<span class='error'>ID inválido</span>";
     return;
   }
 
   try {
-    /* TRAER CAPACITACIÓN CON RELACIONES[cite: 9] */
+    /* CONSULTA A LA BASE DE DATOS[cite: 9] */
     const { data, error } = await client
       .from("capacitaciones_empresas")
       .select(`
@@ -118,50 +117,63 @@ async function cargar() {
       .single();
 
     if (error || !data) {
-      estadoDiv.innerHTML = "<span class='error'>Capacitación no encontrada</span>";
+      estadoDiv.innerHTML = "<span class='error'>No encontrado</span>";
       return;
     }
 
-    /* CARGAR ASISTENTES[cite: 9] */
+    /* FIX DE COMPATIBILIDAD PARA MÓVILES[cite: 1, 9] */
+    
+    // 1. Extraer Empresa (Objeto o Array)
+    let nombreEmpresa = "No disponible";
+    if (data.empresas) {
+      if (Array.isArray(data.empresas)) {
+        nombreEmpresa = data.empresas[0]?.nombre || "No disponible";
+      } else {
+        nombreEmpresa = data.empresas.nombre || "No disponible";
+      }
+    }
+
+    // 2. Extraer Capacitación (Objeto o Array)
+    let nombreCurso = "No disponible";
+    if (data.capacitaciones_base) {
+      if (Array.isArray(data.capacitaciones_base)) {
+        nombreCurso = data.capacitaciones_base[0]?.nombre || "No disponible";
+      } else {
+        nombreCurso = data.capacitaciones_base.nombre || "No disponible";
+      }
+    }
+
+    /* RENDERIZAR EN EL HTML */
+    document.getElementById("empresa").textContent = nombreEmpresa;
+    document.getElementById("capacitacion").textContent = nombreCurso;
+    document.getElementById("fecha").textContent = data.fecha_inicio || "-";
+
+    /* ASISTENTES[cite: 9] */
     const { data: asistentes } = await client
       .from("asistentes")
       .select("nombre,dni")
       .eq("capacitacion_id", id);
 
-    /* RENDERIZAR DATOS CON FIX PARA MÓVILES[cite: 1, 9] */
-    
-    // El fix: Manejamos si empresas viene como objeto o como array de un elemento
-    let nombreEmpresa = "N/A";
-    if (data.empresas) {
-      nombreEmpresa = Array.isArray(data.empresas) ? data.empresas[0]?.nombre : data.empresas.nombre;
-    }
-
-    document.getElementById("empresa").innerText = nombreEmpresa;
-    document.getElementById("capacitacion").innerText = data.capacitaciones_base?.nombre || "N/A";
-    document.getElementById("fecha").innerText = data.fecha_inicio || "-";
-
     const lista = document.getElementById("lista");
     lista.innerHTML = "";
 
     if (!asistentes || asistentes.length === 0) {
-      lista.innerHTML = "<div>No hay asistentes registrados.</div>";
+      lista.innerHTML = "<div>Sin asistentes registrados.</div>";
     } else {
       asistentes.forEach(a => {
-        lista.innerHTML += `<div><strong>${a.nombre}</strong> - DNI: ${a.dni}</div>`;
+        lista.innerHTML += `<div><strong>${a.nombre}</strong><br>DNI: ${a.dni}</div>`;
       });
     }
 
-    // Mostrar contenido final
     estadoDiv.innerHTML = "<span class='ok'>✔ Capacitación válida</span>";
     contenidoDiv.style.display = "block";
 
   } catch (err) {
-    console.error("Error:", err);
-    estadoDiv.innerHTML = "<span class='error'>Error al conectar con la base de datos</span>";
+    console.error(err);
+    estadoDiv.innerHTML = "<span class='error'>Error de carga</span>";
   }
 }
 
-// Ejecución
 cargar();
 </script>
 
