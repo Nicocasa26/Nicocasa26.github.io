@@ -112,8 +112,8 @@ async function procesarConIA() {
 
         if (!config) throw new Error("API Key no encontrada");
 
-        // URL UNIFICADA: v1 con nombre completo del modelo
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${config.valor}`;
+        // ✅ URL CORREGIDA - v1beta con gemini-1.5-flash-latest
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.valor}`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -128,7 +128,6 @@ async function procesarConIA() {
         const result = await response.json();
         
         if (result.error) {
-            // Si v1 falla, intentamos una última vez con la ruta que Google a veces requiere según la región
             throw new Error(result.error.message);
         }
 
