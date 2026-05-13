@@ -53,7 +53,7 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f6f8; colo
   <div class="ai-box">
     <div class="ai-header"><span>✨</span><h2>Asistente CONEMAT AI</h2></div>
     <div class="ai-input-group">
-        <input type="text" id="inputIA" class="ai-input" placeholder="Escribí tu consulta técnica aquí...">
+        <input type="text" id="inputIA" class="ai-input" placeholder="Escribí tu consulta aquí...">
         <button onclick="procesarConIA()" class="btn-ai" id="btnIA">Ejecutar</button>
     </div>
     <div id="statusIA">
@@ -107,8 +107,8 @@ async function procesarConIA() {
 
         if (!config) throw new Error("API Key no encontrada.");
 
-        // CAMBIO CLAVE: Usamos gemini-2.0-flash que apareció en tu lista
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${config.valor.trim()}`;
+        // MODELO ELEGIDO: gemini-flash-latest (Confirmado en tu lista)
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${config.valor.trim()}`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -120,15 +120,21 @@ async function procesarConIA() {
 
         const result = await response.json();
         
-        if (result.error) throw new Error(result.error.message);
+        if (result.error) {
+            // Manejo específico de cuota para que no te asustes
+            if (result.error.code === 429) {
+                throw new Error("Límite de mensajes alcanzado. Esperá 20 segundos y reintentá.");
+            }
+            throw new Error(result.error.message);
+        }
 
         if (result.candidates && result.candidates[0].content) {
             respuesta.innerText = result.candidates[0].content.parts[0].text;
         } else {
-            respuesta.innerText = "Respuesta vacía de la IA.";
+            respuesta.innerText = "La IA no devolvió respuesta.";
         }
     } catch (err) {
-        respuesta.innerText = "⚠️ Error: " + err.message;
+        respuesta.innerText = "⚠️ " + err.message;
     } finally {
         btn.innerText = "Ejecutar";
         btn.disabled = false;
