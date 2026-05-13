@@ -83,7 +83,7 @@ async function cargarKPIs() {
     document.getElementById("totalEmpresas").innerText = nEmp || 0;
     document.getElementById("totalCapacitaciones").innerText = nCap || 0;
     document.getElementById("totalAsistentes").innerText = nAsi || 0;
-  } catch (e) { console.error(e); }
+  } catch (e) { console.error("Error KPIs:", e); }
 }
 
 async function procesarConIA() {
@@ -97,7 +97,7 @@ async function procesarConIA() {
     btn.innerText = "Pensando...";
     btn.disabled = true;
     status.style.display = "block";
-    respuesta.innerText = "Conectando...";
+    respuesta.innerText = "Consultando cerebro de CONEMAT...";
 
     try {
         const { data: config } = await supabaseClient
@@ -108,9 +108,8 @@ async function procesarConIA() {
 
         if (!config) throw new Error("API Key no encontrada.");
 
-        // URL "A PRUEBA DE BALAS": gemini-pro suele ser el más estable cuando Flash da problemas de "Not found"
-        // Probamos con v1beta que tiene mayor compatibilidad regional
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${config.valor}`;
+        // URL CORREGIDA CON EL NOMBRE TÉCNICO COMPLETO
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.valor}`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -127,10 +126,10 @@ async function procesarConIA() {
         if (result.candidates && result.candidates[0].content) {
             respuesta.innerText = result.candidates[0].content.parts[0].text;
         } else {
-            respuesta.innerText = "No se recibió texto de respuesta.";
+            respuesta.innerText = "La IA no devolvió texto.";
         }
     } catch (err) {
-        console.error("Error consola:", err);
+        console.error("Error detallado:", err);
         respuesta.innerText = "⚠️ Error: " + err.message;
     } finally {
         btn.innerText = "Ejecutar";
