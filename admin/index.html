@@ -55,7 +55,7 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f6f8; colo
     <div class="ai-header"><span>✨</span><h2>Asistente CONEMAT AI</h2></div>
     <div class="ai-input-group">
         <input type="text" id="inputIA" class="ai-input" placeholder="Escribí tu consulta aquí...">
-        <button onclick="procesarConIA()" class="btn-ai" id="btnIA">Ejecutar</button>
+        <button onclick="window.procesarConIA()" class="btn-ai" id="btnIA">Ejecutar</button>
     </div>
     <div id="statusIA">
         <p id="textoRespuestaIA" style="margin: 0; font-size: 14px; white-space: pre-line;"></p>
@@ -74,71 +74,68 @@ body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #f4f6f8; colo
   </div>
 </div>
 
-<script>
-async function cargarKPIs() {
-  try {
-    const { count: nEmp } = await supabaseClient.from("empresas").select("*", { count: "exact", head: true });
-    const { count: nCap } = await supabaseClient.from("capacitaciones_base").select("*", { count: "exact", head: true });
-    const { count: nAsi } = await supabaseClient.from("asistentes").select("*", { count: "exact", head: true });
-    document.getElementById("totalEmpresas").innerText = nEmp || 0;
-    document.getElementById("totalCapacitaciones").innerText = nCap || 0;
-    document.getElementById("totalAsistentes").innerText = nAsi || 0;
-  } catch (e) { console.error("Error KPIs:", e); }
-}
+<script type="module">
+  import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
-async function procesarConIA() {
-    const input = document.getElementById("inputIA");
-    const btn = document.getElementById("btnIA");
-    const status = document.getElementById("statusIA");
-    const respuesta = document.getElementById("textoRespuestaIA");
-
-    if (!input.value) return;
-
-    btn.innerText = "Pensando...";
-    btn.disabled = true;
-    status.style.display = "block";
-    respuesta.innerText = "Consultando cerebro de CONEMAT...";
-
+  window.cargarKPIs = async function() {
     try {
-        const { data: config } = await supabaseClient
-            .from('configuracion_ia')
-            .select('valor')
-            .eq('clave_nombre', 'gemini_api_key')
-            .single();
+      const { count: nEmp } = await supabaseClient.from("empresas").select("*", { count: "exact", head: true });
+      const { count: nCap } = await supabaseClient.from("capacitaciones_base").select("*", { count: "exact", head: true });
+      const { count: nAsi } = await supabaseClient.from("asistentes").select("*", { count: "exact", head: true });
+      document.getElementById("totalEmpresas").innerText = nEmp || 0;
+      document.getElementById("totalCapacitaciones").innerText = nCap || 0;
+      document.getElementById("totalAsistentes").innerText = nAsi || 0;
+    } catch (e) { console.error("Error KPIs:", e); }
+  };
 
-        if (!config) throw new Error("API Key no encontrada.");
+  window.procesarConIA = async function() {
+      const input = document.getElementById("inputIA");
+      const btn = document.getElementById("btnIA");
+      const status = document.getElementById("statusIA");
+      const respuesta = document.getElementById("textoRespuestaIA");
 
-        // URL CORREGIDA CON EL NOMBRE TÉCNICO COMPLETO
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.valor}`;
+      if (!input.value) return;
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: input.value }] }]
-            })
-        });
+      btn.innerText = "Pensando...";
+      btn.disabled = true;
+      status.style.display = "block";
+      respuesta.innerText = "Consultando cerebro de CONEMAT...";
 
-        const result = await response.json();
-        
-        if (result.error) throw new Error(result.error.message);
+      try {
+          // 1. Buscamos la clave en Supabase
+          const { data: config } = await supabaseClient
+              .from('configuracion_ia')
+              .select('valor')
+              .eq('clave_nombre', 'gemini_api_key')
+              .single();
 
-        if (result.candidates && result.candidates[0].content) {
-            respuesta.innerText = result.candidates[0].content.parts[0].text;
-        } else {
-            respuesta.innerText = "La IA no devolvió texto.";
-        }
-    } catch (err) {
-        console.error("Error detallado:", err);
-        respuesta.innerText = "⚠️ Error: " + err.message;
-    } finally {
-        btn.innerText = "Ejecutar";
-        btn.disabled = false;
-        input.value = "";
-    }
-}
+          if (!config || !config.valor) throw new Error("API Key no encontrada en BD.");
 
-cargarKPIs();
+          // 2. CRÍTICO: Limpiamos la clave de posibles espacios en blanco invisibles
+          const apiKeyLimpia = config.valor.trim();
+
+          // 3. Inicializamos el motor oficial de Google (sin usar fetch manual)
+          const genAI = new GoogleGenerativeAI(apiKeyLimpia);
+          const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+          // 4. Enviamos el mensaje
+          const result = await model.generateContent(input.value);
+          const textoFinal = result.response.text();
+          
+          respuesta.innerText = textoFinal;
+
+      } catch (err) {
+          console.error("Error detallado:", err);
+          respuesta.innerText = "⚠️ Error: Hubo un problema al conectar. Verificá que la API Key en Supabase sea correcta.";
+      } finally {
+          btn.innerText = "Ejecutar";
+          btn.disabled = false;
+          input.value = "";
+      }
+  };
+
+  // Iniciar dashboard
+  window.cargarKPIs();
 </script>
 </body>
 </html>
