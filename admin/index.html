@@ -110,10 +110,10 @@ async function procesarConIA() {
             .eq('clave_nombre', 'gemini_api_key')
             .single();
 
-        if (!config) throw new Error("API Key no encontrada en la base de datos");
+        if (!config) throw new Error("API Key no encontrada");
 
-        // Probamos con gemini-pro que es más estable
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${config.valor}`;
+        // ✅ URL CORREGIDA - v1beta con gemini-1.5-flash-latest
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${config.valor}`;
 
         const response = await fetch(url, {
             method: "POST",
@@ -125,25 +125,20 @@ async function procesarConIA() {
             })
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error?.message || `HTTP error ${response.status}`);
-        }
-
         const result = await response.json();
         
         if (result.error) {
             throw new Error(result.error.message);
         }
 
-        if (result.candidates && result.candidates[0]?.content?.parts[0]?.text) {
+        if (result.candidates && result.candidates[0].content) {
             respuesta.innerText = result.candidates[0].content.parts[0].text;
         } else {
-            respuesta.innerText = "La IA no pudo generar una respuesta válida.";
+            respuesta.innerText = "La IA no pudo generar una respuesta.";
         }
     } catch (err) {
         console.error("Error completo:", err);
-        respuesta.innerText = "⚠️ Error: " + err.message + "\n\nRevisá que tu API Key de Gemini sea válida en Google AI Studio.";
+        respuesta.innerText = "⚠️ Error: " + err.message;
     } finally {
         btn.innerText = "Ejecutar";
         btn.disabled = false;
