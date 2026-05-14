@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | CONEMAT</title>
 
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Tu archivo de autenticación -->
     <script src="auth.js"></script>
 
     <script>
@@ -29,6 +27,7 @@
             --bg: #f4f6f8;
             --text: #1e293b;
             --danger: #ef4444;
+            --success: #10b981;
         }
 
         body { 
@@ -186,18 +185,16 @@
     </div>
 
     <div class="container">
-        <!-- Métricas Rápidas -->
         <div class="kpis">
             <div class="kpi"><h2 id="totalEmpresas">-</h2><p>Empresas</p></div>
             <div class="kpi"><h2 id="totalCapacitaciones">-</h2><p>Capacitaciones</p></div>
             <div class="kpi"><h2 id="totalAsistentes">-</h2><p>Asistentes</p></div>
         </div>
 
-        <!-- Módulo de IA Mejorado -->
         <div class="ai-box">
             <div class="ai-header"><span>✨</span><h2>Asistente CONEMAT AI</h2></div>
             <div class="ai-input-group">
-                <input type="text" id="inputIA" class="ai-input" placeholder="Consultar sobre normativa, riesgos o capacitaciones...">
+                <input type="text" id="inputIA" class="ai-input" placeholder="Cargá una empresa o consultá normativa...">
                 <button onclick="procesarConIA()" class="btn-ai" id="btnIA">Ejecutar</button>
             </div>
             <div id="statusIA">
@@ -205,7 +202,6 @@
             </div>
         </div>
 
-        <!-- Accesos Directos -->
         <div class="cards">
             <div class="card">
                 <h3>Empresas</h3>
@@ -236,77 +232,103 @@
         }
     }
 
-    // Función principal de la IA
+    // Función que realmente inserta la empresa en la DB
+    async function ejecutarCargaEmpresa(nombre, direccion) {
+        try {
+            const { error } = await supabaseClient
+                .from('empresas')
+                .insert([{ nombre_empresa: nombre, direccion: direccion }]);
+
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Error DB:", e);
+            return false;
+        }
+    }
+
+    // Función principal de la IA con Lógica de Acción
     async function procesarConIA() {
         const input = document.getElementById("inputIA");
         const btn = document.getElementById("btnIA");
         const status = document.getElementById("statusIA");
         const respuesta = document.getElementById("textoRespuestaIA");
 
-        const pregunta = input.value.trim();
-        if (!pregunta) return;
+        const preguntaUsuario = input.value.trim();
+        if (!preguntaUsuario) return;
 
-        // 1. Limpiamos el cuadro de texto inmediatamente para mejor UX
         input.value = "";
-
-        btn.innerText = "Pensando...";
+        btn.innerText = "Procesando...";
         btn.disabled = true;
         status.style.display = "block";
-        respuesta.innerText = "Consultando cerebro de CONEMAT...";
+        respuesta.innerText = "CONEMAT AI analizando comando...";
+
+        // --- INSTRUCCIÓN DE SISTEMA (Prompt Engineering) ---
+        const contextoSistema = `Eres el asistente experto en Higiene y Seguridad de CONEMAT. 
+        Si el usuario te pide agregar, crear o cargar una empresa con su dirección, RESPONDE ÚNICAMENTE un objeto JSON con este formato: 
+        {"accion": "crear_empresa", "nombre": "NOMBRE_EMPRESA", "direccion": "DIRECCION_EMPRESA"}. 
+        No añadas texto antes ni después del JSON. 
+        Si es una consulta técnica o charla normal, responde como texto normal.`;
 
         try {
-            // Buscamos la clave en Supabase
-            const { data: config, error: dbError } = await supabaseClient
+            const { data: config } = await supabaseClient
                 .from('configuracion_ia')
                 .select('valor')
                 .eq('clave_nombre', 'gemini_api_key')
                 .single();
 
-            if (dbError || !config) throw new Error("API Key no encontrada en la base de datos.");
-            
-            const apiKey = config.valor.trim();
+            if (!config) throw new Error("API Key no configurada.");
 
-            // Usamos el modelo que confirmamos que funciona: gemini-flash-latest
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${config.valor.trim()}`;
 
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: pregunta }] }]
+                    contents: [{ parts: [{ text: contextoSistema + "\n\nUsuario dice: " + preguntaUsuario }] }]
                 })
             });
 
             const result = await response.json();
+            
+            if (result.error) throw new Error(result.error.message);
 
-            if (result.error) {
-                // Manejo de cuota (Rate Limit)
-                if (result.error.code === 429) {
-                    throw new Error("Límite alcanzado. Por favor, esperá 20 segundos y reintentá.");
+            const textoIA = result.candidates[0].content.parts[0].text.trim();
+
+            // --- LÓGICA DE DECISIÓN ---
+            if (textoIA.includes('{"accion": "crear_empresa"')) {
+                // Es una orden de carga
+                try {
+                    const datos = JSON.parse(textoIA.match(/\{.*\}/s)[0]); // Extrae el JSON por si la IA puso texto extra
+                    const exito = await ejecutarCargaEmpresa(datos.nombre, datos.direccion);
+                    
+                    if (exito) {
+                        respuesta.innerHTML = `<b style="color:var(--success)">✅ Empresa cargada con éxito</b><br>
+                                               <b>Nombre:</b> ${datos.nombre}<br>
+                                               <b>Dirección:</b> ${datos.direccion}`;
+                        cargarKPIs(); // Refresca los numeritos arriba
+                    } else {
+                        throw new Error("Error al guardar en la base de datos.");
+                    }
+                } catch (parseErr) {
+                    respuesta.innerText = "Interpreté que querías cargar una empresa, pero hubo un error de formato. Reintentá.";
                 }
-                throw new Error(result.error.message);
-            }
-
-            if (result.candidates && result.candidates[0].content) {
-                respuesta.innerText = result.candidates[0].content.parts[0].text;
             } else {
-                respuesta.innerText = "La IA no pudo procesar la respuesta en este momento.";
+                // Es una respuesta normal
+                respuesta.innerText = textoIA;
             }
 
         } catch (err) {
-            console.error("Error IA:", err);
-            respuesta.innerHTML = `<span style="color: #ef4444;">⚠️ Error: ${err.message}</span>`;
-            // Devolvemos la pregunta al input por si el usuario quiere reintentar
-            input.value = pregunta;
+            respuesta.innerHTML = `<span style="color: var(--danger);">⚠️ Error: ${err.message}</span>`;
+            input.value = preguntaUsuario;
         } finally {
             btn.innerText = "Ejecutar";
             btn.disabled = false;
-            // Volvemos a poner el foco en el input para la siguiente pregunta
             input.focus();
         }
     }
 
-    // Evento para enviar con la tecla Enter
+    // Evento Enter
     document.getElementById("inputIA").addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -314,7 +336,6 @@
         }
     });
 
-    // Inicialización
     cargarKPIs();
     </script>
 </body>
