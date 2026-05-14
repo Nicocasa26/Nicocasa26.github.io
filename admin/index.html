@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | CONEMAT</title>
 
+    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="auth.js"></script>
 
@@ -108,23 +109,26 @@
     </div>
 
     <div class="container">
+        <!-- KPIs -->
         <div class="kpis">
             <div class="kpi"><h2 id="totalEmpresas">-</h2><p>Empresas</p></div>
             <div class="kpi"><h2 id="totalCapacitaciones">-</h2><p>Capacitaciones</p></div>
             <div class="kpi"><h2 id="totalAsistentes">-</h2><p>Asistentes</p></div>
         </div>
 
+        <!-- Módulo de IA -->
         <div class="ai-box">
-            <div class="ai-header"><span>✨</span><h2>Asistente CONEMAT AI</h2></div>
+            <div class="ai-header"><span>✨</span><h2>Asistente CONEMAT AI (Lectura y Escritura)</h2></div>
             <div class="ai-input-group">
-                <input type="text" id="inputIA" class="ai-input" placeholder="Ej: Cargá Siderar / Borrá Empresa falsa 12">
+                <input type="text" id="inputIA" class="ai-input" placeholder="¿Qué empresas tengo? / Cargá Siderar / Borrá Empresa X">
                 <button onclick="procesarConIA()" class="btn-ai" id="btnIA">Ejecutar</button>
             </div>
             <div id="statusIA">
-                <p id="textoRespuestaIA">Consultando cerebro de CONEMAT...</p>
+                <p id="textoRespuestaIA">Consultando base de datos...</p>
             </div>
         </div>
 
+        <!-- Accesos Directos -->
         <div class="cards">
             <div class="card">
                 <h3>Empresas</h3>
@@ -140,15 +144,7 @@
     </div>
 
     <script>
-    function generarSlug(texto) {
-        return texto.toString().toLowerCase()
-            .replace(/\s+/g, '-')           
-            .replace(/[^\w\-]+/g, '')       
-            .replace(/\-\-+/g, '-')         
-            .replace(/^-+/, '')             
-            .replace(/-+$/, '');            
-    }
-
+    // --- FUNCIONES DE BASE DE DATOS ---
     async function cargarKPIs() {
         try {
             const { count: nEmp } = await supabaseClient.from("empresas").select("*", { count: "exact", head: true });
@@ -160,41 +156,39 @@
         } catch (e) { console.error(e); }
     }
 
-    // --- FUNCIÓN CREAR EMPRESA ---
+    async function obtenerContextoReal() {
+        const { data: emps } = await supabaseClient.from('empresas').select('nombre, direccion');
+        const { data: caps } = await supabaseClient.from('capacitaciones').select('empresa, tema, slug');
+        return `Empresas actuales: ${JSON.stringify(emps)}. Capacitaciones cargadas: ${JSON.stringify(caps)}.`;
+    }
+
     async function ejecutarCargaEmpresa(nombre, direccion) {
-        const { error } = await supabaseClient.from('empresas').insert([{ nombre: nombre, direccion: direccion }]);
+        const { error } = await supabaseClient.from('empresas').insert([{ nombre, direccion }]);
         return error ? { exito: false, msg: error.message } : { exito: true };
     }
 
-    // --- FUNCIÓN ELIMINAR EMPRESA (NUEVA) ---
     async function ejecutarBorrarEmpresa(nombre) {
-        // Supabase requiere un .eq() para saber exactamente cuál borrar
         const { error } = await supabaseClient.from('empresas').delete().eq('nombre', nombre);
         return error ? { exito: false, msg: error.message } : { exito: true };
     }
 
-    // --- FUNCIÓN CREAR CAPACITACIÓN ---
     async function ejecutarCargaCapacitacion(empresa, tema) {
-        const slugGenerado = generarSlug(tema + "-" + empresa);
-        
         const hoy = new Date();
-        const fechaInicioStr = hoy.toISOString().split('T')[0];
+        const vto = new Date(); vto.setFullYear(hoy.getFullYear() + 1);
+        const slug = tema.toLowerCase().replace(/ /g, '-') + "-" + Math.floor(Math.random() * 1000);
         
-        const vencimiento = new Date(hoy);
-        vencimiento.setFullYear(vencimiento.getFullYear() + 1);
-        const fechaVencimientoStr = vencimiento.toISOString().split('T')[0];
-
         const { error } = await supabaseClient.from('capacitaciones').insert([{ 
             empresa: empresa, 
             tema: tema, 
-            slug: slugGenerado,
+            slug: slug,
             activa: true,
-            fecha_inicio: fechaInicioStr,
-            fecha_vencimiento: fechaVencimientoStr
+            fecha_inicio: hoy.toISOString().split('T')[0],
+            fecha_vencimiento: vto.toISOString().split('T')[0]
         }]);
         return error ? { exito: false, msg: error.message } : { exito: true };
     }
 
+    // --- PROCESAMIENTO IA ---
     async function procesarConIA() {
         const input = document.getElementById("inputIA");
         const btn = document.getElementById("btnIA");
@@ -207,25 +201,31 @@
         input.value = "";
         btn.disabled = true;
         status.style.display = "block";
-        respuesta.innerText = "Procesando orden...";
-
-        // ACTUALIZAMOS EL CONTEXTO PARA ENSEÑARLE A BORRAR
-        const contexto = `Eres el asistente de CONEMAT. 
-        1. Si el usuario pide CARGAR/AGREGAR empresa y/o capacitación, responde SOLO JSON:
-        {"accion": "crear_todo", "nombre": "Nombre Empresa", "direccion": "Calle 123", "tema": "Nombre Capacitación"}.
-        (Si no hay tema pon null. Si no hay dirección pon "No especificada").
-        
-        2. Si el usuario pide BORRAR/ELIMINAR una empresa, responde SOLO JSON:
-        {"accion": "borrar_empresa", "nombre": "Nombre Empresa"}.`;
+        respuesta.innerText = "Consultando base de datos...";
 
         try {
+            const dbContext = await obtenerContextoReal();
+
+            const contexto = `Eres el asistente experto de CONEMAT. 
+            DATOS REALES DE TU BASE DE DATOS (Supabase): ${dbContext}
+            
+            REGLAS DE RESPUESTA:
+            1. Si el usuario pregunta qué hay en la base, responde listando los datos de forma amigable.
+            2. Si el usuario pide el link de una capacitación, búscalo en los datos reales. El link es: https://conemat.vercel.app/capacitacion.html?slug=[EL_SLUG_CORRESPONDIENTE]
+            3. Si el usuario pide CARGAR/AGREGAR una empresa y/o capacitación, responde ÚNICAMENTE un JSON:
+               {"accion": "crear", "nombre": "Nombre Empresa", "direccion": "Calle 123", "tema": "Nombre Capacitación"}
+            4. Si el usuario pide BORRAR/ELIMINAR una empresa, responde ÚNICAMENTE un JSON:
+               {"accion": "borrar", "nombre": "Nombre Empresa"}`;
+
             const { data: config } = await supabaseClient.from('configuracion_ia').select('valor').eq('clave_nombre', 'gemini_api_key').single();
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${config.valor.trim()}`;
 
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: contexto + "\n\nUsuario: " + pregunta }] }] })
+                body: JSON.stringify({ contents: [{ parts: [{ text: contexto + "
+
+Usuario: " + pregunta }] }] })
             });
 
             const result = await res.json();
@@ -233,27 +233,27 @@
 
             if (textoIA.startsWith('{')) {
                 const datos = JSON.parse(textoIA);
-                let resumen = "";
-
-                // VERIFICAMOS QUÉ ACCIÓN PIDIÓ LA IA
-                if (datos.accion === "borrar_empresa") {
-                    const rBorrar = await ejecutarBorrarEmpresa(datos.nombre);
-                    resumen = rBorrar.exito ? `🗑️ Empresa "${datos.nombre}" eliminada correctamente.` : `❌ Error al eliminar: ${rBorrar.msg}`;
-                } 
-                else if (datos.accion === "crear_todo") {
-                    const rEmp = await ejecutarCargaEmpresa(datos.nombre, datos.direccion);
-                    resumen += rEmp.exito ? `✅ Empresa "${datos.nombre}" creada.<br>` : `❌ Error Empresa: ${rEmp.msg}<br>`;
-
-                    if (datos.tema) {
-                        const rCap = await ejecutarCargaCapacitacion(datos.nombre, datos.tema);
-                        resumen += rCap.exito ? `✅ Capacitación "${datos.tema}" asignada.` : `❌ Error Capacitación: ${rCap.msg}`;
+                if (datos.accion === "borrar") {
+                    const r = await ejecutarBorrarEmpresa(datos.nombre);
+                    respuesta.innerText = r.exito ? `🗑️ Empresa "${datos.nombre}" eliminada correctamente.` : `❌ Error: ${r.msg}`;
+                } else if (datos.accion === "crear") {
+                    const rE = await ejecutarCargaEmpresa(datos.nombre, datos.direccion || "No especificada");
+                    if (rE.exito) {
+                        let resumen = `✅ Empresa "${datos.nombre}" creada correctamente.`;
+                        if (datos.tema) {
+                            const rC = await ejecutarCargaCapacitacion(datos.nombre, datos.tema);
+                            resumen += rC.exito ? `<br>✅ Capacitación "${datos.tema}" asignada.` : `<br>❌ Error Capa: ${rC.msg}`;
+                        }
+                        respuesta.innerHTML = resumen;
+                    } else {
+                        respuesta.innerText = `❌ Error Empresa: ${rE.msg}`;
                     }
                 }
-
-                respuesta.innerHTML = resumen;
-                cargarKPIs(); // Actualizamos los números de arriba
+                cargarKPIs();
             } else {
-                respuesta.innerText = textoIA; // Por si contesta con texto normal
+                // Si es una respuesta de texto (consulta de datos)
+                respuesta.innerHTML = textoIA.replace(/
+/g, "<br>");
             }
         } catch (e) {
             respuesta.innerText = "Error: " + e.message;
@@ -262,7 +262,9 @@
         }
     }
 
+    // Enter para ejecutar
     document.getElementById("inputIA").addEventListener("keypress", (e) => { if (e.key === "Enter") procesarConIA(); });
+
     cargarKPIs();
     </script>
 </body>
