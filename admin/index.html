@@ -84,7 +84,7 @@
         }
         #textoRespuestaIA { margin: 0; font-size: 14px; white-space: pre-line; color: #334155; line-height: 1.6; }
 
-        /* ACCESOS DIRECTOS (CARDS VOLVIERON) */
+        /* ACCESOS DIRECTOS */
         .cards { display: flex; gap: 20px; }
         .card { 
             flex: 1; background: white; padding: 20px; border-radius: 12px; 
@@ -117,7 +117,7 @@
         <div class="ai-box">
             <div class="ai-header"><span>✨</span><h2>Asistente CONEMAT AI</h2></div>
             <div class="ai-input-group">
-                <input type="text" id="inputIA" class="ai-input" placeholder="Ej: Cargá la empresa Siderar y asignale RCP">
+                <input type="text" id="inputIA" class="ai-input" placeholder="Ej: Cargá Siderar / Borrá Empresa falsa 12">
                 <button onclick="procesarConIA()" class="btn-ai" id="btnIA">Ejecutar</button>
             </div>
             <div id="statusIA">
@@ -140,7 +140,6 @@
     </div>
 
     <script>
-    // --- FUNCIONES AUXILIARES ---
     function generarSlug(texto) {
         return texto.toString().toLowerCase()
             .replace(/\s+/g, '-')           
@@ -161,21 +160,37 @@
         } catch (e) { console.error(e); }
     }
 
+    // --- FUNCIÓN CREAR EMPRESA ---
     async function ejecutarCargaEmpresa(nombre, direccion) {
         const { error } = await supabaseClient.from('empresas').insert([{ nombre: nombre, direccion: direccion }]);
         return error ? { exito: false, msg: error.message } : { exito: true };
     }
 
+    // --- FUNCIÓN ELIMINAR EMPRESA (NUEVA) ---
+    async function ejecutarBorrarEmpresa(nombre) {
+        // Supabase requiere un .eq() para saber exactamente cuál borrar
+        const { error } = await supabaseClient.from('empresas').delete().eq('nombre', nombre);
+        return error ? { exito: false, msg: error.message } : { exito: true };
+    }
+
+    // --- FUNCIÓN CREAR CAPACITACIÓN ---
     async function ejecutarCargaCapacitacion(empresa, tema) {
-        // Generamos el slug para evitar el error de not-null constraint
         const slugGenerado = generarSlug(tema + "-" + empresa);
         
+        const hoy = new Date();
+        const fechaInicioStr = hoy.toISOString().split('T')[0];
+        
+        const vencimiento = new Date(hoy);
+        vencimiento.setFullYear(vencimiento.getFullYear() + 1);
+        const fechaVencimientoStr = vencimiento.toISOString().split('T')[0];
+
         const { error } = await supabaseClient.from('capacitaciones').insert([{ 
             empresa: empresa, 
             tema: tema, 
-            slug: slugGenerado, // Ahora sí mandamos el slug
+            slug: slugGenerado,
             activa: true,
-            fecha_inicio: new Date().toISOString().split('T')[0] // Fecha de hoy por defecto
+            fecha_inicio: fechaInicioStr,
+            fecha_vencimiento: fechaVencimientoStr
         }]);
         return error ? { exito: false, msg: error.message } : { exito: true };
     }
@@ -194,10 +209,14 @@
         status.style.display = "block";
         respuesta.innerText = "Procesando orden...";
 
+        // ACTUALIZAMOS EL CONTEXTO PARA ENSEÑARLE A BORRAR
         const contexto = `Eres el asistente de CONEMAT. 
-        Si el usuario pide cargar empresa/capacitación, responde SOLO JSON:
+        1. Si el usuario pide CARGAR/AGREGAR empresa y/o capacitación, responde SOLO JSON:
         {"accion": "crear_todo", "nombre": "Nombre Empresa", "direccion": "Calle 123", "tema": "Nombre Capacitación"}.
-        Si no hay tema, pon null. Si no hay dirección, pon "No especificada".`;
+        (Si no hay tema pon null. Si no hay dirección pon "No especificada").
+        
+        2. Si el usuario pide BORRAR/ELIMINAR una empresa, responde SOLO JSON:
+        {"accion": "borrar_empresa", "nombre": "Nombre Empresa"}.`;
 
         try {
             const { data: config } = await supabaseClient.from('configuracion_ia').select('valor').eq('clave_nombre', 'gemini_api_key').single();
@@ -216,18 +235,25 @@
                 const datos = JSON.parse(textoIA);
                 let resumen = "";
 
-                const rEmp = await ejecutarCargaEmpresa(datos.nombre, datos.direccion);
-                resumen += rEmp.exito ? `✅ Empresa "${datos.nombre}" creada.<br>` : `❌ Error Empresa: ${rEmp.msg}<br>`;
+                // VERIFICAMOS QUÉ ACCIÓN PIDIÓ LA IA
+                if (datos.accion === "borrar_empresa") {
+                    const rBorrar = await ejecutarBorrarEmpresa(datos.nombre);
+                    resumen = rBorrar.exito ? `🗑️ Empresa "${datos.nombre}" eliminada correctamente.` : `❌ Error al eliminar: ${rBorrar.msg}`;
+                } 
+                else if (datos.accion === "crear_todo") {
+                    const rEmp = await ejecutarCargaEmpresa(datos.nombre, datos.direccion);
+                    resumen += rEmp.exito ? `✅ Empresa "${datos.nombre}" creada.<br>` : `❌ Error Empresa: ${rEmp.msg}<br>`;
 
-                if (datos.tema) {
-                    const rCap = await ejecutarCargaCapacitacion(datos.nombre, datos.tema);
-                    resumen += rCap.exito ? `✅ Capacitación "${datos.tema}" asignada.` : `❌ Error Capacitación: ${rCap.msg}`;
+                    if (datos.tema) {
+                        const rCap = await ejecutarCargaCapacitacion(datos.nombre, datos.tema);
+                        resumen += rCap.exito ? `✅ Capacitación "${datos.tema}" asignada.` : `❌ Error Capacitación: ${rCap.msg}`;
+                    }
                 }
 
                 respuesta.innerHTML = resumen;
-                cargarKPIs();
+                cargarKPIs(); // Actualizamos los números de arriba
             } else {
-                respuesta.innerText = textoIA;
+                respuesta.innerText = textoIA; // Por si contesta con texto normal
             }
         } catch (e) {
             respuesta.innerText = "Error: " + e.message;
@@ -236,6 +262,7 @@
         }
     }
 
+    document.getElementById("inputIA").addEventListener("keypress", (e) => { if (e.key === "Enter") procesarConIA(); });
     cargarKPIs();
     </script>
 </body>
