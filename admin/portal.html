@@ -5,44 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CONEMAT | Portal de Gestión</title>
     <style>
-        :root { --primary: #2563eb; --secondary: #7c3aed; --bg: #f8fafc; --text: #1e293b; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-        .header { text-align: center; margin-bottom: 50px; }
-        .header h1 { font-size: 2.5rem; color: var(--primary); margin: 0; }
-        .container { display: flex; gap: 30px; max-width: 900px; width: 95%; flex-wrap: wrap; justify-content: center; }
-        .card { background: white; border-radius: 20px; padding: 40px; flex: 1; min-width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.05); transition: transform 0.3s; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; border: 2px solid transparent; }
-        .card:hover { transform: translateY(-10px); }
+        :root {
+            --primary: #1e5bb9; /* Azul CONEMAT */
+            --secondary: #7c3aed; /* Violeta Capacitaciones */
+            --bg-light: #f4f7fa;
+            --text-dark: #1e293b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Franja Azul Superior con Logo */
+        .top-bar {
+            background-color: var(--primary);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-container img {
+            height: 35px;
+            width: auto;
+        }
+
+        .top-bar-title {
+            color: white;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        .top-bar-title h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .top-bar-title p {
+            margin: 0;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        /* Banner con Imagen de Fondo (Sección Hero) */
+        .hero-banner {
+            height: 300px;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), 
+                              url('https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Contenedor de Tarjetas */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: -50px; /* Para que las tarjetas muerdan un poco el banner */
+            margin-top: -60px;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 30px;
+            max-width: 1000px;
+            width: 90%;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            flex: 1;
+            min-width: 320px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 3px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
         .card.gestion:hover { border-color: var(--primary); }
         .card.capacitacion:hover { border-color: var(--secondary); }
-        .icon { font-size: 60px; margin-bottom: 20px; }
-        .btn { padding: 12px 25px; border-radius: 10px; text-decoration: none; color: white; font-weight: 600; margin-top: 20px; }
-        .btn-gestion { background: var(--primary); }
-        .btn-capa { background: var(--secondary); }
+
+        .icon-box {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            margin: 0 0 15px 0;
+            color: var(--text-dark);
+            font-size: 1.6rem;
+        }
+
+        .card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: filter 0.2s;
+        }
+
+        .btn-gestion { background-color: var(--primary); }
+        .btn-capa { background-color: var(--secondary); }
+        .btn:hover { filter: brightness(1.1); }
+
+        @media (max-width: 768px) {
+            .hero-banner { height: 200px; }
+            .main-content { margin-top: -40px; }
+            .top-bar-title { display: none; }
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>CONEMAT</h1>
-        <p>Seleccione el área de trabajo</p>
-    </div>
-    <div class="container">
-        <div class="card gestion" onclick="location.href='gestion_hys.html'">
-            <div>
-                <div class="icon">🏗️</div>
-                <h2>Gestión Integral H&S</h2>
-                <p>Empresas, Cronogramas de Obra, Visitas Técnicas y Documentación Legal.</p>
-            </div>
-            <a href="gestion_hys.html" class="btn btn-gestion">ENTRAR</a>
-        </div>
 
-        <div class="card capacitacion" onclick="location.href='index_capacitaciones.html'">
-            <div>
-                <div class="icon">🎓</div>
-                <h2>Capacitaciones</h2>
-                <p>Cursos, Videos, Registro de Asistentes y generación de Links de Firma.</p>
-            </div>
-            <a href="index_capacitaciones.html" class="btn btn-capa">ENTRAR</a>
+    <div class="top-bar">
+        <div class="logo-container">
+            <img src="logo-black.png" alt="CONEMAT Logo">
+        </div>
+        <div class="top-bar-title">
+            <h1>CONEMAT</h1>
+            <p>GESTIÓN INTEGRAL</p>
         </div>
     </div>
+
+    <div class="hero-banner"></div>
+
+    <div class="main-content">
+        <div class="cards-container">
+            
+            <div class="card gestion" onclick="location.href='gestion_hys.html'">
+                <div>
+                    <div class="icon-box">🛡️</div>
+                    <h2>MI GESTIÓN H&S</h2>
+                    <p>Administración de empresas, cronogramas de visitas, seguimiento de tareas operativas y archivos técnicos.</p>
+                </div>
+                <a href="gestion_hys.html" class="btn btn-gestion">ENTRAR</a>
+            </div>
+
+            <div class="card capacitacion" onclick="location.href='index_capacitaciones.html'">
+                <div>
+                    <div class="icon-box">🎓</div>
+                    <h2>CAPACITACIONES</h2>
+                    <p>Plataforma de entrenamiento, videos, registro de firmas digitales y gestión de asistentes.</p>
+                </div>
+                <a href="index_capacitaciones.html" class="btn btn-capa">ENTRAR</a>
+            </div>
+
+        </div>
+    </div>
+
 </body>
 </html>
