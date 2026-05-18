@@ -14,17 +14,43 @@
   </script>
 
   <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Forzamos a que el logo ignore el css viejo y crezca de verdad */
+    img.logo, .header .logo, .logo {
+      height: 85px !important;
+      min-height: 85px !important;
+      width: auto !important;
+      max-height: none !important;
+      max-width: none !important;
+      object-fit: contain !important;
+      display: block !important;
+    }
+    /* Aseguramos que el contenedor le dé el espacio físico suficiente al logo grande */
+    .header-content {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      padding-top: 15px !important;
+      padding-bottom: 15px !important;
+      height: auto !important;
+      min-height: 100px !important;
+    }
+    /* Centrado vertical de la botonera con respecto al nuevo escudo */
+    .header nav {
+      display: flex !important;
+      align-items: center !important;
+      gap: 20px;
+    }
+  </style>
 </head>
 
 <body>
 
-<header class="header" style="padding: 10px 0;">
-  <div class="container header-content" style="display: flex; align-items: center; justify-content: space-between;">
+<header class="header">
+  <div class="container header-content">
     
-    <img src="logo-black.png" 
-         alt="CONEMAT Seguridad e Higiene" 
-         class="logo" 
-         style="height: 70px !important; width: auto !important; max-height: none !important; object-fit: contain; display: block;">
+    <img src="logo-black.png" alt="CONEMAT Seguridad e Higiene" class="logo">
 
     <nav>
       <a href="#inicio">Inicio</a>
