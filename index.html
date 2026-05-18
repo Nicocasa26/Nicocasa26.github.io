@@ -16,31 +16,41 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* Forzamos a que el logo ignore el css viejo y crezca de verdad */
-    img.logo, .header .logo, .logo {
-      height: 85px !important;
-      min-height: 85px !important;
+    /* Liberamos el Header para que se estire verticalmente y acepte el logo grande */
+    header.header, .header {
+      height: auto !important;
+      min-height: 150px !important; /* Le damos pista suficiente */
+      padding: 15px 0 !important;
+      overflow: visible !important; /* Evita que se recorte la imagen */
+    }
+
+    /* Forzamos el contenedor para que distribuya el espacio sin restricciones */
+    .header-content {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      height: auto !important;
+      min-height: 120px !important;
+      max-height: none !important;
+    }
+
+    /* Súper-tamaño para el logo de CONEMAT */
+    img.logo, .header .logo, .header-content img {
+      height: 130px !important; /* Agrandado drásticamente */
+      min-height: 130px !important;
       width: auto !important;
       max-height: none !important;
       max-width: none !important;
       object-fit: contain !important;
       display: block !important;
+      flex-shrink: 0 !important; /* Clave: impide que la botonera lo aplaste */
     }
-    /* Aseguramos que el contenedor le dé el espacio físico suficiente al logo grande */
-    .header-content {
-      display: flex !important;
-      align-items: center !important;
-      justify-content: space-between !important;
-      padding-top: 15px !important;
-      padding-bottom: 15px !important;
-      height: auto !important;
-      min-height: 100px !important;
-    }
-    /* Centrado vertical de la botonera con respecto al nuevo escudo */
+
+    /* Alineación perfecta de la botonera lateral */
     .header nav {
       display: flex !important;
       align-items: center !important;
-      gap: 20px;
+      gap: 25px !important;
     }
   </style>
 </head>
