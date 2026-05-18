@@ -16,41 +16,43 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* Liberamos el Header para que se estire verticalmente y acepte el logo grande */
+    /* 1. Resetear el header para que sea compacto y suba la línea */
     header.header, .header {
       height: auto !important;
-      min-height: 150px !important; /* Le damos pista suficiente */
-      padding: 15px 0 !important;
-      overflow: visible !important; /* Evita que se recorte la imagen */
+      min-height: 0 !important; /* Quitamos la altura forzada anterior */
+      padding: 5px 0 !important; /* Padding mínimo vertical para pegar la línea */
+      background-color: #000000 !important; /* Aseguramos fondo negro puro */
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; /* Forzamos la línea divisoria visible */
+      position: relative !important;
+      z-index: 100 !important;
     }
 
-    /* Forzamos el contenedor para que distribuya el espacio sin restricciones */
+    /* 2. Ajustar el contenedor flex sin alturas forzadas */
     .header-content {
       display: flex !important;
       align-items: center !important;
       justify-content: space-between !important;
       height: auto !important;
-      min-height: 120px !important;
-      max-height: none !important;
+      min-height: 0 !important;
+      padding: 0 !important;
     }
 
-    /* Súper-tamaño para el logo de CONEMAT */
-    img.logo, .header .logo, .header-content img {
-      height: 130px !important; /* Agrandado drásticamente */
-      min-height: 130px !important;
+    /* 3. Tamaño del logo equilibrado (Ni muy chico, ni gigante) */
+    img.logo, .header .logo {
+      height: 80px !important; /* Reducido de 130px a 80px para compactar */
       width: auto !important;
       max-height: none !important;
-      max-width: none !important;
-      object-fit: contain !important;
       display: block !important;
-      flex-shrink: 0 !important; /* Clave: impide que la botonera lo aplaste */
+      flex-shrink: 0 !important;
+      margin: 0 !important;
     }
 
-    /* Alineación perfecta de la botonera lateral */
+    /* 4. Alineación vertical del menú con respecto al logo */
     .header nav {
       display: flex !important;
       align-items: center !important;
-      gap: 25px !important;
+      gap: 20px !important;
+      height: 80px !important; /* Misma altura que el logo para centrado perfecto */
     }
   </style>
 </head>
