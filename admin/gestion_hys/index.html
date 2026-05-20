@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONEMAT | Panel de Empresas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e5bb9;
+            --primary-dark: #1a4a94;
+            --bg-body: #f1f5f9;
+            --success: #10b981;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: #0f172a;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header Premium unificado con el Portal */
+        .header {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .logo-box {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        /* Subimos un nivel con ../ para buscar el logo que está en /admin */
+        .logo-box img { height: 32px; }
+
+        .btn-back {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255,255,255,0.4);
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .btn-back:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Contenedor Principal */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        /* Botón Agregar Empresa */
+        .btn-add {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 14px rgba(30,91,185,0.3);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-add:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+            box-shadow: 0 6px 20px rgba(30,91,185,0.4);
+        }
+
+        /* Grid de Empresas */
+        .companies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        /* Tarjeta de Empresa */
+        .company-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 6px; height: 100%;
+            background: var(--primary);
+        }
+
+        .company-card:hover {
+            transform: translateY(-6px);
+            background: #ffffff;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        .company-info p {
+            margin: 5px 0;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .company-badge {
+            display: inline-block;
+            background: #e0eafd;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        /* Ventana Modal para Añadir Empresa */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: scale(0.9);
+            transition: all 0.3s ease;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #94a3b8;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #334155;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30,91,185,0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.2);
+            transition: all 0.3s;
+        }
+        .btn-submit:hover {
+            filter: brightness(1.05);
+            box-shadow: 0 6px 18px rgba(16,185,129,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <a href="../portal.html" class="logo-box">
+            <img src="../logo-black.png" alt="CONEMAT">
+        </a>
+        <a href="../portal.html" class="btn-back">← Volver al Portal</a>
+    </header>
+
+    <main class="container">
+        
+        <div class="section-header">
+            <h2>Mis Clientes H&S</h2>
+            <button class="btn-add" onclick="toggleModal(true)">➕ Agregar Empresa</button>
+        </div>
+
+        <div class="companies-grid" id="companiesGrid">
+            <div class="company-card" onclick="verEmpresa('id_prueba_123')">
+                <div class="company-info">
+                    <h3>Empresa de Ejemplo S.A.</h3>
+                    <p><strong>CUIT:</strong> 30-12345678-9</p>
+                    <p><strong>Rubro:</strong> Construcción / Obra</p>
+                </div>
+                <div>
+                    <span class="company-badge">10 Módulos de Gestión</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal" id="companyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nueva Empresa Cliente</h3>
+                <button class="modal-close" onclick="toggleModal(false)">&times;</button>
+            </div>
+            <form id="addCompanyForm">
+                <div class="form-group">
+                    <label for="razonSocial">Razón Social *</label>
+                    <input type="text" id="razonSocial" required placeholder="Ej: Constructora del Sur S.R.L.">
+                </div>
+                <div class="form-group">
+                    <label for="cuit">CUIT *</label>
+                    <input type="text" id="cuit" required placeholder="Ej: 30-71458962-9">
+                </div>
+                <div class="form-group">
+                    <label for="rubro">Rubro / Actividad</label>
+                    <input type="text" id="rubro" placeholder="Ej: Metalúrgica, Oficinas, Obra Pública">
+                </div>
+                <button type="submit" class="btn-submit">Guardar Empresa</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleModal(show) {
+            const modal = document.getElementById('companyModal');
+            if(show) modal.classList.add('active');
+            else modal.classList.remove('active');
+        }
+
+        function verEmpresa(id) {
+            localStorage.setItem('current_company_id', id);
+            // Va a buscar el detalle técnico dentro de la misma carpeta
+            window.location.href = 'detalle_empresa.html';
+        }
+
+        document.getElementById('companyModal').addEventListener('click', function(e) {
+            if(e.target === this) toggleModal(false);
+        });
+    </script>
+</body>
+</html>
