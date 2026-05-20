@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CONEMAT | Panel de Empresas</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --primary: #1e5bb9;
@@ -43,7 +46,6 @@
             align-items: center;
             text-decoration: none;
         }
-        /* Subimos un nivel con ../ para buscar el logo que está en /admin */
         .logo-box img { height: 32px; }
 
         .btn-back {
@@ -56,9 +58,7 @@
             border-radius: 10px;
             transition: all 0.3s;
         }
-        .btn-back:hover {
-            background: rgba(255,255,255,0.1);
-        }
+        .btn-back:hover { background: rgba(255,255,255,0.1); }
 
         /* Contenedor Principal */
         .container {
@@ -182,10 +182,7 @@
             z-index: 1000;
         }
 
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal.active { opacity: 1; pointer-events: auto; }
 
         .modal-content {
             background: white;
@@ -198,9 +195,7 @@
             transition: all 0.3s ease;
         }
 
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
+        .modal.active .modal-content { transform: scale(1); }
 
         .modal-header {
             display: flex;
@@ -209,48 +204,12 @@
             margin-bottom: 25px;
         }
 
-        .modal-header h3 {
-            margin: 0;
-            font-size: 1.4rem;
-            font-weight: 700;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #94a3b8;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #334155;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            font-family: inherit;
-            font-size: 0.95rem;
-            box-sizing: border-box;
-            transition: all 0.3s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(30,91,185,0.15);
-        }
+        .modal-header h3 { margin: 0; font-size: 1.4rem; font-weight: 700; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #334155; }
+        .form-group input { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid #cbd5e1; font-family: inherit; font-size: 0.95rem; box-sizing: border-box; transition: all 0.3s; }
+        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,91,185,0.15); }
 
         .btn-submit {
             width: 100%;
@@ -266,10 +225,9 @@
             box-shadow: 0 4px 12px rgba(16,185,129,0.2);
             transition: all 0.3s;
         }
-        .btn-submit:hover {
-            filter: brightness(1.05);
-            box-shadow: 0 6px 18px rgba(16,185,129,0.3);
-        }
+        .btn-submit:hover { filter: brightness(1.05); box-shadow: 0 6px 18px rgba(16,185,129,0.3); }
+        
+        .loading-text { text-align: center; color: #64748b; font-weight: 600; width: 100%; padding: 40px; }
     </style>
 </head>
 <body>
@@ -282,25 +240,14 @@
     </header>
 
     <main class="container">
-        
         <div class="section-header">
             <h2>Mis Clientes H&S</h2>
             <button class="btn-add" onclick="toggleModal(true)">➕ Agregar Empresa</button>
         </div>
 
         <div class="companies-grid" id="companiesGrid">
-            <div class="company-card" onclick="verEmpresa('id_prueba_123')">
-                <div class="company-info">
-                    <h3>Empresa de Ejemplo S.A.</h3>
-                    <p><strong>CUIT:</strong> 30-12345678-9</p>
-                    <p><strong>Rubro:</strong> Construcción / Obra</p>
-                </div>
-                <div>
-                    <span class="company-badge">10 Módulos de Gestión</span>
-                </div>
-            </div>
+            <div class="loading-text">Cargando empresas desde Supabase...</div>
         </div>
-
     </main>
 
     <div class="modal" id="companyModal">
@@ -311,16 +258,16 @@
             </div>
             <form id="addCompanyForm">
                 <div class="form-group">
-                    <label for="razonSocial">Razón Social *</label>
-                    <input type="text" id="razonSocial" required placeholder="Ej: Constructora del Sur S.R.L.">
+                    <label for="nombreEmpresa">Nombre / Razón Social *</label>
+                    <input type="text" id="nombreEmpresa" required placeholder="Ej: Polytemp - Planta 3">
                 </div>
                 <div class="form-group">
-                    <label for="cuit">CUIT *</label>
-                    <input type="text" id="cuit" required placeholder="Ej: 30-71458962-9">
+                    <label for="direccionEmpresa">Dirección</label>
+                    <input type="text" id="direccionEmpresa" placeholder="Ej: Av. Sta. María de las Conchas">
                 </div>
                 <div class="form-group">
-                    <label for="rubro">Rubro / Actividad</label>
-                    <input type="text" id="rubro" placeholder="Ej: Metalúrgica, Oficinas, Obra Pública">
+                    <label for="contactoEmpresa">Contacto / Referente</label>
+                    <input type="text" id="contactoEmpresa" placeholder="Ej: Anahí">
                 </div>
                 <button type="submit" class="btn-submit">Guardar Empresa</button>
             </form>
@@ -328,6 +275,101 @@
     </div>
 
     <script>
+        // LEER IMPORTANTE: Usamos las credenciales que ya tenés guardadas en tu archivo auth.js de la carpeta admin
+        // Si por alguna razón no conectara, podés reemplazar estos strings por tus datos reales de Supabase.
+        const SUPABASE_URL = window.localStorage.getItem('supabaseUrl') || "TU_SUPABASE_URL_AQUÍ";
+        const SUPABASE_KEY = window.localStorage.getItem('supabaseKey') || "TU_SUPABASE_ANON_KEY_AQUÍ";
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Al cargar el documento, traemos la info real
+        document.addEventListener('DOMContentLoaded', fetchCompanies);
+
+        // 1. FUNCIÓN PARA LEER LAS EMPRESAS DE LA DB
+        async function fetchCompanies() {
+            const grid = document.getElementById('companiesGrid');
+            
+            try {
+                // Traemos todas las empresas de tu tabla ordenada por nombre
+                const { data: empresas, error } = await supabase
+                    .from('empresas')
+                    .select('*')
+                    .order('nombre', { ascending: true });
+
+                if (error) throw error;
+
+                if (!empresas || empresas.length === 0) {
+                    grid.innerHTML = '<div class="loading-text">No hay empresas registradas aún.</div>';
+                    return;
+                }
+
+                grid.innerHTML = ''; // Limpiamos el texto de "Cargando..."
+
+                // Renderizamos cada fila real de Supabase como una tarjeta interactiva
+                empresas.forEach(empresa => {
+                    const card = document.createElement('div');
+                    card.className = 'company-card';
+                    card.onclick = () => verEmpresa(empresa.id);
+                    
+                    // Si el contacto o dirección están vacíos en tu DB ponemos un guión sutil
+                    const direccion = empresa.direccion || 'No especificada';
+                    const contacto = empresa.contacto || '-';
+
+                    card.innerHTML = `
+                        <div class="company-info">
+                            <h3>${empresa.nombre}</h3>
+                            <p><strong>Dirección:</strong> ${direccion}</p>
+                            <p><strong>Contacto:</strong> ${contacto}</p>
+                        </div>
+                        <div>
+                            <span class="company-badge">10 Módulos de Gestión</span>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                grid.innerHTML = '<div class="loading-text" style="color: #ef4444;">Error de conexión con la base de datos.</div>';
+            }
+        }
+
+        // 2. FUNCIÓN PARA CREAR UNA NUEVA EMPRESA EN LA DB
+        document.getElementById('addCompanyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('nombreEmpresa').value;
+            const direccion = document.getElementById('direccionEmpresa').value;
+            const contacto = document.getElementById('contactoEmpresa').value;
+            const fecha_inicio = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+
+            try {
+                // Hacemos el insert con los nombres de columna idénticos a tu captura de pantalla
+                const { error } = await supabase
+                    .from('empresas')
+                    .insert([
+                        { 
+                            nombre: nombre, 
+                            direccion: direccion, 
+                            contacto: contacto, 
+                            fecha_inicio: fecha_inicio,
+                            activo: true 
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                // Si todo sale bien, cerramos modal, limpiamos el formulario y recargamos la grilla en vivo
+                toggleModal(false);
+                document.getElementById('addCompanyForm').reset();
+                await fetchCompanies(); 
+
+            } catch (error) {
+                console.error('Error al guardar la empresa:', error);
+                alert('No se pudo guardar la empresa. Revisá la consola o las políticas RLS de tu Supabase.');
+            }
+        });
+
         function toggleModal(show) {
             const modal = document.getElementById('companyModal');
             if(show) modal.classList.add('active');
@@ -336,7 +378,6 @@
 
         function verEmpresa(id) {
             localStorage.setItem('current_company_id', id);
-            // Va a buscar el detalle técnico dentro de la misma carpeta
             window.location.href = 'detalle_empresa.html';
         }
 
