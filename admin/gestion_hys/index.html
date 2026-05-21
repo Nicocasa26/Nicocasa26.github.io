@@ -275,30 +275,51 @@
     </div>
 
     <script>
-        // 1. URL de tu proyecto extraída de tu panel
+        // SOLUCIÓN AL CRASHEO: Definimos exactamente la variable que tu auth.js está buscando
         const SUPABASE_URL = "https://brdekhbqophvcnbhadgc.supabase.co";
         
-        // 2. BUSCÁ TU CLAVE ANON (está en tu archivo admin/auth.js) Y PEGALA EN EL STRING DE ABAJO:
+        // >>> PEGA TU CLAVE ANON_KEY ACÁ ABAJO <<<
         const SUPABASE_KEY = "TU_CLAVE_ANON_REAL_AQUI";
 
-        // Inicializamos la conexión de forma segura
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // Creamos la instancia con el nombre exacto que requiere auth.js
+        var supabaseClient = null;
 
-        // Disparamos la carga al montar el archivo
-        document.addEventListener('DOMContentLoaded', fetchCompanies);
+        // Disparamos todo de forma segura al cargar el DOM
+        document.addEventListener('DOMContentLoaded', initPanel);
 
-        // FUNCIÓN PARA LEER LAS EMPRESAS DE LA DB
+        async function initPanel() {
+            const grid = document.getElementById('companiesGrid');
+            
+            try {
+                // 1. Control preventivo de configuración de clave
+                if (SUPABASE_KEY === "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn" || SUPABASE_KEY.trim() === "") {
+                    grid.innerHTML = '<div class="loading-text" style="color: #f59e0b; background: #fffbeb; padding: 20px; border-radius: 12px; border: 1px solid #fef3c7;">⚠️ <strong>Configuración pendiente:</strong> Te falta abrir este archivo index.html en GitHub y pegar tu SUPABASE_KEY en la línea 192.</div>';
+                    return;
+                }
+
+                // 2. Inicialización obligatoria de la variable que usa tu script auth.js
+                if (window.supabase) {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                } else {
+                    grid.innerHTML = '<div class="loading-text" style="color: #ef4444;">❌ Error: No se pudo cargar la librería externa de Supabase.</div>';
+                    return;
+                }
+
+                // 3. Ejecutamos la lectura de empresas de la DB
+                await fetchCompanies();
+
+            } catch (err) {
+                console.error("Error crítico en arranque:", err);
+                grid.innerHTML = `<div class="loading-text" style="color: #ef4444;">❌ Error de inicialización: ${err.message || err}</div>`;
+            }
+        }
+
+        // FUNCIÓN INDEPENDIENTE PARA LEER LAS EMPRESAS
         async function fetchCompanies() {
             const grid = document.getElementById('companiesGrid');
             
             try {
-                // Validación por si quedó el marcador de posición
-                if (SUPABASE_KEY === "TU_CLAVE_ANON_REAL_AQUI") {
-                    grid.innerHTML = '<div class="loading-text" style="color: #f59e0b;">⚠️ Te falta pegar tu SUPABASE_KEY dentro del código del archivo index.html.</div>';
-                    return;
-                }
-
-                const { data: empresas, error } = await supabase
+                const { data: empresas, error } = await supabaseClient
                     .from('empresas')
                     .select('*')
                     .order('nombre', { ascending: true });
@@ -306,7 +327,7 @@
                 if (error) throw error;
 
                 if (!empresas || empresas.length === 0) {
-                    grid.innerHTML = '<div class="loading-text">No hay empresas registradas aún en tu tabla.</div>';
+                    grid.innerHTML = '<div class="loading-text">No hay empresas dadas de alta en tu base de datos.</div>';
                     return;
                 }
 
@@ -334,8 +355,8 @@
                 });
 
             } catch (error) {
-                console.error('Error detallado:', error);
-                grid.innerHTML = `<div class="loading-text" style="color: #ef4444;">❌ Error: ${error.message || error}</div>`;
+                console.error('Error al traer empresas:', error);
+                grid.innerHTML = `<div class="loading-text" style="color: #ef4444; background: #fef2f2; padding: 20px; border-radius: 12px; border: 1px solid #fee2e2;">❌ <strong>Error de Supabase:</strong> ${error.message || error}</div>`;
             }
         }
 
@@ -343,13 +364,18 @@
         document.getElementById('addCompanyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
+            if (!supabaseClient) {
+                alert('La conexión con Supabase no está lista.');
+                return;
+            }
+
             const nombre = document.getElementById('nombreEmpresa').value;
             const direccion = document.getElementById('direccionEmpresa').value;
             const contacto = document.getElementById('contactoEmpresa').value;
             const fecha_inicio = new Date().toISOString().split('T')[0];
 
             try {
-                const { error } = await supabase
+                const { error } = await supabaseClient
                     .from('empresas')
                     .insert([
                         { 
@@ -365,7 +391,7 @@
 
                 toggleModal(false);
                 document.getElementById('addCompanyForm').reset();
-                await fetchCompanies(); 
+                await fetchCompanies(); // Recargamos las tarjetas automáticamente
 
             } catch (error) {
                 console.error('Error al guardar:', error);
