@@ -275,37 +275,36 @@
     </div>
 
     <script>
-        // SOLUCIÓN AL CRASHEO: Definimos exactamente la variable que tu auth.js está buscando
-        const SUPABASE_URL = "https://brdekhbqophvcnbhadgc.supabase.co";
-        
-        // >>> PEGA TU CLAVE ANON_KEY ACÁ ABAJO <<<
-        const SUPABASE_KEY = "TU_CLAVE_ANON_REAL_AQUI";
+        // Claves definitivas corregidas
+        const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
-        // Creamos la instancia con el nombre exacto que requiere auth.js
+        // Variable global expuesta de forma segura para auth.js
         var supabaseClient = null;
 
-        // Disparamos todo de forma segura al cargar el DOM
+        // Inicialización segura del ecosistema
         document.addEventListener('DOMContentLoaded', initPanel);
 
         async function initPanel() {
             const grid = document.getElementById('companiesGrid');
             
             try {
-                // 1. Control preventivo de configuración de clave
-                if (SUPABASE_KEY === "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn" || SUPABASE_KEY.trim() === "") {
-                    grid.innerHTML = '<div class="loading-text" style="color: #f59e0b; background: #fffbeb; padding: 20px; border-radius: 12px; border: 1px solid #fef3c7;">⚠️ <strong>Configuración pendiente:</strong> Te falta abrir este archivo index.html en GitHub y pegar tu SUPABASE_KEY en la línea 192.</div>';
+                // Control preventivo de seguridad
+                if (SUPABASE_KEY === "TU_CLAVE_ANON_REAL_AQUI" || SUPABASE_KEY.trim() === "") {
+                    grid.innerHTML = '<div class="loading-text" style="color: #f59e0b; background: #fffbeb; padding: 20px; border-radius: 12px; border: 1px solid #fef3c7;">⚠️ <strong>Configuración pendiente:</strong> Te falta pegar tu SUPABASE_KEY real en las variables globales.</div>';
                     return;
                 }
 
-                // 2. Inicialización obligatoria de la variable que usa tu script auth.js
+                // Vinculación e inicialización del SDK
                 if (window.supabase) {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                    window.supabaseClient = supabaseClient; // Espejo global exacto para auth.js
                 } else {
                     grid.innerHTML = '<div class="loading-text" style="color: #ef4444;">❌ Error: No se pudo cargar la librería externa de Supabase.</div>';
                     return;
                 }
 
-                // 3. Ejecutamos la lectura de empresas de la DB
+                // Carga de la grilla de clientes
                 await fetchCompanies();
 
             } catch (err) {
@@ -314,7 +313,7 @@
             }
         }
 
-        // FUNCIÓN INDEPENDIENTE PARA LEER LAS EMPRESAS
+        // FUNCIÓN PARA LEER LAS EMPRESAS DE LA DB
         async function fetchCompanies() {
             const grid = document.getElementById('companiesGrid');
             
@@ -331,7 +330,7 @@
                     return;
                 }
 
-                grid.innerHTML = ''; // Limpiamos el texto de carga
+                grid.innerHTML = ''; // Limpieza de loader
 
                 empresas.forEach(empresa => {
                     const card = document.createElement('div');
@@ -360,7 +359,7 @@
             }
         }
 
-        // FUNCIÓN PARA CREAR UNA NUEVA EMPRESA
+        // FUNCIÓN PARA CREAR UNA NUEVA EMPRESA CLIENTE
         document.getElementById('addCompanyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -391,7 +390,7 @@
 
                 toggleModal(false);
                 document.getElementById('addCompanyForm').reset();
-                await fetchCompanies(); // Recargamos las tarjetas automáticamente
+                await fetchCompanies(); // Actualización en tiempo real
 
             } catch (error) {
                 console.error('Error al guardar:', error);
