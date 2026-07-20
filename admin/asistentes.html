@@ -7,8 +7,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
+  // Credenciales de simulación seguras para el Portafolio público
+  const SUPABASE_URL = "https://your-project-placeholder.supabase.co";
+  const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY_PLACEHOLDER";
 
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const client = supabaseClient; // Alias para que no fallen tus funciones que usan 'client'
@@ -17,7 +18,7 @@
 <script src="auth.js"></script>
 
 <script>
-  // 3. Verificación inmediata de la sesión
+  // Verificación inmediata de la sesión
   checkAuth();
 </script>
 
@@ -76,6 +77,8 @@ border:none;
 
 <button onclick="volver()">← Volver</button>
 <button onclick="generarPDF()">Generar PDF</button>
+<!-- Nuevo botón solicitado para el Simulacro de Evacuación -->
+<button onclick="generarPDFEvacuacion()">Generar PDF Evacuación</button>
 
 <table>
 <thead>
@@ -213,7 +216,7 @@ cargarAsistentes()
 
 }
 
-/* PDF */
+/* PDF ORIGINAL (CON FIRMAS) */
 
 function generarPDF(){
 
@@ -381,6 +384,157 @@ doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"})
 agregarFooter()
 
 doc.save(`${empresa} - ${capacitacion}.pdf`)
+
+}
+
+}
+
+},300)
+
+}
+
+
+/* 🔥 NUEVA FUNCIÓN: GENERAR PDF EVACUACIÓN (CON COLUMNA ROL) */
+
+function generarPDFEvacuacion(){
+
+const {jsPDF}=window.jspdf
+const doc=new jsPDF()
+
+const fecha=new Date().toLocaleDateString("es-AR")
+
+const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
+
+const qrContainer = document.createElement("div")
+qrContainer.style.display = "none"
+document.body.appendChild(qrContainer)
+
+new QRCode(qrContainer,{
+text:urlVerificacion,
+width:80,
+height:80
+})
+
+setTimeout(()=>{
+
+const qrCanvas=qrContainer.querySelector("canvas")
+const qrImage=qrCanvas.toDataURL("image/png")
+
+function agregarFooter(){
+const pageCount = doc.getNumberOfPages()
+for(let i=1;i<=pageCount;i++){
+doc.setPage(i)
+const qrX = 15
+const qrY = 255
+const textX = 45
+const textY = 270
+
+doc.addImage(qrImage,"PNG",qrX,qrY,25,25)
+doc.setFontSize(8)
+doc.setTextColor(120)
+doc.text(
+"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+textX,
+textY,
+{maxWidth:150}
+)
+}
+}
+
+const logo=new Image()
+logo.src="../logo-black.png"
+
+logo.onload=function(){
+
+doc.addImage(logo,"PNG",15,8,25,0)
+
+doc.setFont("helvetica","bold")
+doc.setFontSize(18)
+doc.text("REGISTRO DE CAPACITACIÓN - EVACUACIÓN",105,20,{align:"center"})
+
+doc.setFont("helvetica","normal")
+doc.setFontSize(10)
+doc.setTextColor(100)
+doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",105,26,{align:"center"})
+
+doc.line(10,34,200,34)
+
+let startY=48
+
+doc.setFontSize(9)
+doc.setTextColor(120)
+
+doc.text("EMPRESA",12,startY)
+doc.text("CAPACITACIÓN",12,startY+8)
+doc.text("INSTRUCTOR",120,startY)
+doc.text("FECHA",120,startY+8)
+
+doc.setFont("helvetica","bold")
+doc.setTextColor(0)
+
+doc.text(empresa,12,startY+4)
+doc.text(capacitacion,12,startY+12)
+doc.text("Casanova Nicolás",120,startY+4)
+doc.text(fecha,120,startY+12)
+
+/* Estructura de filas solicitada: número, nombre y apellido, rol, dni, puesto y firma */
+const rows=asistentes.map((a,i)=>[
+i+1,
+a.nombre,
+"", // Columna vacía para completar el Rol de Evacuación manualmente o en revisión
+a.dni,
+a.puesto,
+""  // Columna vacía destinada para la firma
+])
+
+doc.autoTable({
+startY:startY+20,
+head:[["Nº","APELLIDO Y NOMBRE","ROL","DNI","PUESTO","FIRMA"]],
+body:rows,
+styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[220,220,220],lineWidth:0.2},
+headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold"},
+columnStyles:{
+  2:{cellWidth:25}, // Espacio asignado para escribir el Rol
+  5:{cellWidth:35}  // Espacio asignado para la Firma
+}
+})
+
+/* Renderizado de firmas: ahora mapeado al índice 5 correspondientemente */
+asistentes.forEach((a,i)=>{
+if(a.firma){
+const row=doc.lastAutoTable.body[i]
+const cell=row.cells[5] // La firma se movió al índice 5 debido a la columna Rol
+doc.addImage(a.firma,"PNG",cell.x+3,cell.y+4,28,10)
+}
+})
+
+let finalY = doc.lastAutoTable.finalY + 25
+
+if(finalY > 240){
+doc.addPage()
+finalY = 40
+}
+
+const firma=new Image()
+firma.src="Firma nicolas nueva.jpg"
+
+firma.onload=function(){
+
+doc.addImage(firma,"JPEG",140,finalY-20,45,20)
+doc.line(130,finalY,190,finalY)
+
+doc.setFontSize(10)
+doc.setFont("helvetica","bold")
+doc.text("Casanova Nicolás",160,finalY+6,{align:"center"})
+
+doc.setFont("helvetica","normal")
+doc.setFontSize(9)
+doc.text("Lic. Higiene y Seguridad",160,finalY+11,{align:"center"})
+doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"})
+
+agregarFooter()
+
+doc.save(`${empresa} - ${capacitacion} (Evacuacion).pdf`)
 
 }
 
