@@ -2,22 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=index.html, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CONEMAT - Gestión de Asistentes</title>
-    <!-- Tailwind CSS para un diseño moderno y limpio -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- html2pdf.js para exportar a PDF de forma idéntica al diseño HTML -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body class="bg-gray-900 text-gray-100 min-h-screen font-sans">
 
-    <!-- Barra de Navegación -->
+    <!-- Barra de Navegación con el Logo Nuevo -->
     <header class="bg-gray-800 border-b border-gray-700 shadow-md">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <!-- Se invoca el logo oscuro recién subido -->
+                <!-- Ruta corregida al logo nuevo -->
                 <img src="Logo vertical/logo-conemat.png" alt="CONEMAT Logo" class="h-12 w-auto object-contain">
                 <span class="text-xl font-bold tracking-wider text-blue-400">CONEMAT</span>
             </div>
@@ -28,21 +25,25 @@
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-8">
-        <!-- Encabezado de sección y acciones -->
+        <!-- Encabezado y Botones de PDF anteriores -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-extrabold text-white">Control de Asistentes</h1>
-                <p class="text-gray-400 text-sm mt-1">Registrá, visualizá y exportá las planillas de asistencia para las capacitaciones.</p>
+                <p class="text-gray-400 text-sm mt-1">Registrá y exportá las planillas de asistencia y evacuación.</p>
             </div>
-            <div class="flex gap-3 w-full md:w-auto">
-                <button onclick="exportarPDF()" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-5 py-2.5 rounded-lg transition shadow-lg flex items-center justify-center gap-2">
-                    📦 Exportar Planilla (PDF)
+            <!-- Volvieron los botones específicos de PDF -->
+            <div class="flex flex-wrap gap-3 w-full md:w-auto">
+                <button onclick="exportarPDF('asistencia')" class="flex-1 md:flex-none bg-blue-600 hover:bg-blue-500 text-white font-medium px-4 py-2.5 rounded-lg transition shadow flex items-center justify-center gap-2">
+                    📋 PDF Asistencia
+                </button>
+                <button onclick="exportarPDF('evacuacion')" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-lg transition shadow flex items-center justify-center gap-2">
+                    🔥 PDF Evacuación
                 </button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Formulario de Registro -->
+            <!-- Formulario con el campo Rol devuelto -->
             <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-xl h-fit">
                 <h2 class="text-xl font-bold text-white mb-4 border-b border-gray-700 pb-2">Nuevo Asistente</h2>
                 <form id="formAsistente" class="space-y-4">
@@ -55,8 +56,8 @@
                         <input type="text" id="dni" required class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 transition">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Empresa / Sector</label>
-                        <input type="text" id="empresa" required class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 transition">
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Rol / Puesto</label>
+                        <input type="text" id="rol" required class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 transition">
                     </div>
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition shadow-md mt-2">
                         Agregar a la Lista
@@ -64,7 +65,7 @@
                 </form>
             </div>
 
-            <!-- Tabla de Datos -->
+            <!-- Tabla de Datos con columna Rol -->
             <div class="lg:col-span-2 bg-gray-800 border border-gray-700 rounded-xl shadow-xl overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-700 bg-gray-800/50">
                     <h2 class="text-xl font-bold text-white">Listado de Personal</h2>
@@ -75,12 +76,12 @@
                             <tr class="bg-gray-900 text-gray-400 text-xs font-semibold uppercase tracking-wider border-b border-gray-700">
                                 <th class="px-6 py-3">Nombre</th>
                                 <th class="px-6 py-3">DNI</th>
-                                <th class="px-6 py-3">Empresa / Sector</th>
+                                <th class="px-6 py-3">Rol / Puesto</th>
                                 <th class="px-6 py-3 text-center">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tablaAsistentes" class="divide-y divide-gray-700 text-sm">
-                            <!-- Datos dinámicos cargados por JS -->
+                            <!-- Carga dinámica -->
                         </tbody>
                     </table>
                 </div>
@@ -88,70 +89,70 @@
         </div>
     </main>
 
-    <!-- PLANILLA OCULTA DE IMPRESIÓN (Estructura estética para el PDF) -->
+    <!-- VISTA OCULTA PARA GENERAR EL PDF -->
     <div id="plantillaPDF" class="hidden">
         <div style="padding: 40px; color: #000; background: #fff; font-family: Arial, sans-serif;">
-            <!-- Header del PDF -->
-            <div style="display: flex; justify-between; items-center; border-b: 2px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 30px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-b: 2px solid #1e3a8a; padding-bottom: 20px; margin-bottom: 30px;">
                 <div>
-                    <h1 style="font-size: 24px; font-weight: bold; margin: 0; color: #1e3a8a;">PLANILLA DE ASISTENCIA</h1>
-                    <p style="font-size: 13px; color: #4b5563; margin: 5px 0 0 0;">Registro Oficial de Capacitaciones Higiene y Seguridad</p>
+                    <h1 id="pdfTitulo" style="font-size: 24px; font-weight: bold; margin: 0; color: #1e3a8a;">PLANILLA DE ASISTENCIA</h1>
+                    <p style="font-size: 13px; color: #4b5563; margin: 5px 0 0 0;">CONEMAT - Registro de Higiene y Seguridad</p>
                 </div>
-                <!-- Aquí se inyecta el logo en el PDF final -->
-                <img src="Logo vertical/logo-conemat.png" style="height: 75px; width: auto; object-contain: fit;" alt="CONEMAT">
+                <img src="Logo vertical/logo-conemat.png" style="height: 70px; width: auto; object-fit: contain;" alt="CONEMAT">
             </div>
 
-            <!-- Tabla del PDF -->
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <thead>
                     <tr style="background-color: #f3f4f6; text-align: left; font-size: 12px; font-weight: bold; border-bottom: 2px solid #cbd5e1;">
                         <th style="padding: 12px; border: 1px solid #e2e8f0;">Nombre Completo</th>
                         <th style="padding: 12px; border: 1px solid #e2e8f0;">DNI</th>
-                        <th style="padding: 12px; border: 1px solid #e2e8f0;">Empresa / Sector</th>
+                        <th style="padding: 12px; border: 1px solid #e2e8f0;">Rol / Puesto</th>
                         <th style="padding: 12px; border: 1px solid #e2e8f0; width: 150px;">Firma</th>
                     </tr>
                 </thead>
                 <tbody id="tablaAsistentesPDF" style="font-size: 12px;">
-                    <!-- Se duplica el contenido de la tabla aquí para impresión -->
+                    <!-- Se llena automáticamente -->
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Lógica JavaScript -->
     <script>
-        // Configuración de Supabase (Se vincula automáticamente si usás las variables del proyecto)
         const SUPABASE_URL = "TU_SUPABASE_URL"; 
         const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // CAPTURA DEL ID DESDE LA URL (Esto era lo que faltaba)
+        const urlParams = new URLSearchParams(window.location.search);
+        const capacitacionId = urlParams.get('capacitacion_empresa_id');
+
         let asistentes = [];
 
-        // Inicializador
         document.addEventListener("DOMContentLoaded", () => {
+            if (!capacitacionId) {
+                alert("Falta el ID de la capacitación en la URL");
+            }
             obtenerAsistentes();
             document.getElementById("formAsistente").addEventListener("submit", guardarAsistente);
         });
 
-        // Traer datos desde Supabase
+        // Traer datos filtrando por la capacitación actual
         async function obtenerAsistentes() {
+            if (!capacitacionId) return;
             try {
                 const { data, error } = await supabase
-                    .from('asistentes') // Nombre de tu tabla en Supabase
+                    .from('asistentes')
                     .select('*')
+                    .eq('capacitacion_empresa_id', capacitacionId) // Filtro restaurado
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
                 asistentes = data || [];
                 renderizarTablas();
             } catch (err) {
-                console.error("Error obteniendo asistentes:", err.message);
-                // Renderizado de fallback local por si faltan credenciales de prueba
-                renderizarTablas();
+                console.error("Error:", err.message);
             }
         }
 
-        // Renderizar en UI y en la plantilla de impresión
         function renderizarTablas() {
             const tbodyHTML = document.getElementById("tablaAsistentes");
             const tbodyPDF = document.getElementById("tablaAsistentesPDF");
@@ -160,18 +161,16 @@
             tbodyPDF.innerHTML = "";
 
             if (asistentes.length === 0) {
-                tbodyHTML.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">No hay asistentes registrados aún.</td></tr>`;
-                tbodyPDF.innerHTML = `<tr><td colspan="4" style="padding: 20px; text-align: center; color: #9ca3af;">No hay registros.</td></tr>`;
+                tbodyHTML.innerHTML = `<tr><td colspan="4" class="px-6 py-8 text-center text-gray-500">No hay asistentes en esta capacitación.</td></tr>`;
                 return;
             }
 
             asistentes.forEach(asistente => {
-                // Fila para la pantalla del sistema
                 tbodyHTML.innerHTML += `
                     <tr class="hover:bg-gray-700/50 transition">
                         <td class="px-6 py-4 font-medium text-white">${asistente.nombre}</td>
                         <td class="px-6 py-4 text-gray-300">${asistente.dni}</td>
-                        <td class="px-6 py-4 text-gray-300">${asistente.empresa}</td>
+                        <td class="px-6 py-4 text-gray-300">${asistente.rol || assistant.role || ''}</td>
                         <td class="px-6 py-4 text-center">
                             <button onclick="eliminarAsistente('${asistente.id}')" class="text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-3 py-1 rounded transition text-xs">
                                 Eliminar
@@ -180,77 +179,78 @@
                     </tr>
                 `;
 
-                // Fila limpia y clara con bordes para el documento PDF
                 tbodyPDF.innerHTML += `
                     <tr style="border-bottom: 1px solid #e2e8f0;">
                         <td style="padding: 12px; border: 1px solid #e2e8f0; font-weight: bold;">${asistente.nombre}</td>
                         <td style="padding: 12px; border: 1px solid #e2e8f0;">${asistente.dni}</td>
-                        <td style="padding: 12px; border: 1px solid #e2e8f0;">${asistente.empresa}</td>
+                        <td style="padding: 12px; border: 1px solid #e2e8f0;">${asistente.rol || assistant.role || ''}</td>
                         <td style="padding: 12px; border: 1px solid #e2e8f0; height: 35px;"></td>
                     </tr>
                 `;
             });
         }
 
-        // Agregar asistente a la base de datos
+        // Guardar asociando el registro al ID de la capacitación actual
         async function guardarAsistente(e) {
             e.preventDefault();
             const nombre = document.getElementById("nombre").value;
             const dni = document.getElementById("dni").value;
-            const empresa = document.getElementById("empresa").value;
+            const rol = document.getElementById("rol").value;
 
-            const nuevo = { nombre, dni, empresa };
+            const nuevo = { 
+                nombre, 
+                dni, 
+                rol, 
+                capacitacion_empresa_id: capacitacionId // Vinculación recuperada
+            };
 
             try {
-                const { data, error } = await supabase
+                const { error } = await supabase
                     .from('asistentes')
-                    .insert([nuevo])
-                    .select();
+                    .insert([nuevo]);
 
                 if (error) throw error;
                 
                 document.getElementById("formAsistente").reset();
                 obtenerAsistentes();
             } catch (err) {
-                console.warn("Falta configurar Supabase. Guardando localmente de forma temporal.", err.message);
-                // Fallback local:
-                asistentes.unshift({ id: Date.now().toString(), ...nuevo });
-                document.getElementById("formAsistente").reset();
-                renderizarTablas();
+                console.error("Error al guardar:", err.message);
             }
         }
 
-        // Eliminar asistente
         async function eliminarAsistente(id) {
             try {
-                const { error } = await supabase
-                    .from('asistentes')
-                    .delete()
-                    .eq('id', id);
-
+                const { error } = await supabase.from('asistentes').delete().eq('id', id);
                 if (error) throw error;
                 obtenerAsistentes();
             } catch (err) {
-                asistentes = asistentes.filter(a => a.id !== id);
-                renderizarTablas();
+                console.error(err.message);
             }
         }
 
-        // Generar el PDF usando html2pdf.js con el logo nítido
-        function exportarPDF() {
+        // Función dinámica para generar ambos tipos de PDF
+        function exportarPDF(tipo) {
             const elemento = document.getElementById("plantillaPDF");
-            elemento.classList.remove("hidden"); // Mostrar temporalmente para el render
+            const titulo = document.getElementById("pdfTitulo");
+            
+            if(tipo === 'evacuacion') {
+                titulo.innerText = "PLANILLA DE ASISTENCIA - SIMULACRO DE EVACUACIÓN";
+            } else {
+                titulo.innerText = "PLANILLA DE ASISTENCIA - CAPACITACIÓN";
+            }
+
+            elemento.classList.remove("hidden");
 
             const opciones = {
                 margin:       10,
-                filename:     'Planilla_Asistentes_CONEMAT.pdf',
+                filename:     `Planilla_${tipo === 'evacuacion' ? 'Evacuacion' : 'Asistencia'}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, logging: false, useCORS: true }, 
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().from(elemento).set(opciones).save().then(() => {
-                elemento.classList.add("hidden"); // Volver a ocultar en la interfaz
+                elemento.classList.add("hidden");
             });
         }
     </script>
