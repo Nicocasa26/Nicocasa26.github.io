@@ -26,7 +26,7 @@
             min-height: 100vh;
         }
 
-        /* Header Premium unificado con el Portal */
+        /* Header Premium */
         .header {
             background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
             height: 80px;
@@ -60,7 +60,6 @@
         }
         .btn-back:hover { background: rgba(255,255,255,0.1); }
 
-        /* Contenedor Principal */
         .container {
             max-width: 1200px;
             width: 100%;
@@ -83,7 +82,6 @@
             margin: 0;
         }
 
-        /* Botón Agregar Empresa */
         .btn-add {
             background: var(--primary);
             color: white;
@@ -107,14 +105,12 @@
             box-shadow: 0 6px 20px rgba(30,91,185,0.4);
         }
 
-        /* Grid de Empresas */
         .companies-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
         }
 
-        /* Tarjeta de Empresa */
         .company-card {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 20px;
@@ -125,7 +121,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            cursor: pointer;
             position: relative;
             overflow: hidden;
         }
@@ -156,18 +151,7 @@
             font-size: 0.95rem;
         }
 
-        .company-badge {
-            display: inline-block;
-            background: #e0eafd;
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: 15px;
-        }
-
-        /* Ventana Modal para Añadir Empresa */
+        /* Modal y Formulario */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -197,13 +181,7 @@
 
         .modal.active .modal-content { transform: scale(1); }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .modal-header h3 { margin: 0; font-size: 1.4rem; font-weight: 700; }
         .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #94a3b8; }
         .form-group { margin-bottom: 20px; }
@@ -212,20 +190,11 @@
         .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(30,91,185,0.15); }
 
         .btn-submit {
-            width: 100%;
-            background: var(--success);
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(16,185,129,0.2);
-            transition: all 0.3s;
+            width: 100%; background: var(--success); color: white; border: none; padding: 14px;
+            border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(16,185,129,0.2); transition: all 0.3s;
         }
-        .btn-submit:hover { filter: brightness(1.05); box-shadow: 0 6px 18px rgba(16,185,129,0.3); }
+        .btn-submit:hover { filter: brightness(1.05); }
         
         .loading-text { text-align: center; color: #64748b; font-weight: 600; width: 100%; padding: 40px; }
     </style>
@@ -275,48 +244,27 @@
     </div>
 
     <script>
-        // Claves definitivas corregidas
         const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
         const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
-
-        // Variable global expuesta de forma segura para auth.js
         var supabaseClient = null;
 
-        // Inicialización segura del ecosistema
         document.addEventListener('DOMContentLoaded', initPanel);
 
         async function initPanel() {
             const grid = document.getElementById('companiesGrid');
-            
             try {
-                // Control preventivo de seguridad
-                if (SUPABASE_KEY === "TU_CLAVE_ANON_REAL_AQUI" || SUPABASE_KEY.trim() === "") {
-                    grid.innerHTML = '<div class="loading-text" style="color: #f59e0b; background: #fffbeb; padding: 20px; border-radius: 12px; border: 1px solid #fef3c7;">⚠️ <strong>Configuración pendiente:</strong> Te falta pegar tu SUPABASE_KEY real en las variables globales.</div>';
-                    return;
-                }
-
-                // Vinculación e inicialización del SDK
                 if (window.supabase) {
                     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                    window.supabaseClient = supabaseClient; // Espejo global exacto para auth.js
-                } else {
-                    grid.innerHTML = '<div class="loading-text" style="color: #ef4444;">❌ Error: No se pudo cargar la librería externa de Supabase.</div>';
-                    return;
+                    window.supabaseClient = supabaseClient;
                 }
-
-                // Carga de la grilla de clientes
                 await fetchCompanies();
-
             } catch (err) {
-                console.error("Error crítico en arranque:", err);
-                grid.innerHTML = `<div class="loading-text" style="color: #ef4444;">❌ Error de inicialización: ${err.message || err}</div>`;
+                grid.innerHTML = `<div class="loading-text" style="color: #ef4444;">❌ Error de inicialización.</div>`;
             }
         }
 
-        // FUNCIÓN PARA LEER LAS EMPRESAS DE LA DB
         async function fetchCompanies() {
             const grid = document.getElementById('companiesGrid');
-            
             try {
                 const { data: empresas, error } = await supabaseClient
                     .from('empresas')
@@ -326,16 +274,15 @@
                 if (error) throw error;
 
                 if (!empresas || empresas.length === 0) {
-                    grid.innerHTML = '<div class="loading-text">No hay empresas dadas de alta en tu base de datos.</div>';
+                    grid.innerHTML = '<div class="loading-text">No hay empresas dadas de alta.</div>';
                     return;
                 }
 
-                grid.innerHTML = ''; // Limpieza de loader
+                grid.innerHTML = '';
 
                 empresas.forEach(empresa => {
                     const card = document.createElement('div');
                     card.className = 'company-card';
-                    card.onclick = () => verEmpresa(empresa.id);
                     
                     const direccion = empresa.direccion || 'No especificada';
                     const contacto = empresa.contacto || '-';
@@ -346,55 +293,50 @@
                             <p><strong>Dirección:</strong> ${direccion}</p>
                             <p><strong>Contacto:</strong> ${contacto}</p>
                         </div>
-                        <div>
-                            <span class="company-badge">10 Módulos de Gestión</span>
+                        <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                            <button onclick="verCapacitaciones('${empresa.id}')" style="flex: 1; padding: 10px 12px; background: #e0eafd; color: #1e5bb9; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">
+                                🎓 Capacitaciones
+                            </button>
+                            <button onclick="verDocumentos('${empresa.id}')" style="flex: 1; padding: 10px 12px; background: #d1fae5; color: #065f46; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">
+                                📁 Informes PDF
+                            </button>
                         </div>
                     `;
                     grid.appendChild(card);
                 });
-
             } catch (error) {
-                console.error('Error al traer empresas:', error);
-                grid.innerHTML = `<div class="loading-text" style="color: #ef4444; background: #fef2f2; padding: 20px; border-radius: 12px; border: 1px solid #fee2e2;">❌ <strong>Error de Supabase:</strong> ${error.message || error}</div>`;
+                grid.innerHTML = `<div class="loading-text" style="color: #ef4444;">❌ Error al cargar.</div>`;
             }
         }
 
-        // FUNCIÓN PARA CREAR UNA NUEVA EMPRESA CLIENTE
+        // Navegación a Capacitaciones (Existente)
+        function verCapacitaciones(id) {
+            localStorage.setItem('current_company_id', id);
+            window.location.href = 'detalle_empresa.html';
+        }
+
+        // Navegación a Informes (Nuevo)
+        function verDocumentos(id) {
+            localStorage.setItem('current_company_id', id);
+            window.location.href = `documentos_empresa.html?id=${id}`;
+        }
+
         document.getElementById('addCompanyForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
-            if (!supabaseClient) {
-                alert('La conexión con Supabase no está lista.');
-                return;
-            }
-
             const nombre = document.getElementById('nombreEmpresa').value;
             const direccion = document.getElementById('direccionEmpresa').value;
             const contacto = document.getElementById('contactoEmpresa').value;
-            const fecha_inicio = new Date().toISOString().split('T')[0];
 
             try {
-                const { error } = await supabaseClient
-                    .from('empresas')
-                    .insert([
-                        { 
-                            nombre: nombre, 
-                            direccion: direccion, 
-                            contacto: contacto, 
-                            fecha_inicio: fecha_inicio,
-                            activa: true 
-                        }
-                    ]);
-
+                const { error } = await supabaseClient.from('empresas').insert([
+                    { nombre, direccion, contacto, activa: true }
+                ]);
                 if (error) throw error;
-
                 toggleModal(false);
                 document.getElementById('addCompanyForm').reset();
-                await fetchCompanies(); // Actualización en tiempo real
-
+                await fetchCompanies();
             } catch (error) {
-                console.error('Error al guardar:', error);
-                alert('No se pudo guardar la empresa: ' + error.message);
+                alert('No se pudo guardar: ' + error.message);
             }
         });
 
@@ -403,15 +345,6 @@
             if(show) modal.classList.add('active');
             else modal.classList.remove('active');
         }
-
-        function verEmpresa(id) {
-            localStorage.setItem('current_company_id', id);
-            window.location.href = 'detalle_empresa.html';
-        }
-
-        document.getElementById('companyModal').addEventListener('click', function(e) {
-            if(e.target === this) toggleModal(false);
-        });
     </script>
 </body>
 </html>
