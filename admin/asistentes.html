@@ -268,11 +268,12 @@ doc.text(
 const logo=new Image()
 logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
-logo.src="../logo-black.png" // Nombre corregido idéntico a tu repositorio
+logo.src="Logo vertical/logo-conemat.png" // Nueva ubicación del logo vertical
 
 function construirCuerpo(conLogo){
 if(conLogo) {
-doc.addImage(logo,"PNG",15,13,35,0)
+// Al dejar el alto en 0 se auto-escala proporcionalmente manteniendo la relación de aspecto
+doc.addImage(logo,"PNG",15,11,35,0)
 }
 
 doc.setFont("helvetica","bold")
@@ -409,11 +410,11 @@ doc.text(
 const logo=new Image()
 logo.onload = function(){ construirCuerpoEvac(true); }
 logo.onerror = function(){ construirCuerpoEvac(false); }
-logo.src="../logo-black.png" // Nombre corregido idéntico a tu repositorio
+logo.src="Logo vertical/logo-conemat.png" // Nueva ubicación del logo vertical
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
-doc.addImage(logo,"PNG",15,13,35,0)
+doc.addImage(logo,"PNG",15,11,35,0)
 }
 
 doc.setFont("helvetica","bold")
