@@ -259,7 +259,7 @@ doc.addImage(qrImage,"PNG",14,253,25,25)
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
-"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+"Esta capacitación fue brindada en modalid virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
 43,266,{maxWidth:150}
 )
 }
@@ -268,12 +268,12 @@ doc.text(
 const logo=new Image()
 logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
-logo.src="Logo vertical/logo-conemat.png" // Nueva ubicación del logo vertical
+logo.src="Logo vertical/logo-conemat.png"
 
 function construirCuerpo(conLogo){
 if(conLogo) {
-// Al dejar el alto en 0 se auto-escala proporcionalmente manteniendo la relación de aspecto
-doc.addImage(logo,"PNG",15,11,35,0)
+// Se redujo el ancho a 25 para que escale proporcionalmente y no pise la línea
+doc.addImage(logo,"PNG",15,11,25,0)
 }
 
 doc.setFont("helvetica","bold")
@@ -410,11 +410,12 @@ doc.text(
 const logo=new Image()
 logo.onload = function(){ construirCuerpoEvac(true); }
 logo.onerror = function(){ construirCuerpoEvac(false); }
-logo.src="Logo vertical/logo-conemat.png" // Nueva ubicación del logo vertical
+logo.src="Logo vertical/logo-conemat.png"
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
-doc.addImage(logo,"PNG",15,11,35,0)
+// Se redujo el ancho a 25 para que escale proporcionalmente y no pise la línea
+doc.addImage(logo,"PNG",15,11,25,0)
 }
 
 doc.setFont("helvetica","bold")
