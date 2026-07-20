@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -215,7 +216,7 @@ cargarAsistentes()
 
 }
 
-/* PDF ORIGINAL (CON FIRMAS) */
+/* PDF ORIGINAL EMBELLECIDO */
 
 function generarPDF(){
 
@@ -225,7 +226,6 @@ const doc=new jsPDF()
 const fecha=new Date().toLocaleDateString("es-AR")
 
 /* GENERAR QR UNA SOLA VEZ */
-
 const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
 
 const qrContainer = document.createElement("div")
@@ -244,86 +244,74 @@ const qrCanvas=qrContainer.querySelector("canvas")
 const qrImage=qrCanvas.toDataURL("image/png")
 
 /* FUNCIÓN FOOTER */
-
 function agregarFooter(){
-
 const pageCount = doc.getNumberOfPages()
-
 for(let i=1;i<=pageCount;i++){
-
 doc.setPage(i)
-
-/* POSICIÓN BASE */
 const qrX = 15
 const qrY = 255
-
 const textX = 45
 const textY = 270
 
-/* QR */
-
 doc.addImage(qrImage,"PNG",qrX,qrY,25,25)
-
-/* TEXTO */
-
 doc.setFontSize(8)
-doc.setTextColor(120)
-
+doc.setTextColor(148, 163, 184) // Gris slate moderno
 doc.text(
-"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+"Esta capacitación fue brindada en modalid virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
 textX,
 textY,
 {maxWidth:150}
 )
-
+}
 }
 
-}
-
-/* CONTINUAR PDF */
-
+/* LOGO REMOTO DE GITHUB PAGES */
 const logo=new Image()
-logo.src="../logo-black.png"
+logo.crossOrigin = "Anonymous"; // Evita problemas de canvas bloqueado por dominio cruzado
+logo.src="https://nicocasa26.github.io/logo-negro.png"
 
 logo.onload=function(){
 
-doc.addImage(logo,"PNG",15,8,25,0)
+// Ajuste y posicionamiento del logo en cabecera
+doc.addImage(logo,"PNG",15,10,32,0)
 
 doc.setFont("helvetica","bold")
-doc.setFontSize(18)
-doc.text("REGISTRO DE CAPACITACIÓN",105,20,{align:"center"})
+doc.setFontSize(20)
+doc.setTextColor(30, 91, 185) // Azul CONEMAT Premium
+doc.text("REGISTRO DE CAPACITACIÓN",200,22,{align:"right"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
-doc.setTextColor(100)
+doc.setTextColor(100, 116, 139)
+doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",200,28,{align:"right"})
 
-doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",105,26,{align:"center"})
+// Línea divisoria elegante
+doc.setDrawColor(226, 232, 240)
+doc.setLineWidth(0.5)
+doc.line(10,36,200,36)
 
-doc.line(10,34,200,34)
-
-/* DATOS */
-
+/* DATOS GENERALES */
 let startY=48
 
 doc.setFontSize(9)
-doc.setTextColor(120)
+doc.setFont("helvetica","bold")
+doc.setTextColor(148, 163, 184) // Etiquetas en gris sutil
 
-doc.text("EMPRESA",12,startY)
-doc.text("CAPACITACIÓN",12,startY+8)
+doc.text("EMPRESA",15,startY)
+doc.text("CAPACITACIÓN",15,startY+10)
 doc.text("INSTRUCTOR",120,startY)
-doc.text("FECHA",120,startY+8)
+doc.text("FECHA",120,startY+10)
 
 doc.setFont("helvetica","bold")
-doc.setTextColor(0)
+doc.setFontSize(11)
+doc.setTextColor(15, 23, 42) // Valores dinámicos en negro pleno
 
-doc.text(empresa,12,startY+4)
-doc.text(capacitacion,12,startY+12)
+doc.text(empresa,15,startY+5)
+doc.text(capacitacion,15,startY+15)
+doc.text("Casanova Nicolás",120,startY+5)
+doc.text(fecha,120,startY+15)
 
-doc.text("Casanova Nicolás",120,startY+4)
-doc.text(fecha,120,startY+12)
-
-/* TABLA */
-
+/* ESTRUCTURA DE TABLA DISEÑO PREMIUM */
 const rows=asistentes.map((a,i)=>[
 i+1,
 a.nombre,
@@ -333,29 +321,29 @@ a.puesto,
 ])
 
 doc.autoTable({
-startY:startY+20,
+startY:startY+25,
 head:[["Nº","APELLIDO Y NOMBRE","DNI","PUESTO","FIRMA"]],
 body:rows,
-styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[220,220,220],lineWidth:0.2},
-headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold"},
+theme: 'striped',
+styles:{fontSize:9,cellPadding:5,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
+headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"}, // Cabecera Azul de marca
+alternateRowStyles:{fillColor:[248, 250, 252]}, // Sombras intercaladas suaves
 columnStyles:{4:{cellWidth:35}}
 })
 
-/* FIRMAS */
-
+/* FIRMAS DE OPERARIOS */
 asistentes.forEach((a,i)=>{
 if(a.firma){
 const row=doc.lastAutoTable.body[i]
 const cell=row.cells[4]
-doc.addImage(a.firma,"PNG",cell.x+3,cell.y+4,28,10)
+doc.addImage(a.firma,"PNG",cell.x+3,cell.y+2,28,10)
 }
 })
 
-/* FIRMA PROFESIONAL */
-
+/* FIRMA PROFESIONAL INSTRUCTOR */
 let finalY = doc.lastAutoTable.finalY + 25
 
-if(finalY > 240){
+if(finalY > 230){
 doc.addPage()
 finalY = 40
 }
@@ -365,20 +353,20 @@ firma.src="Firma nicolas nueva.jpg"
 
 firma.onload=function(){
 
-doc.addImage(firma,"JPEG",140,finalY-20,45,20)
-
-doc.line(130,finalY,190,finalY)
+doc.addImage(firma,"JPEG",145,finalY-20,45,20)
+doc.setDrawColor(30, 91, 185) // Línea firma corporativa
+doc.line(135,finalY,195,finalY)
 
 doc.setFontSize(10)
 doc.setFont("helvetica","bold")
-doc.text("Casanova Nicolás",160,finalY+6,{align:"center"})
+doc.setTextColor(15, 23, 42)
+doc.text("Casanova Nicolás",165,finalY+6,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(9)
-doc.text("Lic. Higiene y Seguridad",160,finalY+11,{align:"center"})
-doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"})
-
-/* 🔥 AGREGAR FOOTER A TODAS LAS PÁGINAS */
+doc.setTextColor(100, 116, 139)
+doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
+doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
 
 agregarFooter()
 
@@ -393,7 +381,7 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 
 
-/* 🔥 FUNCIÓN SOLICITADA: PDF EVACUACIÓN CON ESTRUCTURA DE 6 COLUMNAS Y ROL */
+/* PDF EVACUACIÓN EMBELLECIDO */
 
 function generarPDFEvacuacion(){
 
@@ -430,7 +418,7 @@ const textY = 270
 
 doc.addImage(qrImage,"PNG",qrX,qrY,25,25)
 doc.setFontSize(8)
-doc.setTextColor(120)
+doc.setTextColor(148, 163, 184)
 doc.text(
 "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
 textX,
@@ -440,43 +428,49 @@ textY,
 }
 }
 
+/* LOGO REMOTO DE GITHUB PAGES */
 const logo=new Image()
-logo.src="../logo-black.png"
+logo.crossOrigin = "Anonymous";
+logo.src="https://nicocasa26.github.io/logo-negro.png"
 
 logo.onload=function(){
 
-doc.addImage(logo,"PNG",15,8,25,0)
+doc.addImage(logo,"PNG",15,10,32,0)
 
 doc.setFont("helvetica","bold")
 doc.setFontSize(18)
-doc.text("REGISTRO DE CAPACITACIÓN",105,20,{align:"center"})
+doc.setTextColor(30, 91, 185) // Azul Corporativo CONEMAT
+doc.text("REGISTRO DE CAPACITACIÓN",200,22,{align:"right"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
-doc.setTextColor(100)
-doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",105,26,{align:"center"})
+doc.setTextColor(100, 116, 139)
+doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",200,28,{align:"right"})
 
-doc.line(10,34,200,34)
+doc.setDrawColor(226, 232, 240)
+doc.setLineWidth(0.5)
+doc.line(10,36,200,36)
 
 let startY=48
 
 doc.setFontSize(9)
-doc.setTextColor(120)
+doc.setFont("helvetica","bold")
+doc.setTextColor(148, 163, 184)
 
-doc.text("EMPRESA",12,startY)
-doc.text("CAPACITACIÓN",12,startY+8)
+doc.text("EMPRESA",15,startY)
+doc.text("CAPACITACIÓN",15,startY+10)
 doc.text("INSTRUCTOR",120,startY)
-doc.text("FECHA",120,startY+8)
+doc.text("FECHA",120,startY+10)
 
 doc.setFont("helvetica","bold")
-doc.setTextColor(0)
+doc.setFontSize(11)
+doc.setTextColor(15, 23, 42)
 
-doc.text(empresa,12,startY+4)
-doc.text(capacitacion,12,startY+12)
-doc.text("Casanova Nicolás",120,startY+4)
-doc.text(fecha,120,startY+12)
+doc.text(empresa,15,startY+5)
+doc.text(capacitacion + " (Evacuación)",15,startY+15)
+doc.text("Casanova Nicolás",120,startY+5)
+doc.text(fecha,120,startY+15)
 
-/* Mapeo de columnas solicitado: número, nombre y apellido, rol, dni, puesto y firma */
 const rows=asistentes.map((a,i)=>[
 i+1,
 a.nombre,
@@ -487,29 +481,31 @@ a.puesto,
 ])
 
 doc.autoTable({
-startY:startY+20,
-head:[["Nº","APELLIDO Y NOMBRE","ROL","DNI","PUESTO","FIRMA"]],
+startY:startY+25,
+head:[["Nº","APELLIDO Y NOMBRE","ROL EVACUACIÓN","DNI","PUESTO","FIRMA"]],
 body:rows,
-styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[220,220,220],lineWidth:0.2},
-headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold"},
+theme: 'striped',
+styles:{fontSize:9,cellPadding:5,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
+headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"}, // Cabecera Azul de marca
+alternateRowStyles:{fillColor:[248, 250, 252]},
 columnStyles:{
-  2:{cellWidth:25}, 
+  2:{cellWidth:32}, // Ancho óptimo para columna Rol
   5:{cellWidth:35}  
 }
 })
 
-/* Renderizado de firmas ajustado al índice de celda 5 debido al desplazamiento */
+/* Renderizado preciso de firmas en la columna de índice 5 */
 asistentes.forEach((a,i)=>{
 if(a.firma){
 const row=doc.lastAutoTable.body[i]
 const cell=row.cells[5] 
-doc.addImage(a.firma,"PNG",cell.x+3,cell.y+4,28,10)
+doc.addImage(a.firma,"PNG",cell.x+3,cell.y+2,28,10)
 }
 })
 
 let finalY = doc.lastAutoTable.finalY + 25
 
-if(finalY > 240){
+if(finalY > 230){
 doc.addPage()
 finalY = 40
 }
@@ -519,17 +515,20 @@ firma.src="Firma nicolas nueva.jpg"
 
 firma.onload=function(){
 
-doc.addImage(firma,"JPEG",140,finalY-20,45,20)
-doc.line(130,finalY,190,finalY)
+doc.addImage(firma,"JPEG",145,finalY-20,45,20)
+doc.setDrawColor(30, 91, 185)
+doc.line(135,finalY,195,finalY)
 
 doc.setFontSize(10)
 doc.setFont("helvetica","bold")
-doc.text("Casanova Nicolás",160,finalY+6,{align:"center"})
+doc.setTextColor(15, 23, 42)
+doc.text("Casanova Nicolás",165,finalY+6,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(9)
-doc.text("Lic. Higiene y Seguridad",160,finalY+11,{align:"center"})
-doc.text("Mat. CPHS 6921",160,finalY+16,{align:"center"})
+doc.setTextColor(100, 116, 139)
+doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
+doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
 
 agregarFooter()
 
