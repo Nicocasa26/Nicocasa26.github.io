@@ -77,7 +77,7 @@ border:none;
 
 <button onclick="volver()">← Volver</button>
 <button onclick="generarPDF()">Generar PDF</button>
-<!-- Nuevo botón solicitado para el Simulacro de Evacuación -->
+<!-- Botón para PDF de Evacuación alineado en la interfaz -->
 <button onclick="generarPDFEvacuacion()">Generar PDF Evacuación</button>
 
 <table>
@@ -394,7 +394,7 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 
 
-/* 🔥 NUEVA FUNCIÓN: GENERAR PDF EVACUACIÓN (CON COLUMNA ROL) */
+/* 🔥 NUEVA FUNCIÓN: PDF EVACUACIÓN (ESTRUCTURA DE 6 COLUMNAS CON ROL) */
 
 function generarPDFEvacuacion(){
 
@@ -450,7 +450,7 @@ doc.addImage(logo,"PNG",15,8,25,0)
 
 doc.setFont("helvetica","bold")
 doc.setFontSize(18)
-doc.text("REGISTRO DE CAPACITACIÓN - EVACUACIÓN",105,20,{align:"center"})
+doc.text("REGISTRO DE CAPACITACIÓN",105,20,{align:"center"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
@@ -477,14 +477,14 @@ doc.text(capacitacion,12,startY+12)
 doc.text("Casanova Nicolás",120,startY+4)
 doc.text(fecha,120,startY+12)
 
-/* Estructura de filas solicitada: número, nombre y apellido, rol, dni, puesto y firma */
+/* Mapeo exacto solicitado: número, nombre y apellido, rol, dni, puesto y firma */
 const rows=asistentes.map((a,i)=>[
 i+1,
 a.nombre,
-"", // Columna vacía para completar el Rol de Evacuación manualmente o en revisión
+a.rol || "", // Se mapea el rol si existiera en la base de datos, sino queda vacío para completar
 a.dni,
 a.puesto,
-""  // Columna vacía destinada para la firma
+"" // Celda de firma
 ])
 
 doc.autoTable({
@@ -494,16 +494,16 @@ body:rows,
 styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[220,220,220],lineWidth:0.2},
 headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold"},
 columnStyles:{
-  2:{cellWidth:25}, // Espacio asignado para escribir el Rol
-  5:{cellWidth:35}  // Espacio asignado para la Firma
+  2:{cellWidth:25}, // Espacio balanceado para la columna de Roles
+  5:{cellWidth:35}  // Espacio idéntico de 35 para que calce el gráfico de firma
 }
 })
 
-/* Renderizado de firmas: ahora mapeado al índice 5 correspondientemente */
+/* Renderizado de firmas: desplazado al índice 5 por la nueva columna ROL */
 asistentes.forEach((a,i)=>{
 if(a.firma){
 const row=doc.lastAutoTable.body[i]
-const cell=row.cells[5] // La firma se movió al índice 5 debido a la columna Rol
+const cell=row.cells[5] 
 doc.addImage(a.firma,"PNG",cell.x+3,cell.y+4,28,10)
 }
 })
