@@ -12,7 +12,7 @@
   const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const client = supabaseClient; // Alias para que no fallen tus funciones que usan 'client'
+  const client = supabaseClient; // Alias para compatibilidad
 </script>
 
 <script src="auth.js"></script>
@@ -96,27 +96,23 @@ border:none;
 <script>
 
 /* PARAMS */
-
 const params=new URLSearchParams(window.location.search)
 const capacitacionEmpresaId=params.get("capacitacion_empresa_id")
 
 /* STATE */
-
 let asistentes=[]
-let empresa=""
-let capacitacion=""
+let empresa="Empresa"
+let capacitacion="Capacitación"
 
 /* NAV */
-
 function volver(){
 window.history.back()
 }
 
-/* CONTEXTO */
-
+/* CONTEXTO SEGURO */
 async function cargarContexto(){
-
-const {data}=await client
+try {
+const {data, error}=await client
 .from("capacitaciones_empresas")
 .select(`
 empresas(nombre),
@@ -125,28 +121,45 @@ capacitaciones_base(nombre)
 .eq("id",capacitacionEmpresaId)
 .single()
 
-empresa=data.empresas.nombre
-capacitacion=data.capacitaciones_base.nombre
-
+if(error) {
+console.error("Error cargando contexto:", error)
+return
 }
 
-/* ASISTENTES */
+if(data){
+empresa=data.empresas?.nombre || "Empresa"
+capacitacion=data.capacitaciones_base?.nombre || "Capacitación"
+}
+} catch(err) {
+console.error("Excepción en cargarContexto:", err)
+}
+}
 
+/* ASISTENTES SEGURO */
 async function cargarAsistentes(){
-
-const {data}=await client
+try {
+const {data, error}=await client
 .from("asistentes")
 .select("*")
 .eq("capacitacion_id",capacitacionEmpresaId)
 .order("nombre")
 
-asistentes=data
+if(error) {
+console.error("Error en base de datos:", error)
+alert("Error al conectar con la base de datos de asistentes.")
+return
+}
 
+asistentes = data || []
 const tabla=document.getElementById("tabla")
 tabla.innerHTML=""
 
-data.forEach((a,i)=>{
+if(asistentes.length === 0) {
+tabla.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#64748b;">No hay asistentes registrados en esta capacitación.</td></tr>`
+return
+}
 
+asistentes.forEach((a,i)=>{
 tabla.innerHTML+=`
 <tr>
 <td>${i+1}</td>
@@ -159,15 +172,14 @@ tabla.innerHTML+=`
 </td>
 </tr>
 `
-
 })
-
+} catch(err) {
+console.error("Excepción en cargarAsistentes:", err)
+}
 }
 
 /* EDITAR */
-
 async function editar(id,nombre,dni,puesto){
-
 const nuevoNombre=prompt("Apellido y Nombre",nombre)
 if(!nuevoNombre) return
 
@@ -190,17 +202,12 @@ if(error){
 alert("Error al actualizar")
 return
 }
-
 cargarAsistentes()
-
 }
 
 /* ELIMINAR */
-
 async function eliminar(id){
-
 if(!confirm("¿Eliminar asistente?")) return
-
 const {error}=await client
 .from("asistentes")
 .delete()
@@ -210,14 +217,15 @@ if(error){
 alert("Error al eliminar")
 return
 }
-
 cargarAsistentes()
-
 }
 
-/* PDF ORIGINAL PREMIUM CON MARCO Y LOGO LOCAL */
-
+/* PDF ORIGINAL PREMIUM */
 function generarPDF(){
+if(!asistentes || asistentes.length === 0){
+alert("No hay asistentes cargados para exportar.")
+return
+}
 
 const {jsPDF}=window.jspdf
 const doc=new jsPDF()
@@ -235,25 +243,19 @@ height:80
 })
 
 setTimeout(()=>{
-
 const qrCanvas=qrContainer.querySelector("canvas")
+if(!qrCanvas) return
 const qrImage=qrCanvas.toDataURL("image/png")
 
 function decorarTodasLasPaginas(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
 doc.setPage(i)
-
-// Recuadro Perimetral Institucional
-doc.setPage(i)
 doc.setDrawColor(30, 91, 185) 
 doc.setLineWidth(0.3)
 doc.rect(8, 8, 194, 281) 
 
-// Código QR
 doc.addImage(qrImage,"PNG",14,253,25,25)
-
-// Leyenda Inferior
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
@@ -263,12 +265,11 @@ doc.text(
 }
 }
 
-// Usamos la ruta local original para evitar bloqueos CORS del navegador
 const logo=new Image()
-logo.src="../logo-black.png"[cite: 2]
-
+// IMPORTANTE: Definir listeners ANTES de setear el .src
 logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
+logo.src="../logo-negro.png" 
 
 function construirCuerpo(conLogo){
 if(conLogo) {
@@ -332,8 +333,6 @@ let finalY = doc.lastAutoTable.finalY + 25
 if(finalY > 225){ doc.addPage(); finalY = 45; }
 
 const firma=new Image()
-firma.src="Firma nicolas nueva.jpg"
-
 firma.onload = function(){
 doc.addImage(firma,"JPEG",145,finalY-20,45,20)
 finalizarDescarga();
@@ -341,6 +340,7 @@ finalizarDescarga();
 firma.onerror = function(){
 finalizarDescarga();
 }
+firma.src="Firma nicolas nueva.jpg"
 
 function finalizarDescarga(){
 doc.setDrawColor(30, 91, 185)
@@ -362,10 +362,12 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 },300)
 }
 
-
-/* PDF EVACUACIÓN PREMIUM CON MARCO Y LOGO LOCAL */
-
+/* PDF EVACUACIÓN PREMIUM */
 function generarPDFEvacuacion(){
+if(!asistentes || asistentes.length === 0){
+alert("No hay asistentes cargados para exportar.")
+return
+}
 
 const {jsPDF}=window.jspdf
 const doc=new jsPDF()
@@ -383,21 +385,19 @@ height:80
 })
 
 setTimeout(()=>{
-
 const qrCanvas=qrContainer.querySelector("canvas")
+if(!qrCanvas) return
 const qrImage=qrCanvas.toDataURL("image/png")
 
 function decorarTodasLasPaginasEvac(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
 doc.setPage(i)
-
 doc.setDrawColor(30, 91, 185)
 doc.setLineWidth(0.3)
 doc.rect(8, 8, 194, 281)
 
 doc.addImage(qrImage,"PNG",14,253,25,25)
-
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
@@ -407,12 +407,10 @@ doc.text(
 }
 }
 
-// Usamos la ruta local original para evitar bloqueos CORS del navegador
 const logo=new Image()
-logo.src="../logo-black.png"[cite: 2]
-
 logo.onload = function(){ construirCuerpoEvac(true); }
 logo.onerror = function(){ construirCuerpoEvac(false); }
+logo.src="../logo-negro.png"
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
@@ -479,8 +477,6 @@ let finalY = doc.lastAutoTable.finalY + 25
 if(finalY > 225){ doc.addPage(); finalY = 45; }
 
 const firma=new Image()
-firma.src="Firma nicolas nueva.jpg"
-
 firma.onload = function(){
 doc.addImage(firma,"JPEG",145,finalY-20,45,20)
 finalizarDescargaEvac();
@@ -488,6 +484,7 @@ finalizarDescargaEvac();
 firma.onerror = function(){
 finalizarDescargaEvac();
 }
+firma.src="Firma nicolas nueva.jpg"
 
 function finalizarDescargaEvac(){
 doc.setDrawColor(30, 91, 185)
@@ -510,7 +507,6 @@ doc.save(`${empresa} - ${capacitacion} (Evacuacion).pdf`)
 }
 
 /* INIT */
-
 cargarContexto()
 cargarAsistentes()
 
