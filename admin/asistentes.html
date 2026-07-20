@@ -215,7 +215,7 @@ cargarAsistentes()
 
 }
 
-/* PDF ORIGINAL PREMIUM CON MARCO Y LOGO */
+/* PDF ORIGINAL PREMIUM CON MARCO Y LOGO LOCAL */
 
 function generarPDF(){
 
@@ -239,21 +239,21 @@ setTimeout(()=>{
 const qrCanvas=qrContainer.querySelector("canvas")
 const qrImage=qrCanvas.toDataURL("image/png")
 
-// Función unificada que decora todas las páginas del documento
 function decorarTodasLasPaginas(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
 doc.setPage(i)
 
-// 1. Dibujar Recuadro Perimetral de la hoja (A4: 210x297mm)
-doc.setDrawColor(30, 91, 185) // Azul Institucional CONEMAT
+// Recuadro Perimetral Institucional
+doc.setPage(i)
+doc.setDrawColor(30, 91, 185) 
 doc.setLineWidth(0.3)
-doc.rect(8, 8, 194, 281) // Deja un margen simétrico perfecto de 8mm
+doc.rect(8, 8, 194, 281) 
 
-// 2. Insertar Código QR de verificación
+// Código QR
 doc.addImage(qrImage,"PNG",14,253,25,25)
 
-// 3. Insertar Leyenda Legal del Footer
+// Leyenda Inferior
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
@@ -263,16 +263,15 @@ doc.text(
 }
 }
 
+// Usamos la ruta local original para evitar bloqueos CORS del navegador
 const logo=new Image()
-logo.crossOrigin = "Anonymous";
-logo.src="https://nicocasa26.github.io/logo-negro.png"
+logo.src="../logo-black.png"[cite: 2]
 
 logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
 
 function construirCuerpo(conLogo){
 if(conLogo) {
-// Posicionamiento preciso del logo arriba a la izquierda
 doc.addImage(logo,"PNG",15,13,35,0)
 }
 
@@ -318,7 +317,7 @@ styles:{fontSize:9,cellPadding:5,valign:"middle",lineColor:[226, 232, 240],lineW
 headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"},
 alternateRowStyles:{fillColor:[248, 250, 252]},
 columnStyles:{4:{cellWidth:35}},
-margin:{left:12, right:12} // Ajustado para que calce perfecto dentro del marco
+margin:{left:12, right:12}
 })
 
 asistentes.forEach((a,i)=>{
@@ -356,7 +355,7 @@ doc.setTextColor(100, 116, 139)
 doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
 doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
 
-decorarTodasLasPaginas() // Aplica marcos y footer de forma masiva
+decorarTodasLasPaginas()
 doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 }
@@ -364,7 +363,7 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 
 
-/* PDF EVACUACIÓN PREMIUM CON MARCO Y LOGO */
+/* PDF EVACUACIÓN PREMIUM CON MARCO Y LOGO LOCAL */
 
 function generarPDFEvacuacion(){
 
@@ -393,15 +392,12 @@ const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
 doc.setPage(i)
 
-// 1. Dibujar Recuadro Perimetral de la hoja
 doc.setDrawColor(30, 91, 185)
 doc.setLineWidth(0.3)
 doc.rect(8, 8, 194, 281)
 
-// 2. Insertar Código QR
 doc.addImage(qrImage,"PNG",14,253,25,25)
 
-// 3. Insertar Leyenda Legal
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
@@ -411,16 +407,15 @@ doc.text(
 }
 }
 
+// Usamos la ruta local original para evitar bloqueos CORS del navegador
 const logo=new Image()
-logo.crossOrigin = "Anonymous";
-logo.src="https://nicocasa26.github.io/logo-negro.png"
+logo.src="../logo-black.png"[cite: 2]
 
 logo.onload = function(){ construirCuerpoEvac(true); }
 logo.onerror = function(){ construirCuerpoEvac(false); }
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
-// Posicionamiento preciso del logo arriba a la izquierda
 doc.addImage(logo,"PNG",15,13,35,0)
 }
 
@@ -507,7 +502,7 @@ doc.setTextColor(100, 116, 139)
 doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
 doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
 
-decorarTodasLasPaginasEvac() // Aplica marcos y footer de forma masiva
+decorarTodasLasPaginasEvac()
 doc.save(`${empresa} - ${capacitacion} (Evacuacion).pdf`)
 }
 }
