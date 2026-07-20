@@ -215,7 +215,7 @@ cargarAsistentes()
 
 }
 
-/* PDF ORIGINAL EMBELLECIDO (ANTIBLOQUEO) */
+/* PDF ORIGINAL PREMIUM CON MARCO Y LOGO */
 
 function generarPDF(){
 
@@ -239,16 +239,26 @@ setTimeout(()=>{
 const qrCanvas=qrContainer.querySelector("canvas")
 const qrImage=qrCanvas.toDataURL("image/png")
 
-function agregarFooter(){
+// Función unificada que decora todas las páginas del documento
+function decorarTodasLasPaginas(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
 doc.setPage(i)
-doc.addImage(qrImage,"PNG",15,255,25,25)
+
+// 1. Dibujar Recuadro Perimetral de la hoja (A4: 210x297mm)
+doc.setDrawColor(30, 91, 185) // Azul Institucional CONEMAT
+doc.setLineWidth(0.3)
+doc.rect(8, 8, 194, 281) // Deja un margen simétrico perfecto de 8mm
+
+// 2. Insertar Código QR de verificación
+doc.addImage(qrImage,"PNG",14,253,25,25)
+
+// 3. Insertar Leyenda Legal del Footer
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
 "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
-45,270,{maxWidth:150}
+43,266,{maxWidth:150}
 )
 }
 }
@@ -257,30 +267,30 @@ const logo=new Image()
 logo.crossOrigin = "Anonymous";
 logo.src="https://nicocasa26.github.io/logo-negro.png"
 
-// Si el logo carga o falla, igual disparamos la construcción para que no se trabe
 logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
 
 function construirCuerpo(conLogo){
 if(conLogo) {
-doc.addImage(logo,"PNG",15,10,32,0)
+// Posicionamiento preciso del logo arriba a la izquierda
+doc.addImage(logo,"PNG",15,13,35,0)
 }
 
 doc.setFont("helvetica","bold")
 doc.setFontSize(20)
 doc.setTextColor(30, 91, 185)
-doc.text("REGISTRO DE CAPACITACIÓN",200,22,{align:"right"})
+doc.text("REGISTRO DE CAPACITACIÓN",195,22,{align:"right"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
 doc.setTextColor(100, 116, 139)
-doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",200,28,{align:"right"})
+doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",195,28,{align:"right"})
 
 doc.setDrawColor(226, 232, 240)
 doc.setLineWidth(0.5)
-doc.line(10,36,200,36)
+doc.line(12,38,198,38)
 
-let startY=48
+let startY=50
 doc.setFontSize(9)
 doc.setFont("helvetica","bold")
 doc.setTextColor(148, 163, 184)
@@ -307,7 +317,8 @@ theme: 'striped',
 styles:{fontSize:9,cellPadding:5,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
 headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"},
 alternateRowStyles:{fillColor:[248, 250, 252]},
-columnStyles:{4:{cellWidth:35}}
+columnStyles:{4:{cellWidth:35}},
+margin:{left:12, right:12} // Ajustado para que calce perfecto dentro del marco
 })
 
 asistentes.forEach((a,i)=>{
@@ -319,7 +330,7 @@ doc.addImage(a.firma,"PNG",cell.x+3,cell.y+2,28,10)
 })
 
 let finalY = doc.lastAutoTable.finalY + 25
-if(finalY > 230){ doc.addPage(); finalY = 40; }
+if(finalY > 225){ doc.addPage(); finalY = 45; }
 
 const firma=new Image()
 firma.src="Firma nicolas nueva.jpg"
@@ -329,7 +340,7 @@ doc.addImage(firma,"JPEG",145,finalY-20,45,20)
 finalizarDescarga();
 }
 firma.onerror = function(){
-finalizarDescarga(); // Si no encuentra tu firma local, descarga igual sin romperse
+finalizarDescarga();
 }
 
 function finalizarDescarga(){
@@ -345,7 +356,7 @@ doc.setTextColor(100, 116, 139)
 doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
 doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
 
-agregarFooter()
+decorarTodasLasPaginas() // Aplica marcos y footer de forma masiva
 doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 }
@@ -353,7 +364,7 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 
 
-/* PDF EVACUACIÓN EMBELLECIDO (ANTIBLOQUEO) */
+/* PDF EVACUACIÓN PREMIUM CON MARCO Y LOGO */
 
 function generarPDFEvacuacion(){
 
@@ -377,16 +388,25 @@ setTimeout(()=>{
 const qrCanvas=qrContainer.querySelector("canvas")
 const qrImage=qrCanvas.toDataURL("image/png")
 
-function agregarFooter(){
+function decorarTodasLasPaginasEvac(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
 doc.setPage(i)
-doc.addImage(qrImage,"PNG",15,255,25,25)
+
+// 1. Dibujar Recuadro Perimetral de la hoja
+doc.setDrawColor(30, 91, 185)
+doc.setLineWidth(0.3)
+doc.rect(8, 8, 194, 281)
+
+// 2. Insertar Código QR
+doc.addImage(qrImage,"PNG",14,253,25,25)
+
+// 3. Insertar Leyenda Legal
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
 "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
-45,270,{maxWidth:150}
+43,266,{maxWidth:150}
 )
 }
 }
@@ -400,24 +420,25 @@ logo.onerror = function(){ construirCuerpoEvac(false); }
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
-doc.addImage(logo,"PNG",15,10,32,0)
+// Posicionamiento preciso del logo arriba a la izquierda
+doc.addImage(logo,"PNG",15,13,35,0)
 }
 
 doc.setFont("helvetica","bold")
 doc.setFontSize(18)
 doc.setTextColor(30, 91, 185)
-doc.text("REGISTRO DE CAPACITACIÓN",200,22,{align:"right"})
+doc.text("REGISTRO DE CAPACITACIÓN",195,22,{align:"right"})
 
 doc.setFont("helvetica","normal")
 doc.setFontSize(10)
 doc.setTextColor(100, 116, 139)
-doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",200,28,{align:"right"})
+doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",195,28,{align:"right"})
 
 doc.setDrawColor(226, 232, 240)
 doc.setLineWidth(0.5)
-doc.line(10,36,200,36)
+doc.line(12,38,198,38)
 
-let startY=48
+let startY=50
 doc.setFontSize(9)
 doc.setFont("helvetica","bold")
 doc.setTextColor(148, 163, 184)
@@ -447,7 +468,8 @@ alternateRowStyles:{fillColor:[248, 250, 252]},
 columnStyles:{
   2:{cellWidth:32},
   5:{cellWidth:35}
-}
+},
+margin:{left:12, right:12}
 })
 
 asistentes.forEach((a,i)=>{
@@ -459,7 +481,7 @@ doc.addImage(a.firma,"PNG",cell.x+3,cell.y+2,28,10)
 })
 
 let finalY = doc.lastAutoTable.finalY + 25
-if(finalY > 230){ doc.addPage(); finalY = 40; }
+if(finalY > 225){ doc.addPage(); finalY = 45; }
 
 const firma=new Image()
 firma.src="Firma nicolas nueva.jpg"
@@ -485,7 +507,7 @@ doc.setTextColor(100, 116, 139)
 doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
 doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
 
-agregarFooter()
+decorarTodasLasPaginasEvac() // Aplica marcos y footer de forma masiva
 doc.save(`${empresa} - ${capacitacion} (Evacuacion).pdf`)
 }
 }
