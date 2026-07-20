@@ -62,6 +62,12 @@ color:white;
 border:none;
 }
 
+.edit-rol{
+background:#10b981;
+color:white;
+border:none;
+}
+
 .delete{
 background:#dc2626;
 color:white;
@@ -86,6 +92,7 @@ border:none;
 <th>Apellido y Nombre</th>
 <th>DNI</th>
 <th>Puesto</th>
+<th>Rol Evacuación</th>
 <th>Acciones</th>
 </tr>
 </thead>
@@ -150,24 +157,35 @@ alert("Error al conectar con la base de datos de asistentes.")
 return
 }
 
+// Mantenemos los roles si ya se habían editado en la sesión actual
+const rolesPrevios = {};
+asistentes.forEach(a => {
+  if(a.rol_evacuacion) rolesPrevios[a.id] = a.rol_evacuacion;
+});
+
 asistentes = data || []
 const tabla=document.getElementById("tabla")
 tabla.innerHTML=""
 
 if(asistentes.length === 0) {
-tabla.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#64748b;">No hay asistentes registrados en esta capacitación.</td></tr>`
+tabla.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#64748b;">No hay asistentes registrados en esta capacitación.</td></tr>`
 return
 }
 
 asistentes.forEach((a,i)=>{
+// Restaurar rol temporal si existía en memoria
+a.rol_evacuacion = rolesPrevios[a.id] || "";
+
 tabla.innerHTML+=`
 <tr>
 <td>${i+1}</td>
 <td>${a.nombre}</td>
 <td>${a.dni}</td>
 <td>${a.puesto}</td>
+<td id="rol-${a.id}" style="font-weight:bold; color:#0f172a;">${a.rol_evacuacion}</td>
 <td>
-<button class="edit" onclick="editar('${a.id}','${a.nombre}','${a.dni}','${a.puesto}')">Editar</button>
+<button class="edit" onclick="editar('${a.id}','${a.nombre}','${a.dni}','${a.puesto}')">Editar Datos</button>
+<button class="edit-rol" onclick="editarRol('${a.id}')">Asignar Rol</button>
 <button class="delete" onclick="eliminar('${a.id}')">Eliminar</button>
 </td>
 </tr>
@@ -176,6 +194,18 @@ tabla.innerHTML+=`
 } catch(err) {
 console.error("Excepción en cargarAsistentes:", err)
 }
+}
+
+/* ASIGNAR ROL MANUAL (TEMPORAL PARA EL PDF DE EVACUACIÓN) */
+function editarRol(id) {
+  const asistente = asistentes.find(a => a.id === id);
+  if(!asistente) return;
+  
+  const nuevoRol = prompt("Ingrese el Rol de Evacuación (ej: Jefe de Evacuación, Grupo de Auxilio, etc.):", asistente.rol_evacuacion || "");
+  if(nuevoRol === null) return; // Si cancela, no hace nada
+  
+  asistente.rol_evacuacion = nuevoRol;
+  document.getElementById(`rol-${id}`).innerText = nuevoRol;
 }
 
 /* EDITAR */
@@ -220,7 +250,7 @@ return
 cargarAsistentes()
 }
 
-/* PDF ORIGINAL PREMIUM */
+/* PDF ORIGINAL PREMIUM (IGNORA EL ROL) */
 function generarPDF(){
 if(!asistentes || asistentes.length === 0){
 alert("No hay asistentes cargados para exportar.")
@@ -259,7 +289,7 @@ doc.addImage(qrImage,"PNG",14,253,25,25)
 doc.setFontSize(8)
 doc.setTextColor(148, 163, 184)
 doc.text(
-"Esta capacitación fue brindada en modalid virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
 43,266,{maxWidth:150}
 )
 }
@@ -272,7 +302,6 @@ logo.src="Logo vertical/logo-conemat.png"
 
 function construirCuerpo(conLogo){
 if(conLogo) {
-// Se redujo el ancho a 25 para que escale proporcionalmente y no pise la línea
 doc.addImage(logo,"PNG",15,11,25,0)
 }
 
@@ -362,7 +391,7 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 },300)
 }
 
-/* PDF EVACUACIÓN PREMIUM */
+/* PDF EVACUACIÓN PREMIUM (INCLUYE EL ROL ASIGNADO) */
 function generarPDFEvacuacion(){
 if(!asistentes || asistentes.length === 0){
 alert("No hay asistentes cargados para exportar.")
@@ -414,7 +443,6 @@ logo.src="Logo vertical/logo-conemat.png"
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
-// Se redujo el ancho a 25 para que escale proporcionalmente y no pise la línea
 doc.addImage(logo,"PNG",15,11,25,0)
 }
 
@@ -449,7 +477,8 @@ doc.text(capacitacion + " (Evacuación)",15,startY+15)
 doc.text("Casanova Nicolás",120,startY+5)
 doc.text(fecha,120,startY+15)
 
-const rows=asistentes.map((a,i)=>[i+1, a.nombre, a.rol || "", a.dni, a.puesto, ""])
+// Acá mapeamos el 'rol_evacuacion' que pusiste a mano en pantalla
+const rows=asistentes.map((a,i)=>[i+1, a.nombre, a.rol_evacuacion || "", a.dni, a.puesto, ""])
 
 doc.autoTable({
 startY:startY+25,
