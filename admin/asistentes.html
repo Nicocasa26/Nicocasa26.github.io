@@ -266,10 +266,9 @@ doc.text(
 }
 
 const logo=new Image()
-// IMPORTANTE: Definir listeners ANTES de setear el .src
 logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
-logo.src="../logo-negro.png" 
+logo.src="../logo-black.png" // Nombre corregido idéntico a tu repositorio
 
 function construirCuerpo(conLogo){
 if(conLogo) {
@@ -410,7 +409,7 @@ doc.text(
 const logo=new Image()
 logo.onload = function(){ construirCuerpoEvac(true); }
 logo.onerror = function(){ construirCuerpoEvac(false); }
-logo.src="../logo-negro.png"
+logo.src="../logo-black.png" // Nombre corregido idéntico a tu repositorio
 
 function construirCuerpoEvac(conLogo){
 if(conLogo) {
