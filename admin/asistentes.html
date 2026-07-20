@@ -7,9 +7,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-  // Credenciales de simulación seguras para el Portafolio público
-  const SUPABASE_URL = "https://your-project-placeholder.supabase.co";
-  const SUPABASE_KEY = "YOUR_SUPABASE_ANON_KEY_PLACEHOLDER";
+  // Credenciales reales de producción - Uso Local
+  const SUPABASE_URL = "https://brdekhbqophvcobhxdgc.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_CTkAN6flGJDQGVYV2VDUTg_Ov8CuhXn";
 
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const client = supabaseClient; // Alias para que no fallen tus funciones que usan 'client'
@@ -77,7 +77,6 @@ border:none;
 
 <button onclick="volver()">← Volver</button>
 <button onclick="generarPDF()">Generar PDF</button>
-<!-- Botón para PDF de Evacuación alineado en la interfaz -->
 <button onclick="generarPDFEvacuacion()">Generar PDF Evacuación</button>
 
 <table>
@@ -394,7 +393,7 @@ doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 
 
-/* 🔥 NUEVA FUNCIÓN: PDF EVACUACIÓN (ESTRUCTURA DE 6 COLUMNAS CON ROL) */
+/* 🔥 FUNCIÓN SOLICITADA: PDF EVACUACIÓN CON ESTRUCTURA DE 6 COLUMNAS Y ROL */
 
 function generarPDFEvacuacion(){
 
@@ -477,14 +476,14 @@ doc.text(capacitacion,12,startY+12)
 doc.text("Casanova Nicolás",120,startY+4)
 doc.text(fecha,120,startY+12)
 
-/* Mapeo exacto solicitado: número, nombre y apellido, rol, dni, puesto y firma */
+/* Mapeo de columnas solicitado: número, nombre y apellido, rol, dni, puesto y firma */
 const rows=asistentes.map((a,i)=>[
 i+1,
 a.nombre,
-a.rol || "", // Se mapea el rol si existiera en la base de datos, sino queda vacío para completar
+a.rol || "", 
 a.dni,
 a.puesto,
-"" // Celda de firma
+"" 
 ])
 
 doc.autoTable({
@@ -494,12 +493,12 @@ body:rows,
 styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[220,220,220],lineWidth:0.2},
 headStyles:{fillColor:[240,240,240],textColor:[0,0,0],fontStyle:"bold"},
 columnStyles:{
-  2:{cellWidth:25}, // Espacio balanceado para la columna de Roles
-  5:{cellWidth:35}  // Espacio idéntico de 35 para que calce el gráfico de firma
+  2:{cellWidth:25}, 
+  5:{cellWidth:35}  
 }
 })
 
-/* Renderizado de firmas: desplazado al índice 5 por la nueva columna ROL */
+/* Renderizado de firmas ajustado al índice de celda 5 debido al desplazamiento */
 asistentes.forEach((a,i)=>{
 if(a.firma){
 const row=doc.lastAutoTable.body[i]
