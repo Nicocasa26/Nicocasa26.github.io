@@ -1,30 +1,30 @@
 /* ==========================================
-   CONEMAT - Modelo SaaS Moderno / Corporativo
+   CONEMAT - Estilo: Soft-Glow Professional
    ========================================== */
 
 :root {
-  --bg-main: #0a0f1d;
-  --bg-card: rgba(18, 28, 45, 0.65);
-  --bg-card-hover: rgba(26, 40, 64, 0.85);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(2, 132, 199, 0.5);
+  /* Fondo Grafito Profundo con destellos azul noche */
+  --bg-main: #0c1017;
+  --bg-gradient: radial-gradient(circle at 85% 40%, rgba(37, 99, 235, 0.22) 0%, transparent 55%),
+                 radial-gradient(circle at 15% 80%, rgba(29, 78, 216, 0.12) 0%, transparent 50%);
   
-  /* COLOR PRINCIPAL: Azul Cian Tecnológico (Sustituye al verde) */
-  --primary: #0284c7;
-  --primary-hover: #0369a1;
-  --primary-glow: rgba(2, 132, 199, 0.35);
+  /* Tarjetas con efecto vidrio esmerilado suave */
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --bg-card-hover: rgba(255, 255, 255, 0.07);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-active: rgba(59, 130, 246, 0.5);
+  
+  /* Azul Eléctrico Tecnológico */
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-glow: rgba(37, 99, 235, 0.45);
+  
+  /* Tipografía */
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --accent-badge: #38bdf8;
+  --badge-bg: rgba(255, 255, 255, 0.08);
+  --badge-border: rgba(255, 255, 255, 0.18);
 }
-
-/* OTRAS OPCIONES DE COLOR POR SI QUERÉS PROBAR EN EL FUTURO:
-   Si querés un Naranja/Ámbar de Seguridad Industrial, cambiá arriba:
-   --primary: #f59e0b; --primary-hover: #d97706; --accent-badge: #fbbf24;
-
-   Si querés un Azul Real Profundo, cambiá arriba:
-   --primary: #2563eb; --primary-hover: #1d4ed8; --accent-badge: #60a5fa;
-*/
 
 * {
   box-sizing: border-box;
@@ -34,7 +34,9 @@
 
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg-main);
+  background-color: var(--bg-main);
+  background-image: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-main);
   line-height: 1.6;
   overflow-x: hidden;
@@ -46,19 +48,20 @@ body {
   padding: 40px 20px;
 }
 
-/* BADGES DE DESTACADO */
+/* BADGES DE DESTACADO (Pill style) */
 .badge {
   display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: rgba(2, 132, 199, 0.12);
-  border: 1px solid rgba(2, 132, 199, 0.3);
-  color: var(--accent-badge);
-  font-size: 0.82rem;
+  padding: 6px 16px;
+  border-radius: 30px;
+  background: var(--badge-bg);
+  border: 1px solid var(--badge-border);
+  color: #e2e8f0;
+  font-size: 0.8rem;
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
-  margin-bottom: 15px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(8px);
 }
 
 /* HEADER & NAVEGACIÓN */
@@ -66,9 +69,9 @@ header.header, .header {
   height: auto !important;
   min-height: 0 !important;
   padding: 12px 0 !important;
-  background: rgba(10, 15, 29, 0.9) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(12, 16, 23, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-color) !important;
   position: sticky !important;
   top: 0;
@@ -83,18 +86,18 @@ header.header, .header {
   padding: 0 !important;
 }
 
-/* LOGO AGRANDADO */
+/* LOGO DESTACADO */
 img.logo, .header .logo {
-  height: 110px !important; /* Agrandado para destacar la marca */
+  height: 110px !important;
   width: auto !important;
   display: block !important;
-  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 4px 15px rgba(0,0,0,0.6));
 }
 
 .header nav {
   display: flex !important;
   align-items: center !important;
-  gap: 22px !important;
+  gap: 24px !important;
 }
 
 nav a {
@@ -106,59 +109,57 @@ nav a {
 }
 
 nav a:hover {
-  color: var(--text-main);
+  color: #ffffff;
 }
 
 .btn-plataforma {
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 10px 22px;
+  border-radius: 10px;
   background: var(--primary);
   color: #ffffff !important;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px var(--primary-glow);
+  box-shadow: 0 4px 20px var(--primary-glow);
 }
 
 .btn-plataforma:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+  box-shadow: 0 6px 25px rgba(37, 99, 235, 0.6);
 }
 
 /* HERO SECTION */
 .hero {
-  padding: 80px 0 60px 0;
-  background: radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.1) 0%, transparent 50%);
+  padding: 90px 0 70px 0;
 }
 
 .hero h1 {
-  font-size: 2.8rem;
+  font-size: 3.1rem;
   font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 20px;
-  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  line-height: 1.15;
+  margin-bottom: 22px;
+  letter-spacing: -0.5px;
+  color: #ffffff;
 }
 
 .hero p {
   font-size: 1.15rem;
   color: var(--text-muted);
-  max-width: 650px;
-  margin-bottom: 30px;
+  max-width: 680px;
+  margin-bottom: 35px;
 }
 
 .hero-buttons {
   display: flex;
-  gap: 15px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
-/* BOTONES PRINCIPALES */
+/* BOTONES PRINCIPALES CON GLOW SOFT */
 .btn {
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 13px 26px;
+  border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -173,48 +174,49 @@ nav a:hover {
 .btn.primary {
   background: var(--primary);
   color: #ffffff;
-  box-shadow: 0 4px 15px var(--primary-glow);
+  box-shadow: 0 6px 20px var(--primary-glow);
 }
 
 .btn.primary:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.45);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.55);
 }
 
 .btn.secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
   border: 1px solid var(--border-color);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
 }
 
 .btn.secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
 }
 
 /* SECCIONES Y TITULOS */
 .section {
-  padding: 60px 0;
+  padding: 65px 0;
 }
 
 .section-title {
-  font-size: 2rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--text-main);
+  margin-bottom: 14px;
+  color: #ffffff;
+  letter-spacing: -0.3px;
 }
 
 .section-subtitle {
   font-size: 1.05rem;
   color: var(--text-muted);
-  max-width: 700px;
-  margin-bottom: 35px;
+  max-width: 720px;
+  margin-bottom: 40px;
 }
 
-/* TARJETAS CON EFECTO VIDRIO (GLASSMORPHISM) */
+/* TARJETAS SOFT-GLOW (VIDRIO Y BORDES ILUMINADOS) */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -223,41 +225,25 @@ nav a:hover {
 
 .card {
   background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--border-color);
-  padding: 28px;
-  border-radius: 14px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 30px;
+  border-radius: 18px;
+  transition: all 0.35s ease;
   position: relative;
   overflow: hidden;
 }
 
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
 .card:hover {
   background: var(--bg-card-hover);
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   border-color: var(--border-active);
-  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px var(--primary-glow);
-}
-
-.card:hover::before {
-  opacity: 1;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.5), 0 0 25px rgba(37, 99, 235, 0.2);
 }
 
 .card h3, .card h4 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 12px;
   color: #ffffff;
@@ -266,14 +252,14 @@ nav a:hover {
 .card p {
   color: var(--text-muted);
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .card svg {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   fill: var(--primary);
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 /* VENTANA MODAL (FORMULARIO) */
@@ -285,28 +271,28 @@ nav a:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(5, 8, 18, 0.8);
-  backdrop-filter: blur(10px);
+  background: rgba(6, 9, 14, 0.85);
+  backdrop-filter: blur(12px);
   align-items: center;
   justify-content: center;
 }
 
 .modal-content {
-  background: rgba(18, 28, 45, 0.95);
+  background: #111722;
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 35px;
+  border-radius: 20px;
+  padding: 38px;
   width: 90%;
   max-width: 480px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
   position: relative;
 }
 
 .close {
   position: absolute;
-  top: 15px;
-  right: 20px;
-  font-size: 24px;
+  top: 18px;
+  right: 22px;
+  font-size: 26px;
   color: var(--text-muted);
   cursor: pointer;
 }
@@ -316,18 +302,18 @@ nav a:hover {
 }
 
 .modal h2 {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
+  font-size: 1.6rem;
+  margin-bottom: 22px;
   color: #fff;
 }
 
 form input, form textarea {
   width: 100%;
-  padding: 12px 16px;
-  margin-bottom: 15px;
-  background: rgba(10, 15, 29, 0.6);
+  padding: 13px 18px;
+  margin-bottom: 16px;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-color);
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
   font-size: 0.95rem;
 }
@@ -335,14 +321,15 @@ form input, form textarea {
 form input:focus, form textarea:focus {
   outline: none;
   border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary-glow);
 }
 
 /* FOOTER */
 .footer {
-  background: #060913;
+  background: #080b10;
   border-top: 1px solid var(--border-color);
-  padding: 40px 0;
-  margin-top: 60px;
+  padding: 45px 0;
+  margin-top: 70px;
 }
 
 .footer-content {
@@ -351,12 +338,12 @@ form input:focus, form textarea:focus {
   flex-wrap: wrap;
   gap: 30px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 0.92rem;
 }
 
 .footer h3 {
   color: #fff;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 /* BOTÓN FLOTANTE DE WHATSAPP */
@@ -364,26 +351,28 @@ form input:focus, form textarea:focus {
   position: fixed;
   bottom: 25px;
   right: 25px;
-  background: #25d366;
+  background: #2563eb;
   color: #fff;
-  padding: 12px 22px;
+  padding: 12px 24px;
   border-radius: 50px;
   text-decoration: none;
   font-weight: 600;
-  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
   z-index: 999;
   transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .whatsapp-float:hover {
   transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(37, 211, 102, 0.6);
+  background: #1d4ed8;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.7);
 }
 
 /* ANIMACIONES DE APARICIÓN */
 .reveal {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(22px);
   transition: all 0.6s ease-out;
 }
 
@@ -401,10 +390,10 @@ form input:focus, form textarea:focus {
   .header nav {
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px !important;
+    gap: 16px !important;
   }
   .hero h1 {
-    font-size: 2.1rem;
+    font-size: 2.3rem;
   }
   img.logo, .header .logo {
     height: 90px !important;
