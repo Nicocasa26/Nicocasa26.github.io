@@ -1,5 +1,5 @@
 /* ==========================================
-   CONEMAT - Modelo 2: SaaS Moderno / Glassmorphism
+   CONEMAT - Modelo SaaS Moderno / Corporativo
    ========================================== */
 
 :root {
@@ -7,14 +7,24 @@
   --bg-card: rgba(18, 28, 45, 0.65);
   --bg-card-hover: rgba(26, 40, 64, 0.85);
   --border-color: rgba(255, 255, 255, 0.08);
-  --border-active: rgba(16, 185, 129, 0.5);
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --primary-glow: rgba(16, 185, 129, 0.25);
+  --border-active: rgba(2, 132, 199, 0.5);
+  
+  /* COLOR PRINCIPAL: Azul Cian Tecnológico (Sustituye al verde) */
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-glow: rgba(2, 132, 199, 0.35);
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --accent-badge: #34d399;
+  --accent-badge: #38bdf8;
 }
+
+/* OTRAS OPCIONES DE COLOR POR SI QUERÉS PROBAR EN EL FUTURO:
+   Si querés un Naranja/Ámbar de Seguridad Industrial, cambiá arriba:
+   --primary: #f59e0b; --primary-hover: #d97706; --accent-badge: #fbbf24;
+
+   Si querés un Azul Real Profundo, cambiá arriba:
+   --primary: #2563eb; --primary-hover: #1d4ed8; --accent-badge: #60a5fa;
+*/
 
 * {
   box-sizing: border-box;
@@ -41,8 +51,8 @@ body {
   display: inline-block;
   padding: 6px 14px;
   border-radius: 20px;
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(2, 132, 199, 0.12);
+  border: 1px solid rgba(2, 132, 199, 0.3);
   color: var(--accent-badge);
   font-size: 0.82rem;
   font-weight: 600;
@@ -55,8 +65,8 @@ body {
 header.header, .header {
   height: auto !important;
   min-height: 0 !important;
-  padding: 8px 0 !important;
-  background: rgba(10, 15, 29, 0.85) !important;
+  padding: 12px 0 !important;
+  background: rgba(10, 15, 29, 0.9) !important;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color) !important;
@@ -73,11 +83,12 @@ header.header, .header {
   padding: 0 !important;
 }
 
+/* LOGO AGRANDADO */
 img.logo, .header .logo {
-  height: 75px !important;
+  height: 110px !important; /* Agrandado para destacar la marca */
   width: auto !important;
   display: block !important;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
 }
 
 .header nav {
@@ -99,7 +110,7 @@ nav a:hover {
 }
 
 .btn-plataforma {
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: 8px;
   background: var(--primary);
   color: #ffffff !important;
@@ -112,13 +123,13 @@ nav a:hover {
 .btn-plataforma:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
 }
 
 /* HERO SECTION */
 .hero {
   padding: 80px 0 60px 0;
-  background: radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+  background: radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.1) 0%, transparent 50%);
 }
 
 .hero h1 {
@@ -168,7 +179,7 @@ nav a:hover {
 .btn.primary:hover {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 8px 25px rgba(2, 132, 199, 0.45);
 }
 
 .btn.secondary {
@@ -394,5 +405,8 @@ form input:focus, form textarea:focus {
   }
   .hero h1 {
     font-size: 2.1rem;
+  }
+  img.logo, .header .logo {
+    height: 90px !important;
   }
 }
