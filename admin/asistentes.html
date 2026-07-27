@@ -343,23 +343,32 @@ startY:startY+25,
 head:[["Nº","APELLIDO Y NOMBRE","DNI","PUESTO","FIRMA"]],
 body:rows,
 theme: 'striped',
-styles:{fontSize:9,cellPadding:5,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
+styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
 headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"},
 alternateRowStyles:{fillColor:[248, 250, 252]},
-columnStyles:{4:{cellWidth:35}},
-margin:{left:12, right:12}
+columnStyles:{3:{cellWidth:35}, 4:{cellWidth:35}},
+margin:{left:12, right:12, top:20, bottom:45}
 })
 
+// Insertar firmas individuales en las celdas asignadas
 asistentes.forEach((a,i)=>{
 if(a.firma){
 const row=doc.lastAutoTable.body[i]
+if(row){
 const cell=row.cells[4]
-doc.addImage(a.firma,"PNG",cell.x+3,cell.y+2,28,10)
+doc.setPage(row.pageNumber)
+doc.addImage(a.firma,"PNG",cell.x+3,cell.y+1,28,9)
+}
 }
 })
 
 let finalY = doc.lastAutoTable.finalY + 25
-if(finalY > 225){ doc.addPage(); finalY = 45; }
+if(finalY > 215){ 
+  doc.addPage(); 
+  finalY = 45; 
+} else {
+  doc.setPage(doc.lastAutoTable.body[doc.lastAutoTable.body.length - 1].pageNumber);
+}
 
 const firma=new Image()
 firma.onload = function(){
@@ -477,7 +486,7 @@ doc.text(capacitacion + " (Evacuación)",15,startY+15)
 doc.text("Casanova Nicolás",120,startY+5)
 doc.text(fecha,120,startY+15)
 
-// Acá mapeamos el 'rol_evacuacion' que pusiste a mano en pantalla
+// Mapeamos el 'rol_evacuacion'
 const rows=asistentes.map((a,i)=>[i+1, a.nombre, a.rol_evacuacion || "", a.dni, a.puesto, ""])
 
 doc.autoTable({
@@ -485,26 +494,35 @@ startY:startY+25,
 head:[["Nº","APELLIDO Y NOMBRE","ROL EVACUACIÓN","DNI","PUESTO","FIRMA"]],
 body:rows,
 theme: 'striped',
-styles:{fontSize:9,cellPadding:5,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
+styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
 headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"},
 alternateRowStyles:{fillColor:[248, 250, 252]},
 columnStyles:{
   2:{cellWidth:32},
-  5:{cellWidth:35}
+  5:{cellWidth:32}
 },
-margin:{left:12, right:12}
+margin:{left:12, right:12, top:20, bottom:45}
 })
 
+// Insertar firmas individuales en las celdas asignadas
 asistentes.forEach((a,i)=>{
 if(a.firma){
 const row=doc.lastAutoTable.body[i]
+if(row){
 const cell=row.cells[5] 
-doc.addImage(a.firma,"PNG",cell.x+3,cell.y+2,28,10)
+doc.setPage(row.pageNumber)
+doc.addImage(a.firma,"PNG",cell.x+3,cell.y+1,28,9)
+}
 }
 })
 
 let finalY = doc.lastAutoTable.finalY + 25
-if(finalY > 225){ doc.addPage(); finalY = 45; }
+if(finalY > 215){ 
+  doc.addPage(); 
+  finalY = 45; 
+} else {
+  doc.setPage(doc.lastAutoTable.body[doc.lastAutoTable.body.length - 1].pageNumber);
+}
 
 const firma=new Image()
 firma.onload = function(){
