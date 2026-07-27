@@ -157,7 +157,6 @@ alert("Error al conectar con la base de datos de asistentes.")
 return
 }
 
-// Mantenemos los roles si ya se habían editado en la sesión actual
 const rolesPrevios = {};
 asistentes.forEach(a => {
   if(a.rol_evacuacion) rolesPrevios[a.id] = a.rol_evacuacion;
@@ -173,7 +172,6 @@ return
 }
 
 asistentes.forEach((a,i)=>{
-// Restaurar rol temporal si existía en memoria
 a.rol_evacuacion = rolesPrevios[a.id] || "";
 
 tabla.innerHTML+=`
@@ -196,13 +194,13 @@ console.error("Excepción en cargarAsistentes:", err)
 }
 }
 
-/* ASIGNAR ROL MANUAL (TEMPORAL PARA EL PDF DE EVACUACIÓN) */
+/* ASIGNAR ROL MANUAL */
 function editarRol(id) {
   const asistente = asistentes.find(a => a.id === id);
   if(!asistente) return;
   
   const nuevoRol = prompt("Ingrese el Rol de Evacuación (ej: Jefe de Evacuación, Grupo de Auxilio, etc.):", asistente.rol_evacuacion || "");
-  if(nuevoRol === null) return; // Si cancela, no hace nada
+  if(nuevoRol === null) return;
   
   asistente.rol_evacuacion = nuevoRol;
   document.getElementById(`rol-${id}`).innerText = nuevoRol;
@@ -221,36 +219,25 @@ if(!nuevoPuesto) return
 
 const {error}=await client
 .from("asistentes")
-.update({
-nombre:nuevoNombre,
-dni:nuevoDni,
-puesto:nuevoPuesto
-})
+.update({ nombre:nuevoNombre, dni:nuevoDni, puesto:nuevoPuesto })
 .eq("id",id)
 
-if(error){
-alert("Error al actualizar")
-return
-}
+if(error){ alert("Error al actualizar"); return; }
 cargarAsistentes()
 }
 
 /* ELIMINAR */
 async function eliminar(id){
 if(!confirm("¿Eliminar asistente?")) return
-const {error}=await client
-.from("asistentes")
-.delete()
-.eq("id",id)
-
-if(error){
-alert("Error al eliminar")
-return
-}
+const {error}=await client.from("asistentes").delete().eq("id",id)
+if(error){ alert("Error al eliminar"); return; }
 cargarAsistentes()
 }
 
-/* PDF ORIGINAL PREMIUM (IGNORA EL ROL) */
+
+/* ==========================================
+   PDF ORIGINAL (IGNORA EL ROL)
+   ========================================== */
 function generarPDF(){
 if(!asistentes || asistentes.length === 0){
 alert("No hay asistentes cargados para exportar.")
@@ -266,11 +253,7 @@ const qrContainer = document.createElement("div")
 qrContainer.style.display = "none"
 document.body.appendChild(qrContainer)
 
-new QRCode(qrContainer,{
-text:urlVerificacion,
-width:80,
-height:80
-})
+new QRCode(qrContainer,{text:urlVerificacion, width:80, height:80})
 
 setTimeout(()=>{
 const qrCanvas=qrContainer.querySelector("canvas")
@@ -280,18 +263,17 @@ const qrImage=qrCanvas.toDataURL("image/png")
 function decorarTodasLasPaginas(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
-doc.setPage(i)
-doc.setDrawColor(30, 91, 185) 
-doc.setLineWidth(0.3)
-doc.rect(8, 8, 194, 281) 
+  doc.setPage(i)
+  doc.setDrawColor(30, 91, 185) 
+  doc.setLineWidth(0.3)
+  doc.rect(8, 8, 194, 281) 
 
-doc.addImage(qrImage,"PNG",14,253,25,25)
-doc.setFontSize(8)
-doc.setTextColor(148, 163, 184)
-doc.text(
-"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
-43,266,{maxWidth:150}
-)
+  doc.addImage(qrImage,"PNG",14,253,25,25)
+  doc.setFontSize(8)
+  doc.setTextColor(148, 163, 184)
+  doc.text(
+  "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+  43,266,{maxWidth:150})
 }
 }
 
@@ -300,107 +282,107 @@ logo.onload = function(){ construirCuerpo(true); }
 logo.onerror = function(){ construirCuerpo(false); }
 logo.src="Logo vertical/logo-conemat.png"
 
-function construirCuerpo(conLogo){
-if(conLogo) {
-doc.addImage(logo,"PNG",15,11,25,0)
+function dibujarEncabezadoDinamico(conLogo) {
+  if(conLogo) { try{ doc.addImage(logo,"PNG",15,11,25,0) } catch(e){} }
+
+  doc.setFont("helvetica","bold")
+  doc.setFontSize(18)
+  doc.setTextColor(30, 91, 185)
+  doc.text("REGISTRO DE CAPACITACIÓN",195,22,{align:"right"})
+
+  doc.setFont("helvetica","normal")
+  doc.setFontSize(10)
+  doc.setTextColor(100, 116, 139)
+  doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",195,28,{align:"right"})
+
+  doc.setDrawColor(226, 232, 240)
+  doc.setLineWidth(0.5)
+  doc.line(12,38,198,38)
+
+  let headerY=48
+  doc.setFontSize(9)
+  doc.setFont("helvetica","bold")
+  doc.setTextColor(148, 163, 184)
+  doc.text("EMPRESA",15,headerY)
+  doc.text("CAPACITACIÓN",15,headerY+10)
+  doc.text("INSTRUCTOR",120,headerY)
+  doc.text("FECHA",120,headerY+10)
+
+  doc.setFont("helvetica","bold")
+  doc.setFontSize(11)
+  doc.setTextColor(15, 23, 42)
+  doc.text(empresa,15,headerY+5)
+  doc.text(capacitacion,15,headerY+15)
+  doc.text("Casanova Nicolás",120,headerY+5)
+  doc.text(fecha,120,headerY+15)
 }
 
-doc.setFont("helvetica","bold")
-doc.setFontSize(20)
-doc.setTextColor(30, 91, 185)
-doc.text("REGISTRO DE CAPACITACIÓN",195,22,{align:"right"})
-
-doc.setFont("helvetica","normal")
-doc.setFontSize(10)
-doc.setTextColor(100, 116, 139)
-doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",195,28,{align:"right"})
-
-doc.setDrawColor(226, 232, 240)
-doc.setLineWidth(0.5)
-doc.line(12,38,198,38)
-
-let startY=50
-doc.setFontSize(9)
-doc.setFont("helvetica","bold")
-doc.setTextColor(148, 163, 184)
-doc.text("EMPRESA",15,startY)
-doc.text("CAPACITACIÓN",15,startY+10)
-doc.text("INSTRUCTOR",120,startY)
-doc.text("FECHA",120,startY+10)
-
-doc.setFont("helvetica","bold")
-doc.setFontSize(11)
-doc.setTextColor(15, 23, 42)
-doc.text(empresa,15,startY+5)
-doc.text(capacitacion,15,startY+15)
-doc.text("Casanova Nicolás",120,startY+5)
-doc.text(fecha,120,startY+15)
-
+function construirCuerpo(conLogo){
 const rows=asistentes.map((a,i)=>[i+1, a.nombre, a.dni, a.puesto, ""])
 
 doc.autoTable({
-startY:startY+25,
-head:[["Nº","APELLIDO Y NOMBRE","DNI","PUESTO","FIRMA"]],
-body:rows,
-theme: 'striped',
-styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
-headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"},
-alternateRowStyles:{fillColor:[248, 250, 252]},
-columnStyles:{3:{cellWidth:35}, 4:{cellWidth:35}},
-margin:{left:12, right:12, top:20, bottom:45}
+  startY: 72,
+  head:[["Nº","APELLIDO Y NOMBRE","DNI","PUESTO","FIRMA"]],
+  body:rows,
+  theme: 'striped',
+  styles: { fontSize:9, cellPadding:4, valign:"middle", lineColor:[226, 232, 240], lineWidth:0.2, textColor:[51, 65, 85], minCellHeight: 15 },
+  headStyles: { fillColor:[30, 91, 185], textColor:[255,255,255], fontStyle:"bold" },
+  alternateRowStyles: { fillColor:[248, 250, 252] },
+  columnStyles: { 3:{cellWidth:35}, 4:{cellWidth:35} },
+  margin: { left:12, right:12, top:72, bottom:45 },
+  
+  // DIBUJA EL ENCABEZADO EN CADA HOJA NUEVA
+  didDrawPage: function(data) {
+    dibujarEncabezadoDinamico(conLogo);
+  },
+  
+  // DIBUJA LA FIRMA EXACTAMENTE ADENTRO DE LA CELDA
+  didDrawCell: function(data) {
+    if (data.column.index === 4 && data.cell.section === 'body') {
+      const asistenteInfo = asistentes[data.row.index];
+      if (asistenteInfo && asistenteInfo.firma) {
+        doc.addImage(asistenteInfo.firma, "PNG", data.cell.x + 3, data.cell.y + 2, 28, 10);
+      }
+    }
+  }
 })
 
-// Insertar firmas individuales en las celdas asignadas
-asistentes.forEach((a,i)=>{
-if(a.firma){
-const row=doc.lastAutoTable.body[i]
-if(row){
-const cell=row.cells[4]
-doc.setPage(row.pageNumber)
-doc.addImage(a.firma,"PNG",cell.x+3,cell.y+1,28,9)
-}
-}
-})
-
-let finalY = doc.lastAutoTable.finalY + 25
+let finalY = doc.lastAutoTable.finalY + 20
 if(finalY > 215){ 
   doc.addPage(); 
-  finalY = 45; 
-} else {
-  doc.setPage(doc.lastAutoTable.body[doc.lastAutoTable.body.length - 1].pageNumber);
-}
+  dibujarEncabezadoDinamico(conLogo); // Dibujamos el encabezado en la hoja extra
+  finalY = 80; 
+} 
 
 const firma=new Image()
-firma.onload = function(){
-doc.addImage(firma,"JPEG",145,finalY-20,45,20)
-finalizarDescarga();
-}
-firma.onerror = function(){
-finalizarDescarga();
-}
+firma.onload = function(){ doc.addImage(firma,"JPEG",145,finalY-15,45,20); finalizarDescarga(); }
+firma.onerror = function(){ finalizarDescarga(); }
 firma.src="Firma nicolas nueva.jpg"
 
 function finalizarDescarga(){
-doc.setDrawColor(30, 91, 185)
-doc.line(135,finalY,195,finalY)
-doc.setFontSize(10)
-doc.setFont("helvetica","bold")
-doc.setTextColor(15, 23, 42)
-doc.text("Casanova Nicolás",165,finalY+6,{align:"center"})
-doc.setFont("helvetica","normal")
-doc.setFontSize(9)
-doc.setTextColor(100, 116, 139)
-doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
-doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
+  doc.setDrawColor(30, 91, 185)
+  doc.line(135,finalY+5,195,finalY+5)
+  doc.setFontSize(10)
+  doc.setFont("helvetica","bold")
+  doc.setTextColor(15, 23, 42)
+  doc.text("Casanova Nicolás",165,finalY+11,{align:"center"})
+  doc.setFont("helvetica","normal")
+  doc.setFontSize(9)
+  doc.setTextColor(100, 116, 139)
+  doc.text("Lic. Higiene y Seguridad",165,finalY+16,{align:"center"})
+  doc.text("Mat. CPHS 6921",165,finalY+21,{align:"center"})
 
-decorarTodasLasPaginas()
-doc.save(`${empresa} - ${capacitacion}.pdf`)
+  decorarTodasLasPaginas()
+  doc.save(`${empresa} - ${capacitacion}.pdf`)
 }
 }
 },300)
 }
 
-/* PDF EVACUACIÓN PREMIUM (INCLUYE EL ROL ASIGNADO) */
+
+/* ==========================================
+   PDF EVACUACIÓN (INCLUYE ROL ASIGNADO)
+   ========================================== */
 function generarPDFEvacuacion(){
 if(!asistentes || asistentes.length === 0){
 alert("No hay asistentes cargados para exportar.")
@@ -416,11 +398,7 @@ const qrContainer = document.createElement("div")
 qrContainer.style.display = "none"
 document.body.appendChild(qrContainer)
 
-new QRCode(qrContainer,{
-text:urlVerificacion,
-width:80,
-height:80
-})
+new QRCode(qrContainer,{text:urlVerificacion, width:80, height:80})
 
 setTimeout(()=>{
 const qrCanvas=qrContainer.querySelector("canvas")
@@ -430,18 +408,17 @@ const qrImage=qrCanvas.toDataURL("image/png")
 function decorarTodasLasPaginasEvac(){
 const pageCount = doc.getNumberOfPages()
 for(let i=1;i<=pageCount;i++){
-doc.setPage(i)
-doc.setDrawColor(30, 91, 185)
-doc.setLineWidth(0.3)
-doc.rect(8, 8, 194, 281)
+  doc.setPage(i)
+  doc.setDrawColor(30, 91, 185)
+  doc.setLineWidth(0.3)
+  doc.rect(8, 8, 194, 281)
 
-doc.addImage(qrImage,"PNG",14,253,25,25)
-doc.setFontSize(8)
-doc.setTextColor(148, 163, 184)
-doc.text(
-"Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
-43,266,{maxWidth:150}
-)
+  doc.addImage(qrImage,"PNG",14,253,25,25)
+  doc.setFontSize(8)
+  doc.setTextColor(148, 163, 184)
+  doc.text(
+  "Esta capacitación fue brindada en modalidad virtual. Los participantes registrados declararon haber accedido al contenido y comprendido los conceptos expuestos.",
+  43,266,{maxWidth:150})
 }
 }
 
@@ -450,105 +427,98 @@ logo.onload = function(){ construirCuerpoEvac(true); }
 logo.onerror = function(){ construirCuerpoEvac(false); }
 logo.src="Logo vertical/logo-conemat.png"
 
-function construirCuerpoEvac(conLogo){
-if(conLogo) {
-doc.addImage(logo,"PNG",15,11,25,0)
+function dibujarEncabezadoDinamicoEvac(conLogo) {
+  if(conLogo) { try{ doc.addImage(logo,"PNG",15,11,25,0) } catch(e){} }
+
+  doc.setFont("helvetica","bold")
+  doc.setFontSize(18)
+  doc.setTextColor(30, 91, 185)
+  doc.text("REGISTRO DE CAPACITACIÓN",195,22,{align:"right"})
+
+  doc.setFont("helvetica","normal")
+  doc.setFontSize(10)
+  doc.setTextColor(100, 116, 139)
+  doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",195,28,{align:"right"})
+
+  doc.setDrawColor(226, 232, 240)
+  doc.setLineWidth(0.5)
+  doc.line(12,38,198,38)
+
+  let headerY=48
+  doc.setFontSize(9)
+  doc.setFont("helvetica","bold")
+  doc.setTextColor(148, 163, 184)
+  doc.text("EMPRESA",15,headerY)
+  doc.text("CAPACITACIÓN",15,headerY+10)
+  doc.text("INSTRUCTOR",120,headerY)
+  doc.text("FECHA",120,headerY+10)
+
+  doc.setFont("helvetica","bold")
+  doc.setFontSize(11)
+  doc.setTextColor(15, 23, 42)
+  doc.text(empresa,15,headerY+5)
+  doc.text(capacitacion + " (Evacuación)",15,headerY+15)
+  doc.text("Casanova Nicolás",120,headerY+5)
+  doc.text(fecha,120,headerY+15)
 }
 
-doc.setFont("helvetica","bold")
-doc.setFontSize(18)
-doc.setTextColor(30, 91, 185)
-doc.text("REGISTRO DE CAPACITACIÓN",195,22,{align:"right"})
-
-doc.setFont("helvetica","normal")
-doc.setFontSize(10)
-doc.setTextColor(100, 116, 139)
-doc.text("Ley 19.587 – Decreto 351/79 – Resolución SRT 905/15",195,28,{align:"right"})
-
-doc.setDrawColor(226, 232, 240)
-doc.setLineWidth(0.5)
-doc.line(12,38,198,38)
-
-let startY=50
-doc.setFontSize(9)
-doc.setFont("helvetica","bold")
-doc.setTextColor(148, 163, 184)
-doc.text("EMPRESA",15,startY)
-doc.text("CAPACITACIÓN",15,startY+10)
-doc.text("INSTRUCTOR",120,startY)
-doc.text("FECHA",120,startY+10)
-
-doc.setFont("helvetica","bold")
-doc.setFontSize(11)
-doc.setTextColor(15, 23, 42)
-doc.text(empresa,15,startY+5)
-doc.text(capacitacion + " (Evacuación)",15,startY+15)
-doc.text("Casanova Nicolás",120,startY+5)
-doc.text(fecha,120,startY+15)
-
-// Mapeamos el 'rol_evacuacion'
+function construirCuerpoEvac(conLogo){
 const rows=asistentes.map((a,i)=>[i+1, a.nombre, a.rol_evacuacion || "", a.dni, a.puesto, ""])
 
 doc.autoTable({
-startY:startY+25,
-head:[["Nº","APELLIDO Y NOMBRE","ROL EVACUACIÓN","DNI","PUESTO","FIRMA"]],
-body:rows,
-theme: 'striped',
-styles:{fontSize:9,cellPadding:4,valign:"middle",lineColor:[226, 232, 240],lineWidth:0.2, textColor:[51, 65, 85]},
-headStyles:{fillColor:[30, 91, 185],textColor:[255,255,255],fontStyle:"bold"},
-alternateRowStyles:{fillColor:[248, 250, 252]},
-columnStyles:{
-  2:{cellWidth:32},
-  5:{cellWidth:32}
-},
-margin:{left:12, right:12, top:20, bottom:45}
+  startY: 72,
+  head:[["Nº","APELLIDO Y NOMBRE","ROL EVACUACIÓN","DNI","PUESTO","FIRMA"]],
+  body:rows,
+  theme: 'striped',
+  styles: { fontSize:9, cellPadding:4, valign:"middle", lineColor:[226, 232, 240], lineWidth:0.2, textColor:[51, 65, 85], minCellHeight: 15 },
+  headStyles: { fillColor:[30, 91, 185], textColor:[255,255,255], fontStyle:"bold" },
+  alternateRowStyles: { fillColor:[248, 250, 252] },
+  columnStyles: { 2:{cellWidth:32}, 5:{cellWidth:35} },
+  margin: { left:12, right:12, top:72, bottom:45 },
+  
+  // DIBUJA EL ENCABEZADO EN CADA HOJA NUEVA
+  didDrawPage: function(data) {
+    dibujarEncabezadoDinamicoEvac(conLogo);
+  },
+  
+  // DIBUJA LA FIRMA EXACTAMENTE ADENTRO DE LA CELDA
+  didDrawCell: function(data) {
+    if (data.column.index === 5 && data.cell.section === 'body') {
+      const asistenteInfo = asistentes[data.row.index];
+      if (asistenteInfo && asistenteInfo.firma) {
+        doc.addImage(asistenteInfo.firma, "PNG", data.cell.x + 3, data.cell.y + 2, 28, 10);
+      }
+    }
+  }
 })
 
-// Insertar firmas individuales en las celdas asignadas
-asistentes.forEach((a,i)=>{
-if(a.firma){
-const row=doc.lastAutoTable.body[i]
-if(row){
-const cell=row.cells[5] 
-doc.setPage(row.pageNumber)
-doc.addImage(a.firma,"PNG",cell.x+3,cell.y+1,28,9)
-}
-}
-})
-
-let finalY = doc.lastAutoTable.finalY + 25
+let finalY = doc.lastAutoTable.finalY + 20
 if(finalY > 215){ 
   doc.addPage(); 
-  finalY = 45; 
-} else {
-  doc.setPage(doc.lastAutoTable.body[doc.lastAutoTable.body.length - 1].pageNumber);
-}
+  dibujarEncabezadoDinamicoEvac(conLogo); // Dibujamos el encabezado en la hoja extra
+  finalY = 80; 
+} 
 
 const firma=new Image()
-firma.onload = function(){
-doc.addImage(firma,"JPEG",145,finalY-20,45,20)
-finalizarDescargaEvac();
-}
-firma.onerror = function(){
-finalizarDescargaEvac();
-}
+firma.onload = function(){ doc.addImage(firma,"JPEG",145,finalY-15,45,20); finalizarDescargaEvac(); }
+firma.onerror = function(){ finalizarDescargaEvac(); }
 firma.src="Firma nicolas nueva.jpg"
 
 function finalizarDescargaEvac(){
-doc.setDrawColor(30, 91, 185)
-doc.line(135,finalY,195,finalY)
-doc.setFontSize(10)
-doc.setFont("helvetica","bold")
-doc.setTextColor(15, 23, 42)
-doc.text("Casanova Nicolás",165,finalY+6,{align:"center"})
-doc.setFont("helvetica","normal")
-doc.setFontSize(9)
-doc.setTextColor(100, 116, 139)
-doc.text("Lic. Higiene y Seguridad",165,finalY+11,{align:"center"})
-doc.text("Mat. CPHS 6921",165,finalY+16,{align:"center"})
+  doc.setDrawColor(30, 91, 185)
+  doc.line(135,finalY+5,195,finalY+5)
+  doc.setFontSize(10)
+  doc.setFont("helvetica","bold")
+  doc.setTextColor(15, 23, 42)
+  doc.text("Casanova Nicolás",165,finalY+11,{align:"center"})
+  doc.setFont("helvetica","normal")
+  doc.setFontSize(9)
+  doc.setTextColor(100, 116, 139)
+  doc.text("Lic. Higiene y Seguridad",165,finalY+16,{align:"center"})
+  doc.text("Mat. CPHS 6921",165,finalY+21,{align:"center"})
 
-decorarTodasLasPaginasEvac()
-doc.save(`${empresa} - ${capacitacion} (Evacuacion).pdf`)
+  decorarTodasLasPaginasEvac()
+  doc.save(`${empresa} - ${capacitacion} (Evacuacion).pdf`)
 }
 }
 },300)
