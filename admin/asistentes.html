@@ -241,6 +241,40 @@ if(error){ alert("Error al eliminar"); return; }
 cargarAsistentes()
 }
 
+/* ==========================================
+   HELPER: Detecta el formato real de la firma
+   (data URL) y la dibuja de forma segura.
+   Si falla, loguea el motivo en consola con
+   nombre y DNI para poder diagnosticarlo,
+   en vez de fallar en silencio.
+   ========================================== */
+function dibujarFirmaSegura(doc, asistenteInfo, x, y, w, h){
+  if(!asistenteInfo || !asistenteInfo.firma) return
+
+  try {
+    let formato = "PNG"
+    const firmaStr = asistenteInfo.firma
+
+    if(typeof firmaStr === "string"){
+      if(firmaStr.startsWith("data:image/jpeg") || firmaStr.startsWith("data:image/jpg")){
+        formato = "JPEG"
+      } else if(firmaStr.startsWith("data:image/webp")){
+        formato = "WEBP"
+      } else if(firmaStr.startsWith("data:image/png")){
+        formato = "PNG"
+      }
+    }
+
+    doc.addImage(firmaStr, formato, x, y, w, h)
+  } catch(e) {
+    console.error(`No se pudo dibujar la firma de "${asistenteInfo.nombre}" (DNI ${asistenteInfo.dni}):`, e)
+    doc.setFontSize(7)
+    doc.setTextColor(220, 38, 38)
+    doc.text("(error firma)", x, y + h - 2)
+    doc.setTextColor(51, 65, 85) // restaurar color de texto normal
+  }
+}
+
 
 /* ==========================================
    PDF ORIGINAL (IGNORA EL ROL)
@@ -343,13 +377,11 @@ doc.autoTable({
     dibujarEncabezadoDinamico(conLogo);
   },
   
-  // DIBUJA LA FIRMA EXACTAMENTE ADENTRO DE LA CELDA
+  // DIBUJA LA FIRMA EXACTAMENTE ADENTRO DE LA CELDA (detección de formato + manejo de errores)
   didDrawCell: function(data) {
     if (data.column.index === 4 && data.cell.section === 'body') {
       const asistenteInfo = asistentes[data.row.index];
-      if (asistenteInfo && asistenteInfo.firma) {
-        doc.addImage(asistenteInfo.firma, "PNG", data.cell.x + 3, data.cell.y + 2, 28, 10);
-      }
+      dibujarFirmaSegura(doc, asistenteInfo, data.cell.x + 3, data.cell.y + 2, 28, 10);
     }
   }
 })
@@ -488,13 +520,11 @@ doc.autoTable({
     dibujarEncabezadoDinamicoEvac(conLogo);
   },
   
-  // DIBUJA LA FIRMA EXACTAMENTE ADENTRO DE LA CELDA
+  // DIBUJA LA FIRMA EXACTAMENTE ADENTRO DE LA CELDA (detección de formato + manejo de errores)
   didDrawCell: function(data) {
     if (data.column.index === 5 && data.cell.section === 'body') {
       const asistenteInfo = asistentes[data.row.index];
-      if (asistenteInfo && asistenteInfo.firma) {
-        doc.addImage(asistenteInfo.firma, "PNG", data.cell.x + 3, data.cell.y + 2, 28, 10);
-      }
+      dibujarFirmaSegura(doc, asistenteInfo, data.cell.x + 3, data.cell.y + 2, 28, 10);
     }
   }
 })
