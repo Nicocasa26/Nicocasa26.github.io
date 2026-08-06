@@ -24,150 +24,60 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* HERO CENTRADO Y COMPACTO */
-    .hero {
-      padding: 45px 15px 30px 15px !important;
+    /* AJUSTES FINOS PARA VERSIÓN ESCRITORIO */
+    header.header {
+      padding: 10px 0 !important;
     }
 
-    .hero-content {
-      text-align: center !important;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: center !important;
+    /* Logo refinado y de tamaño profesional */
+    img.logo, .header .logo {
+      height: 48px !important; 
+      width: auto !important;
+    }
+
+    .hero {
+      padding: 60px 0 40px 0 !important;
     }
 
     .hero h1 {
-      text-align: center !important;
+      font-size: 2.5rem !important;
+      max-width: 800px;
+      margin: 0 auto 16px auto !important;
     }
 
     .hero p {
-      margin-left: auto !important;
-      margin-right: auto !important;
-      margin-bottom: 25px !important;
-      text-align: center !important;
+      font-size: 1.05rem !important;
+      max-width: 620px;
     }
 
-    .hero-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center !important;
-      flex-wrap: wrap;
-      width: 100%;
+    /* Botón Plataforma Discreto (Acceso Interno) */
+    .btn-plataforma {
+      background: transparent !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-muted) !important;
+      box-shadow: none !important;
+      padding: 7px 16px !important;
+      font-size: 0.88rem !important;
+      font-weight: 500 !important;
     }
 
-    /* ESTILOS DE WHATSAPP DESTACADO */
-    .btn-whatsapp {
-      background-color: #25D366 !important;
+    .btn-plataforma:hover {
+      background: rgba(255, 255, 255, 0.08) !important;
       color: #ffffff !important;
-      border: none !important;
-      font-weight: 600 !important;
-      display: inline-flex !important;
-      align-items: center !important;
-      justify-content: center !important;
-      gap: 8px !important;
-      text-decoration: none !important;
-      padding: 12px 20px !important;
-      border-radius: 6px !important;
-      transition: background-color 0.3s ease, transform 0.2s ease !important;
+      border-color: rgba(255, 255, 255, 0.25) !important;
+      transform: none !important;
     }
 
-    .btn-whatsapp:hover {
-      background-color: #128C7E !important;
-      transform: translateY(-2px);
+    /* Botón de WhatsApp elegante en escritorio */
+    .btn-whatsapp {
+      padding: 11px 22px !important;
+      font-size: 0.92rem !important;
+      border-radius: 8px !important;
     }
 
-    .whatsapp-float {
-      position: fixed;
-      width: 60px;
-      height: 60px;
-      bottom: 25px;
-      right: 25px;
-      background-color: #25d366;
-      color: #fff;
-      border-radius: 50px;
-      text-align: center;
-      font-size: 30px;
-      box-shadow: 2px 4px 12px rgba(0,0,0,0.3);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      transition: all 0.3s ease;
-      animation: pulse-wa 2s infinite;
-    }
-
-    .whatsapp-float:hover {
-      transform: scale(1.1);
-      background-color: #20ba5a;
-    }
-
-    .whatsapp-float svg {
-      width: 32px;
-      height: 32px;
-      fill: #ffffff;
-    }
-
-    @keyframes pulse-wa {
-      0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-      70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-    }
-
-    /* REGLAS RESPONSIVAS PARA MÓVILES */
-    @media (max-width: 768px) {
-      .header-content {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-      }
-
-      nav {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-      }
-
-      nav a {
-        font-size: 14px;
-        padding: 5px;
-      }
-
-      .hero h1 {
-        font-size: 1.8rem;
-        line-height: 1.2;
-      }
-
-      .hero-buttons .btn, 
-      .hero-buttons .btn-whatsapp {
-        width: 100%;
-        text-align: center;
-      }
-
-      .cards {
-        display: grid;
-        grid-template-columns: 1fr !important;
-        gap: 15px !important;
-      }
-
-      .footer-content {
-        flex-direction: column;
-        text-align: center;
-        gap: 20px;
-      }
-
-      .whatsapp-float {
-        width: 50px;
-        height: 50px;
-        bottom: 20px;
-        right: 20px;
-      }
-
-      .whatsapp-float svg {
-        width: 26px;
-        height: 26px;
-      }
+    .btn-whatsapp svg {
+      width: 18px !important;
+      height: 18px !important;
     }
   </style>
 </head>
@@ -194,7 +104,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </header>
 
-<!-- SECCIÓN HERO CENTRADA Y MÁS COMPACTA -->
+<!-- SECCIÓN HERO CENTRADA Y ELEGANTE -->
 <section class="hero reveal" id="inicio">
   <div class="container hero-content">
     <span class="badge">Profesionales en Seguridad</span>
@@ -213,7 +123,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <button class="btn primary" onclick="openForm()">Solicitar presupuesto</button>
 
       <a href="https://wa.me/5491160538420" target="_blank" class="btn-whatsapp">
-        <svg viewBox="0 0 24 24"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z" fill="#fff"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/></svg>
         Contactar por WhatsApp
       </a>
     </div>
@@ -250,7 +160,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="display: flex; gap: 15px; flex-wrap: wrap;">
       <button class="btn primary" onclick="openForm()">Pedir Demo</button>
       <a href="https://wa.me/5491160538420?text=Hola%20Nicolás,%20quiero%20solicitar%20una%20demo%20de%20la%20plataforma%20de%20capacitación" target="_blank" class="btn-whatsapp">
-        <svg viewBox="0 0 24 24" style="width:18px;height:18px;"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z" fill="#fff"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/></svg>
         Pedir Demo por WhatsApp
       </a>
     </div>
@@ -353,7 +263,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-<!-- BOTÓN FLOTANTE DE WHATSAPP MEJORADO -->
+<!-- BOTÓN FLOTANTE DE WHATSAPP -->
 <a href="https://wa.me/5491160538420" target="_blank" class="whatsapp-float" aria-label="Contacto por WhatsApp">
   <svg viewBox="0 0 32 32">
     <path d="M16 2.012c-7.727 0-14 6.273-14 14 0 2.473.645 4.885 1.87 7.013l-1.983 7.24 7.41-1.942c2.062 1.123 4.39 1.713 6.703 1.714h.006c7.725 0 14-6.273 14-14 0-3.743-1.458-7.26-4.103-9.905s-6.163-4.12-9.903-4.12zm0 25.632c-2.1 0-4.156-.563-5.952-1.631l-.427-.253-4.428 1.161 1.182-4.316-.278-.442c-1.173-1.868-1.794-4.038-1.794-6.262 0-6.425 5.228-11.653 11.653-11.653 3.113 0 6.039 1.213 8.24 3.415s3.413 5.128 3.413 8.24c0 6.427-5.227 11.655-11.653 11.655z"/>
