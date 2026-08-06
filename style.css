@@ -1,5 +1,6 @@
 /* ==========================================
    CONEMAT - Estilo: Soft-Glow Professional
+   (Optimizado para Mobile & WhatsApp)
    ========================================== */
 
 :root {
@@ -18,6 +19,10 @@
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --primary-glow: rgba(37, 99, 235, 0.45);
+  
+  /* Verde Oficial WhatsApp */
+  --wa-color: #25D366;
+  --wa-hover: #128C7E;
   
   /* Tipografía */
   --text-main: #f8fafc;
@@ -196,6 +201,35 @@ nav a:hover {
   transform: translateY(-2px);
 }
 
+/* BOTÓN WHATSAPP DESTACADO */
+.btn-whatsapp {
+  background-color: var(--wa-color) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  text-decoration: none !important;
+  padding: 13px 26px !important;
+  border-radius: 10px !important;
+  transition: background-color 0.3s ease, transform 0.2s ease !important;
+  box-shadow: 0 4px 18px rgba(37, 211, 102, 0.4) !important;
+}
+
+.btn-whatsapp:hover {
+  background-color: var(--wa-hover) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.6) !important;
+}
+
+.btn-whatsapp svg {
+  width: 20px;
+  height: 20px;
+  fill: #ffffff;
+}
+
 /* SECCIONES Y TITULOS */
 .section {
   padding: 65px 0;
@@ -346,27 +380,41 @@ form input:focus, form textarea:focus {
   margin-bottom: 12px;
 }
 
-/* BOTÓN FLOTANTE DE WHATSAPP */
+/* BOTÓN FLOTANTE DE WHATSAPP (CIRCULAR Y CON ANIMACIÓN) */
 .whatsapp-float {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background: #2563eb;
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.5);
-  z-index: 999;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  position: fixed !important;
+  width: 58px !important;
+  height: 58px !important;
+  bottom: 25px !important;
+  right: 25px !important;
+  background-color: var(--wa-color) !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 15px rgba(37, 211, 102, 0.5) !important;
+  z-index: 1000 !important;
+  transition: all 0.3s ease !important;
+  animation: pulse-wa 2s infinite;
+}
+
+.whatsapp-float svg {
+  width: 30px;
+  height: 30px;
+  fill: #ffffff;
 }
 
 .whatsapp-float:hover {
-  transform: translateY(-3px);
-  background: #1d4ed8;
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.7);
+  background-color: var(--wa-hover) !important;
+  transform: scale(1.1) !important;
+}
+
+@keyframes pulse-wa {
+  0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+  70% { box-shadow: 0 0 0 14px rgba(37, 211, 102, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
 }
 
 /* ANIMACIONES DE APARICIÓN */
@@ -381,21 +429,99 @@ form input:focus, form textarea:focus {
   transform: translateY(0);
 }
 
-/* RESPONSIVE (CELULARES) */
+/* RESPONSIVE (OPTIMIZADO PARA CELULARES) */
 @media (max-width: 768px) {
+  .container {
+    padding: 24px 16px;
+  }
+
   .header-content {
     flex-direction: column;
     gap: 15px;
   }
+
+  img.logo, .header .logo {
+    height: 75px !important;
+  }
+
   .header nav {
     flex-wrap: wrap;
     justify-content: center;
+    gap: 10px !important;
+  }
+
+  nav a {
+    font-size: 0.88rem;
+  }
+
+  .btn-plataforma {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+  }
+
+  .hero {
+    padding: 30px 0 20px 0 !important;
+  }
+
+  .hero h1 {
+    font-size: 1.85rem !important;
+    line-height: 1.25;
+  }
+
+  .hero p {
+    font-size: 0.98rem;
+    margin-bottom: 20px !important;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .hero-buttons .btn, 
+  .hero-buttons .btn-whatsapp {
+    width: 100%;
+    text-align: center;
+  }
+
+  .cards {
+    grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
-  .hero h1 {
-    font-size: 2.3rem;
+
+  .card {
+    padding: 20px;
+    border-radius: 14px;
   }
-  img.logo, .header .logo {
-    height: 90px !important;
+
+  .section {
+    padding: 40px 0;
+  }
+
+  .section-title {
+    font-size: 1.6rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .modal-content {
+    padding: 24px 18px;
+    width: 94%;
+  }
+
+  .whatsapp-float {
+    width: 52px !important;
+    height: 52px !important;
+    bottom: 18px !important;
+    right: 18px !important;
+  }
+
+  .whatsapp-float svg {
+    width: 26px;
+    height: 26px;
   }
 }
