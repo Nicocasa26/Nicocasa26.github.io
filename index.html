@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,7 +14,9 @@
   <meta charset="UTF-8" />
   <title>CONEMAT | Seguridad e Higiene</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CONEMAT - Consultoría en Seguridad e Higiene Laboral. Prevención de riesgos, cumplimiento normativo y capacitación profesional para empresas." />
 
+  <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-VN94MLJEGK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -24,269 +28,924 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* Ajustes de presentación: el diseño principal vive en style.css */
-    .hero-content { text-align: left; }
-    .trust-strip { margin-top: 32px; }
+    .hero-content {
+      text-align: left;
+    }
+
+    .trust-strip {
+      margin-top: 32px;
+    }
   </style>
 </head>
 
 <body>
+
 <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P557SXZV"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript>
+  <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P557SXZV"
+  height="0"
+  width="0"
+  style="display:none;visibility:hidden"></iframe>
+</noscript>
 <!-- End Google Tag Manager (noscript) -->
+
+
+<!-- =========================
+     HEADER
+========================= -->
 
 <header class="header">
   <div class="container header-content">
-    
-    <img src="logo-black.png" alt="CONEMAT Seguridad e Higiene" class="logo">
+
+    <img
+      src="logo-black.png"
+      alt="CONEMAT Seguridad e Higiene"
+      class="logo"
+    >
 
     <nav>
       <a href="#inicio">Inicio</a>
-      <a href="#servicios">Servicios</a>
-      <a href="#plataforma">Capacitación 24/7</a>
-      <a href="https://wa.me/5491160538420" target="_blank">Contacto</a>
 
-      <a href="/admin/login.html" class="btn-plataforma">Plataforma</a>
+      <a href="#servicios">Servicios</a>
+
+      <a href="#plataforma">Capacitación 24/7</a>
+
+      <a
+        href="https://wa.me/5491160538420"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Contacto
+      </a>
+
+      <!-- ACCESO A LA PLATAFORMA - NO MODIFICAR RUTA -->
+      <a
+        href="/admin/login.html"
+        class="btn-plataforma"
+      >
+        Plataforma
+      </a>
+
     </nav>
+
   </div>
 </header>
 
+
+<!-- =========================
+     HERO
+========================= -->
+
 <section class="hero reveal" id="inicio">
+
   <div class="container hero-content">
-    <span class="badge">SEGURIDAD E HIGIENE LABORAL</span>
+
+    <span class="badge">
+      SEGURIDAD E HIGIENE LABORAL
+    </span>
 
     <h1>
       Seguridad e Higiene para empresas que quieren trabajar con tranquilidad.
     </h1>
 
     <p>
-      Asesoramiento profesional para cumplir con la normativa, prevenir riesgos
-      y acompañar a tu empresa de forma clara y permanente.
+      Asesoramiento profesional para cumplir con la normativa,
+      prevenir riesgos y acompañar a tu empresa de forma clara
+      y permanente.
     </p>
+
+
+    <!-- ELEMENTOS DE CONFIANZA -->
 
     <div class="trust-strip">
-      <div><strong>✓</strong><span>Asesoramiento profesional</span></div>
-      <div><strong>✓</strong><span>Prevención y cumplimiento</span></div>
-      <div><strong>✓</strong><span>Atención directa</span></div>
+
+      <div>
+        <strong>✓</strong>
+        <span>Asesoramiento profesional</span>
+      </div>
+
+      <div>
+        <strong>✓</strong>
+        <span>Prevención y cumplimiento</span>
+      </div>
+
+      <div>
+        <strong>✓</strong>
+        <span>Atención directa</span>
+      </div>
+
     </div>
+
+
+    <!-- BOTONES PRINCIPALES -->
 
     <div class="hero-buttons">
-      <button class="btn primary" onclick="openForm()">Solicitar presupuesto</button>
 
-      <a href="https://wa.me/5491160538420" target="_blank" class="btn-whatsapp">
-        <svg viewBox="0 0 24 24"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/></svg>
+      <button
+        class="btn primary"
+        onclick="openForm()"
+      >
+        Solicitar presupuesto
+      </button>
+
+
+      <a
+        href="https://wa.me/5491160538420"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-whatsapp"
+      >
+
+        <svg viewBox="0 0 24 24">
+          <path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/>
+        </svg>
+
         Contactar por WhatsApp
+
       </a>
+
     </div>
+
   </div>
+
 </section>
 
-<section class="section dark reveal" id="plataforma" style="background: linear-gradient(180deg, #0c1017 0%, #081120 100%); border-top: 1px solid rgba(255,255,255,0.08); border-bottom: 1px solid rgba(255,255,255,0.08);">
+
+
+<!-- =========================
+     PLATAFORMA
+========================= -->
+
+<section
+  class="section dark reveal"
+  id="plataforma"
+>
+
   <div class="container">
-    <span class="badge">NUEVA SOLUCIÓN DIGITAL 24/7</span>
-    <h2 class="section-title" style="margin-top: 10px;">Plataforma de Capacitación Online</h2>
+
+    <span class="badge">
+      NUEVA SOLUCIÓN DIGITAL 24/7
+    </span>
+
+
+    <h2
+      class="section-title"
+      style="margin-top: 10px;"
+    >
+      Plataforma de Capacitación Online
+    </h2>
+
+
     <p class="section-subtitle">
-      Reduce costos operativos y evita detener el flujo de trabajo. Permite que tu equipo realice las capacitaciones desde cualquier lugar, cumpliendo de forma ágil con las exigencias de la legislación vigente.
+
+      Reduce costos operativos y evita detener el flujo de trabajo.
+      Permite que tu equipo realice las capacitaciones desde cualquier
+      lugar, cumpliendo de forma ágil con las exigencias de la
+      legislación vigente.
+
     </p>
 
-    <div class="cards" style="margin-bottom: 30px;">
-      <div class="card">
-        <h3>Flexibilidad Total (24/7)</h3>
-        <p>Cada empleado completa la formación desde el celular o la computadora en el momento que mejor se adapte a sus tareas.</p>
-      </div>
+
+    <div
+      class="cards"
+      style="margin-bottom: 30px;"
+    >
+
+
+      <!-- CARD 1 -->
 
       <div class="card">
-        <h3>Optimización de Costos</h3>
-        <p>Eliminá viáticos, traslados y el costo oculto de frenar las operaciones para coordinar reuniones presenciales.</p>
+
+        <h3>
+          Flexibilidad Total (24/7)
+        </h3>
+
+        <p>
+          Cada empleado completa la formación desde el celular
+          o la computadora en el momento que mejor se adapte
+          a sus tareas.
+        </p>
+
       </div>
 
+
+      <!-- CARD 2 -->
+
       <div class="card">
-        <h3>Cumplimiento Legal</h3>
-        <p>Obtené la documentación y los certificados respaldatorios listos para cumplir sin complicaciones ante la normativa.</p>
+
+        <h3>
+          Optimización de Costos
+        </h3>
+
+        <p>
+          Eliminá viáticos, traslados y el costo oculto de
+          frenar las operaciones para coordinar reuniones
+          presenciales.
+        </p>
+
       </div>
+
+
+      <!-- CARD 3 -->
+
+      <div class="card">
+
+        <h3>
+          Cumplimiento Legal
+        </h3>
+
+        <p>
+          Obtené la documentación y los certificados
+          respaldatorios listos para cumplir sin complicaciones
+          ante la normativa.
+        </p>
+
+      </div>
+
     </div>
 
-    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-      <button class="btn primary" onclick="openForm()">Pedir Demo</button>
-      <a href="https://wa.me/5491160538420?text=Hola%20Nicolás,%20quiero%20solicitar%20una%20demo%20de%20la%20plataforma%20de%20capacitación" target="_blank" class="btn-whatsapp">
-        <svg viewBox="0 0 24 24"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/></svg>
+
+    <!-- BOTONES PLATAFORMA -->
+
+    <div
+      style="
+        display:flex;
+        gap:15px;
+        flex-wrap:wrap;
+      "
+    >
+
+      <button
+        class="btn primary"
+        onclick="openForm()"
+      >
+        Pedir Demo
+      </button>
+
+
+      <a
+        href="https://wa.me/5491160538420?text=Hola%20Nicolás,%20quiero%20solicitar%20una%20demo%20de%20la%20plataforma%20de%20capacitación"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-whatsapp"
+      >
+
+        <svg viewBox="0 0 24 24">
+          <path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/>
+        </svg>
+
         Pedir Demo por WhatsApp
+
       </a>
+
     </div>
+
   </div>
+
 </section>
+
+
+
+<!-- =========================
+     SECCIÓN DE CONFIANZA
+========================= -->
 
 <section class="section trust-section reveal">
+
   <div class="container">
+
     <div class="trust-grid">
+
+
       <div class="trust-intro">
-        <span class="badge">UN ACOMPAÑAMIENTO PROFESIONAL</span>
-        <h2 class="section-title">Tu empresa, más segura y mejor respaldada.</h2>
+
+        <span class="badge">
+          UN ACOMPAÑAMIENTO PROFESIONAL
+        </span>
+
+        <h2 class="section-title">
+          Tu empresa, más segura y mejor respaldada.
+        </h2>
+
         <p class="section-subtitle">
-          Trabajamos para que la seguridad e higiene no sea solamente un requisito,
-          sino una herramienta de prevención y organización para tu empresa.
+
+          Trabajamos para que la seguridad e higiene no sea
+          solamente un requisito, sino una herramienta de
+          prevención y organización para tu empresa.
+
         </p>
+
       </div>
+
+
       <div class="trust-points">
+
+
         <div class="trust-point">
-          <span class="trust-icon">✓</span>
-          <div><strong>Enfoque preventivo</strong><p>Identificamos riesgos y proponemos acciones concretas.</p></div>
+
+          <span class="trust-icon">
+            ✓
+          </span>
+
+          <div>
+
+            <strong>
+              Enfoque preventivo
+            </strong>
+
+            <p>
+              Identificamos riesgos y proponemos acciones concretas.
+            </p>
+
+          </div>
+
         </div>
+
+
         <div class="trust-point">
-          <span class="trust-icon">✓</span>
-          <div><strong>Seguimiento continuo</strong><p>Acompañamiento técnico durante todo el proceso.</p></div>
+
+          <span class="trust-icon">
+            ✓
+          </span>
+
+          <div>
+
+            <strong>
+              Seguimiento continuo
+            </strong>
+
+            <p>
+              Acompañamiento técnico durante todo el proceso.
+            </p>
+
+          </div>
+
         </div>
+
+
         <div class="trust-point">
-          <span class="trust-icon">✓</span>
-          <div><strong>Documentación ordenada</strong><p>Información clara para facilitar el cumplimiento y la gestión.</p></div>
+
+          <span class="trust-icon">
+            ✓
+          </span>
+
+          <div>
+
+            <strong>
+              Documentación ordenada
+            </strong>
+
+            <p>
+              Información clara para facilitar el cumplimiento
+              y la gestión.
+            </p>
+
+          </div>
+
         </div>
+
+
       </div>
+
     </div>
+
   </div>
+
 </section>
 
+
+
+<!-- =========================
+     POR QUÉ ELEGIRNOS
+========================= -->
+
 <section class="section dark reveal">
+
   <div class="container">
-    <h2 class="section-title">¿Por qué elegirnos?</h2>
+
+    <h2 class="section-title">
+      ¿Por qué elegirnos?
+    </h2>
+
     <p class="section-subtitle">
-      Soluciones profesionales orientadas a resultados y cumplimiento normativo
+      Soluciones profesionales orientadas a resultados
+      y cumplimiento normativo.
     </p>
 
+
     <div class="cards">
+
+
+      <!-- CARD 1 -->
+
       <div class="card">
+
         <svg viewBox="0 0 24 24">
           <path d="M12 2l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-4z"/>
         </svg>
-        <h3>CUMPLIMIENTO NORMATIVO</h3>
-        <p>Cumplimiento integral de las resoluciones y exigencias de la SRT.</p>
+
+        <h3>
+          PREVENCIÓN DE RIESGOS
+        </h3>
+
+        <p>
+          Identificación de riesgos y definición de medidas
+          preventivas para proteger a las personas y a la operación.
+        </p>
+
       </div>
 
+
+      <!-- CARD 2 -->
+
       <div class="card">
+
         <svg viewBox="0 0 24 24">
-          <path d="M16 11c1.7 0 3-1.3 3-3S17.7 5 16 5s-3 1.3-3 3 3zM8 11c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3z"/>
+
+          <path d="M16 11c1.7 0 3-1.3 3-3S17.7 5 16 5s-3 1.3-3 3 1.3 3 3 3zM8 11c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3z"/>
+
         </svg>
-        <h3>EQUIPO ESPECIALIZADO</h3>
-        <p>Profesionales con experiencia real en múltiples rubros.</p>
+
+        <h3>
+          ASESORAMIENTO TÉCNICO
+        </h3>
+
+        <p>
+          Acompañamiento profesional para resolver las
+          necesidades de seguridad e higiene de tu empresa.
+        </p>
+
       </div>
 
+
+      <!-- CARD 3 -->
+
       <div class="card">
+
         <svg viewBox="0 0 24 24">
           <path d="M3 3h18v18H3z"/>
         </svg>
-        <h3>SEGUIMIENTO CONTINUO</h3>
-        <p>Acompañamiento técnico y actualización permanente.</p>
+
+        <h3>
+          GESTIÓN Y SEGUIMIENTO
+        </h3>
+
+        <p>
+          Seguimiento de las acciones y documentación para
+          mantener una gestión ordenada y preventiva.
+        </p>
+
       </div>
+
+
     </div>
+
   </div>
+
 </section>
 
-<section class="section reveal" id="servicios">
+
+
+<!-- =========================
+     SERVICIOS
+========================= -->
+
+<section
+  class="section reveal"
+  id="servicios"
+>
+
   <div class="container">
-    <h2 class="section-title">Nuestros Servicios</h2>
+
+    <h2 class="section-title">
+      Nuestros Servicios
+    </h2>
+
     <p class="section-subtitle">
-      Presentación clara para evaluación técnica y comercial
+      Asesoramiento y gestión en Seguridad e Higiene
+      para las necesidades de tu empresa.
     </p>
 
+
     <div class="cards services">
-      <div class="card"><h4>CRONOGRAMA DE TRABAJO</h4><p>Planificación anual de acciones de seguridad e higiene.</p></div>
-      <div class="card"><h4>VERIFICACIÓN DE RIESGOS POR PUESTO</h4><p>Identificación y actualización de riesgos laborales.</p></div>
-      <div class="card"><h4>VERIFICACIÓN EDILICIA</h4><p>Control de condiciones edilicias y de seguridad.</p></div>
-      <div class="card"><h4>CAPACITACIÓN DEL PERSONAL</h4><p>Capacitación en riesgos generales y específicos.</p></div>
-      <div class="card"><h4>RAR</h4><p>Relevamiento y seguimiento anual de agentes de riesgo.</p></div>
-      <div class="card"><h4>EPP</h4><p>Gestión de EPP según Res. SRT 299/11.</p></div>
-      <div class="card"><h4>ERGONOMÍA</h4><p>Evaluación según Res. SRT 295/03.</p></div>
-      <div class="card"><h4>PLAN DE EVACUACIÓN</h4><p>Planos, simulacros y capacitaciones.</p></div>
-      <div class="card"><h4>ILUMINACIÓN</h4><p>Mediciones y control de niveles lumínicos.</p></div>
-      <div class="card"><h4>INVESTIGACIÓN DE ACCIDENTES</h4><p>Análisis causal y acciones preventivas.</p></div>
+
+
+      <div class="card">
+
+        <h4>
+          CRONOGRAMA DE TRABAJO
+        </h4>
+
+        <p>
+          Planificación anual de acciones de seguridad e higiene.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          VERIFICACIÓN DE RIESGOS POR PUESTO
+        </h4>
+
+        <p>
+          Identificación y actualización de riesgos laborales.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          VERIFICACIÓN EDILICIA
+        </h4>
+
+        <p>
+          Control de condiciones edilicias y de seguridad.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          CAPACITACIÓN DEL PERSONAL
+        </h4>
+
+        <p>
+          Capacitación en riesgos generales y específicos.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          RAR
+        </h4>
+
+        <p>
+          Relevamiento y seguimiento anual de agentes de riesgo.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          EPP
+        </h4>
+
+        <p>
+          Gestión de EPP según Res. SRT 299/11.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          ERGONOMÍA
+        </h4>
+
+        <p>
+          Evaluación según Res. SRT 295/03.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          PLAN DE EVACUACIÓN
+        </h4>
+
+        <p>
+          Planos, simulacros y capacitaciones.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          ILUMINACIÓN
+        </h4>
+
+        <p>
+          Mediciones y control de niveles lumínicos.
+        </p>
+
+      </div>
+
+
+      <div class="card">
+
+        <h4>
+          INVESTIGACIÓN DE ACCIDENTES
+        </h4>
+
+        <p>
+          Análisis causal y acciones preventivas.
+        </p>
+
+      </div>
+
+
     </div>
+
   </div>
+
 </section>
 
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
 <footer class="footer">
+
   <div class="container footer-content">
+
+
     <div>
-      <h3>CONEMAT</h3>
-      <p>Consultoría en Seguridad e Higiene Laboral</p>
-      <p>© 2026 CONEMAT</p>
+
+      <h3>
+        CONEMAT
+      </h3>
+
+      <p>
+        Consultoría en Seguridad e Higiene Laboral
+      </p>
+
+      <p>
+        © 2026 CONEMAT
+      </p>
+
     </div>
+
+
     <div>
-      <p>📞 +54 9 11 6053-8420</p>
-      <p>✉ conemat.arg@yahoo.com</p>
-      <p>📍 Buenos Aires</p>
+
+      <p>
+        📞 +54 9 11 6053-8420
+      </p>
+
+      <p>
+        ✉ conemat.arg@yahoo.com
+      </p>
+
+      <p>
+        📍 Buenos Aires
+      </p>
+
     </div>
+
+
   </div>
+
 </footer>
 
-<div id="formModal" class="modal">
+
+
+<!-- =========================
+     MODAL FORMULARIO
+========================= -->
+
+<div
+  id="formModal"
+  class="modal"
+>
+
   <div class="modal-content">
-    <span class="close" onclick="closeForm()">&times;</span>
-    <h2>Solicitar presupuesto o Demo</h2>
 
-    <form id="contactForm" action="https://formspree.io/f/xwvvpvvn" method="POST">
-      <input type="text" name="name" placeholder="Nombre y Apellido" required>
-      <input type="email" name="email" placeholder="Correo electrónico" required>
-      <input type="tel" name="phone" placeholder="Teléfono" required>
-      <textarea name="message" placeholder="Consulta o interés en la demo" required></textarea>
 
-      <input type="hidden" name="_captcha" value="false">
+    <span
+      class="close"
+      onclick="closeForm()"
+    >
+      &times;
+    </span>
 
-      <button type="submit" class="btn primary">Enviar consulta</button>
+
+    <h2>
+      Solicitar presupuesto o Demo
+    </h2>
+
+
+    <form
+      id="contactForm"
+      action="https://formspree.io/f/xwvvpvvn"
+      method="POST"
+    >
+
+      <input
+        type="text"
+        name="name"
+        placeholder="Nombre y Apellido"
+        required
+      >
+
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Correo electrónico"
+        required
+      >
+
+
+      <input
+        type="tel"
+        name="phone"
+        placeholder="Teléfono"
+        required
+      >
+
+
+      <textarea
+        name="message"
+        placeholder="Consulta o interés en la demo"
+        required
+      ></textarea>
+
+
+      <input
+        type="hidden"
+        name="_captcha"
+        value="false"
+      >
+
+
+      <button
+        type="submit"
+        class="btn primary"
+      >
+        Enviar consulta
+      </button>
+
     </form>
 
-    <div id="formSuccess" style="display:none;text-align:center;">
-      <h3>Mensaje enviado</h3>
-      <p>Nos contactaremos a la brevedad.</p>
-      <button class="btn secondary" onclick="closeForm()">Cerrar</button>
+
+    <div
+      id="formSuccess"
+      style="display:none;text-align:center;"
+    >
+
+      <h3>
+        Mensaje enviado
+      </h3>
+
+      <p>
+        Nos contactaremos a la brevedad.
+      </p>
+
+      <button
+        class="btn secondary"
+        onclick="closeForm()"
+      >
+        Cerrar
+      </button>
+
     </div>
+
   </div>
+
 </div>
 
-<a href="https://wa.me/5491160538420" target="_blank" class="whatsapp-float" aria-label="Contacto por WhatsApp">
+
+
+<!-- =========================
+     WHATSAPP FLOTANTE
+========================= -->
+
+<a
+  href="https://wa.me/5491160538420"
+  target="_blank"
+  rel="noopener noreferrer"
+  class="whatsapp-float"
+  aria-label="Contacto por WhatsApp"
+>
+
   <svg viewBox="0 0 32 32">
+
     <path d="M16 2.012c-7.727 0-14 6.273-14 14 0 2.473.645 4.885 1.87 7.013l-1.983 7.24 7.41-1.942c2.062 1.123 4.39 1.713 6.703 1.714h.006c7.725 0 14-6.273 14-14 0-3.743-1.458-7.26-4.103-9.905s-6.163-4.12-9.903-4.12zm0 25.632c-2.1 0-4.156-.563-5.952-1.631l-.427-.253-4.428 1.161 1.182-4.316-.278-.442c-1.173-1.868-1.794-4.038-1.794-6.262 0-6.425 5.228-11.653 11.653-11.653 3.113 0 6.039 1.213 8.24 3.415s3.413 5.128 3.413 8.24c0 6.427-5.227 11.655-11.653 11.655z"/>
+
   </svg>
+
 </a>
 
+
+
+<!-- =========================
+     JAVASCRIPT
+========================= -->
+
 <script>
+
+  /* =========================
+     FORMULARIO
+  ========================= */
+
   function openForm(){
-    document.getElementById("formModal").style.display="flex";
-    document.getElementById("contactForm").style.display="block";
-    document.getElementById("formSuccess").style.display="none";
+
+    document.getElementById("formModal").style.display = "flex";
+
+    document.getElementById("contactForm").style.display = "block";
+
+    document.getElementById("formSuccess").style.display = "none";
+
   }
+
 
   function closeForm(){
-    document.getElementById("formModal").style.display="none";
+
+    document.getElementById("formModal").style.display = "none";
+
   }
 
+
+
+  /* =========================
+     ENVÍO DEL FORMULARIO
+  ========================= */
+
   const form = document.getElementById("contactForm");
+
+
   form.addEventListener("submit", async function(e){
+
     e.preventDefault();
-    const response = await fetch(form.action, {
-      method: "POST",
-      body: new FormData(form),
-      headers: { "Accept": "application/json" }
-    });
+
+
+    const response = await fetch(
+      form.action,
+      {
+        method: "POST",
+        body: new FormData(form),
+        headers: {
+          "Accept": "application/json"
+        }
+      }
+    );
+
 
     if(response.ok){
-      form.style.display="none";
-      document.getElementById("formSuccess").style.display="block";
+
+      form.style.display = "none";
+
+      document.getElementById("formSuccess").style.display = "block";
+
       form.reset();
+
     }
+
   });
 
-  const reveals = document.querySelectorAll(".reveal");
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        entry.target.classList.add("active");
-      }
-    });
-  }, { threshold: 0.15 });
 
-  reveals.forEach(r => observer.observe(r));
+
+  /* =========================
+     ANIMACIONES
+  ========================= */
+
+  const reveals = document.querySelectorAll(".reveal");
+
+
+  const observer = new IntersectionObserver(
+    entries => {
+
+      entries.forEach(entry => {
+
+        if(entry.isIntersecting){
+
+          entry.target.classList.add("active");
+
+        }
+
+      });
+
+    },
+    {
+      threshold: 0.15
+    }
+  );
+
+
+  reveals.forEach(
+    r => observer.observe(r)
+  );
+
+
 </script>
 
 </body>
 </html>
-
