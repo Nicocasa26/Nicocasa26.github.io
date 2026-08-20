@@ -24,60 +24,9 @@
   <link rel="stylesheet" href="style.css" />
 
   <style>
-    /* AJUSTES FINOS PARA VERSIÓN ESCRITORIO */
-    header.header {
-      padding: 10px 0 !important;
-    }
-
-    img.logo, .header .logo {
-      height: 48px !important; 
-      width: auto !important;
-    }
-
-    .hero {
-      padding: 60px 0 40px 0 !important;
-    }
-
-    .hero h1 {
-      font-size: 2.5rem !important;
-      max-width: 800px;
-      margin: 0 auto 16px auto !important;
-    }
-
-    .hero p {
-      font-size: 1.05rem !important;
-      max-width: 620px;
-    }
-
-    /* Botón Plataforma Discreto */
-    .btn-plataforma {
-      background: transparent !important;
-      border: 1px solid var(--border-color) !important;
-      color: var(--text-muted) !important;
-      box-shadow: none !important;
-      padding: 7px 16px !important;
-      font-size: 0.88rem !important;
-      font-weight: 500 !important;
-    }
-
-    .btn-plataforma:hover {
-      background: rgba(255, 255, 255, 0.08) !important;
-      color: #ffffff !important;
-      border-color: rgba(255, 255, 255, 0.25) !important;
-      transform: none !important;
-    }
-
-    /* Botón WhatsApp */
-    .btn-whatsapp {
-      padding: 11px 22px !important;
-      font-size: 0.92rem !important;
-      border-radius: 8px !important;
-    }
-
-    .btn-whatsapp svg {
-      width: 18px !important;
-      height: 18px !important;
-    }
+    /* Ajustes de presentación: el diseño principal vive en style.css */
+    .hero-content { text-align: left; }
+    .trust-strip { margin-top: 32px; }
   </style>
 </head>
 
@@ -105,17 +54,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <section class="hero reveal" id="inicio">
   <div class="container hero-content">
-    <span class="badge">Profesionales en Seguridad</span>
+    <span class="badge">SEGURIDAD E HIGIENE LABORAL</span>
 
     <h1>
-      CONEMAT<br>
-      Consultora de Seguridad e Higiene
+      Seguridad e Higiene para empresas que quieren trabajar con tranquilidad.
     </h1>
 
     <p>
-      Consultoría especializada en higiene y seguridad laboral.
-      Cumplimiento normativo, prevención de riesgos y capacitación profesional.
+      Asesoramiento profesional para cumplir con la normativa, prevenir riesgos
+      y acompañar a tu empresa de forma clara y permanente.
     </p>
+
+    <div class="trust-strip">
+      <div><strong>✓</strong><span>Asesoramiento profesional</span></div>
+      <div><strong>✓</strong><span>Prevención y cumplimiento</span></div>
+      <div><strong>✓</strong><span>Atención directa</span></div>
+    </div>
 
     <div class="hero-buttons">
       <button class="btn primary" onclick="openForm()">Solicitar presupuesto</button>
@@ -159,6 +113,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <svg viewBox="0 0 24 24"><path d="M12.031 0C5.392 0 0 5.391 0 12.031c0 2.124.553 4.197 1.603 6.014L.012 24l6.096-1.599a12.003 12.003 0 0 0 5.923 1.561h.005c6.637 0 12.028-5.392 12.028-12.031 0-3.212-1.252-6.232-3.527-8.508A11.942 11.942 0 0 0 12.031 0z"/></svg>
         Pedir Demo por WhatsApp
       </a>
+    </div>
+  </div>
+</section>
+
+<section class="section trust-section reveal">
+  <div class="container">
+    <div class="trust-grid">
+      <div class="trust-intro">
+        <span class="badge">UN ACOMPAÑAMIENTO PROFESIONAL</span>
+        <h2 class="section-title">Tu empresa, más segura y mejor respaldada.</h2>
+        <p class="section-subtitle">
+          Trabajamos para que la seguridad e higiene no sea solamente un requisito,
+          sino una herramienta de prevención y organización para tu empresa.
+        </p>
+      </div>
+      <div class="trust-points">
+        <div class="trust-point">
+          <span class="trust-icon">✓</span>
+          <div><strong>Enfoque preventivo</strong><p>Identificamos riesgos y proponemos acciones concretas.</p></div>
+        </div>
+        <div class="trust-point">
+          <span class="trust-icon">✓</span>
+          <div><strong>Seguimiento continuo</strong><p>Acompañamiento técnico durante todo el proceso.</p></div>
+        </div>
+        <div class="trust-point">
+          <span class="trust-icon">✓</span>
+          <div><strong>Documentación ordenada</strong><p>Información clara para facilitar el cumplimiento y la gestión.</p></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -224,7 +207,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="container footer-content">
     <div>
       <h3>CONEMAT</h3>
-      <p>Seguridad e Higiene Laboral</p>
+      <p>Consultoría en Seguridad e Higiene Laboral</p>
       <p>© 2026 CONEMAT</p>
     </div>
     <div>
@@ -306,3 +289,4 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 </body>
 </html>
+
