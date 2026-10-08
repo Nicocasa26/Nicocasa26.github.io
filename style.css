@@ -145,7 +145,7 @@ form .btn { width: 100%; }
   .method-grid > div { border-right: 0; border-bottom: 2px solid var(--ink); }
   .method-grid > div:last-child { border-bottom: 0; }
   .service-list { grid-template-columns: 1fr; }
-}
+
 @media (max-width: 680px) {
   .header-content { flex-direction: column; gap: 8px; padding: 10px 0; }
   .header nav { gap: 14px; flex-wrap: wrap; justify-content: center; }
@@ -156,6 +156,8 @@ form .btn { width: 100%; }
   .hero-buttons .btn, .hero-buttons .btn-whatsapp, .platform-actions > *, .closing-actions > * { width: 100%; }
   .sheet { padding: 22px 20px 18px; }
   .footer-content { flex-direction: column; }
+}
+  
   /* Header oscuro para que se vea el logo */
 .header { background: var(--ink); border-bottom: 0; }
 .header nav a { color: #dbe4ec; }
