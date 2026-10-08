@@ -156,5 +156,11 @@ form .btn { width: 100%; }
   .hero-buttons .btn, .hero-buttons .btn-whatsapp, .platform-actions > *, .closing-actions > * { width: 100%; }
   .sheet { padding: 22px 20px 18px; }
   .footer-content { flex-direction: column; }
+  /* Header oscuro para que se vea el logo */
+.header { background: var(--ink); border-bottom: 0; }
+.header nav a { color: #dbe4ec; }
+.header nav a:hover { color: #fff; }
+.header nav .btn-plataforma { border-color: var(--signal); color: var(--signal); }
+.header nav .btn-plataforma:hover { background: var(--signal); color: var(--ink); }
 }
 
