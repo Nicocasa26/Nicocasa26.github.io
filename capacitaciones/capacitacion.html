@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Capacitación | CONEMAT</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -9,10 +10,15 @@
 
 <style>
 
+*{
+box-sizing:border-box;
+}
+
 body{
-font-family:Arial;
+font-family:Arial, Helvetica, sans-serif;
 background:#f4f6f8;
 padding:40px;
+margin:0;
 }
 
 .card{
@@ -24,11 +30,18 @@ border-radius:8px;
 text-align:center;
 }
 
-input{
+input[type="text"]{
 width:100%;
 padding:10px;
 margin-bottom:12px;
-font-size:14px;
+font-size:16px; /* evita el zoom automático en iPhone */
+}
+
+input[type="checkbox"]{
+width:auto;
+margin:0 8px 0 0;
+vertical-align:middle;
+transform:scale(1.2);
 }
 
 button{
@@ -37,14 +50,21 @@ padding:12px;
 background:#0d6efd;
 color:white;
 border:none;
+border-radius:4px;
 cursor:pointer;
 font-size:15px;
 margin-top:10px;
 }
 
+button:disabled{
+background:#9ca3af;
+cursor:not-allowed;
+}
+
 iframe{
 width:100%;
-height:315px;
+aspect-ratio:16/9;
+height:auto;
 border:none;
 margin-top:20px;
 }
@@ -83,6 +103,33 @@ max-width:420px;
 height:160px;
 margin:10px auto;
 display:block;
+touch-action:none; /* evita que la pantalla se mueva mientras firmás */
+}
+
+/* ====== AJUSTES PARA CELULAR ====== */
+@media (max-width:600px){
+
+body{
+padding:12px;
+}
+
+.card{
+padding:18px;
+}
+
+h2{
+font-size:1.3em;
+}
+
+button{
+padding:14px;
+font-size:16px;
+}
+
+canvas{
+max-width:100%;
+}
+
 }
 
 </style>
@@ -120,13 +167,40 @@ let signaturePad=null
 
 /* ================= HELPERS ================= */
 
+/* Escapa texto para insertarlo de forma segura en HTML */
+function esc(texto){
+return String(texto ?? "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#39;")
+}
+
+/* Soporta youtu.be/ID, watch?v=ID, embed/ID y shorts/ID, con o sin parámetros extra */
 function youtubeEmbed(url){
 
-const id=url.includes("youtu.be")
-?url.split("youtu.be/")[1]
-:url.split("v=")[1]
+const match=String(url||"").match(
+/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/))([A-Za-z0-9_-]{11})/
+)
+
+const id=match ? match[1] : ""
 
 return `https://www.youtube.com/embed/${id}`
+
+}
+
+/* Devuelve true si la fecha de vencimiento ya pasó (vence al final de ese día) */
+function estaVencida(fecha){
+
+if(!fecha) return false
+
+const soloFecha=String(fecha).substring(0,10)
+const limite=new Date(soloFecha+"T23:59:59")
+
+if(isNaN(limite.getTime())) return false
+
+return new Date() > limite
 
 }
 
@@ -138,6 +212,8 @@ if(!token){
 contenedor.innerHTML="<p class='error'>Link inválido.</p>"
 return
 }
+
+try{
 
 const {data,error}=await client
 .from("capacitaciones_empresas")
@@ -164,12 +240,25 @@ contenedor.innerHTML=`
 return
 }
 
+if(estaVencida(data.fecha_vencimiento)){
+contenedor.innerHTML=`
+<h2>Link vencido</h2>
+<p>El plazo para realizar esta capacitación ya terminó. Comuníquese con CONEMAT.</p>
+`
+return
+}
+
 capacitacionEmpresaId=data.id
-empresaNombre=data.empresas.nombre
-videoURL=data.capacitaciones_base.url_video
-tituloCapacitacion=data.capacitaciones_base.nombre
+empresaNombre=data.empresas?.nombre || ""
+videoURL=data.capacitaciones_base?.url_video || ""
+tituloCapacitacion=data.capacitaciones_base?.nombre || "Capacitación"
 
 mostrarFormulario(data.fecha_vencimiento)
+
+}catch(err){
+console.error("Error cargando capacitación:",err)
+contenedor.innerHTML="<p class='error'>No se pudo cargar la capacitación. Intente nuevamente.</p>"
+}
 
 }
 
@@ -179,21 +268,23 @@ function mostrarFormulario(vencimiento){
 
 contenedor.innerHTML=`
 
-<h2>${tituloCapacitacion} – CONEMAT</h2>
-<p><strong>Empresa:</strong> ${empresaNombre}</p>
-<p><strong>Vigente hasta:</strong> ${vencimiento}</p>
+<h2>${esc(tituloCapacitacion)} – CONEMAT</h2>
+<p><strong>Empresa:</strong> ${esc(empresaNombre)}</p>
+<p><strong>Vigente hasta:</strong> ${esc(vencimiento)}</p>
 
 <hr>
 
 <h3>Registro obligatorio</h3>
 
-<input type="text" id="nombre" placeholder="Apellido y Nombre">
-<input type="text" id="dni" placeholder="DNI (7 u 8 dígitos)">
+<input type="text" id="nombre" placeholder="Apellido y Nombre" autocomplete="name">
+<input type="text" id="dni" placeholder="DNI (7 u 8 dígitos)" inputmode="numeric">
 <input type="text" id="puesto" placeholder="Puesto / Tarea">
 
 <div class="legal">
+<label>
 <input type="checkbox" id="declaracion">
 Declaro que los datos ingresados son verídicos y que participé de la capacitación.
+</label>
 </div>
 
 <h4>Firma</h4>
@@ -204,7 +295,7 @@ Declaro que los datos ingresados son verídicos y que participé de la capacitac
 Limpiar firma
 </button>
 
-<button onclick="registrar()">Registrar y acceder</button>
+<button id="btnRegistrar" onclick="registrar()">Registrar y acceder</button>
 
 <div id="mensaje"></div>
 
@@ -219,8 +310,15 @@ inicializarFirma()
 function inicializarFirma(){
 
 const canvas=document.getElementById("firmaCanvas")
+let anchoAnterior=0
 
 function resizeCanvas(){
+
+/* Solo redimensiona si cambió el ANCHO (el teclado del celu cambia el alto y borraba la firma) */
+if(canvas.offsetWidth===anchoAnterior) return
+anchoAnterior=canvas.offsetWidth
+
+const datosPrevios=signaturePad ? signaturePad.toData() : null
 
 const ratio=Math.max(window.devicePixelRatio||1,1)
 
@@ -228,6 +326,11 @@ canvas.width=canvas.offsetWidth*ratio
 canvas.height=canvas.offsetHeight*ratio
 
 canvas.getContext("2d").scale(ratio,ratio)
+
+if(signaturePad){
+signaturePad.clear()
+if(datosPrevios && datosPrevios.length) signaturePad.fromData(datosPrevios)
+}
 
 }
 
@@ -244,12 +347,12 @@ window.addEventListener("resize",resizeCanvas)
 }
 
 function limpiarFirma(){
-signaturePad.clear()
+if(signaturePad) signaturePad.clear()
 }
 
 function obtenerFirma(){
 
-if(signaturePad.isEmpty()){
+if(!signaturePad || signaturePad.isEmpty()){
 
 alert("Debe firmar antes de registrarse")
 return null
@@ -269,6 +372,7 @@ const dni=document.getElementById("dni").value.trim().replace(/\D/g,"")
 const puesto=document.getElementById("puesto").value.trim()
 const declaracion=document.getElementById("declaracion").checked
 const mensaje=document.getElementById("mensaje")
+const btn=document.getElementById("btnRegistrar")
 
 mensaje.innerHTML=""
 
@@ -292,6 +396,17 @@ if(!firma){
 return
 }
 
+/* Evita doble clic mientras se guarda */
+btn.disabled=true
+btn.textContent="Registrando..."
+
+function rehabilitar(){
+btn.disabled=false
+btn.textContent="Registrar y acceder"
+}
+
+try{
+
 const {data:existente}=await client
 .from("asistentes")
 .select("nombre")
@@ -303,9 +418,10 @@ if(existente){
 
 mensaje.innerHTML=`
 <div class="error">
-${existente.nombre} ya se encuentra registrado en esta capacitación.
+${esc(existente.nombre)} ya se encuentra registrado en esta capacitación.
 </div>
 `
+rehabilitar()
 return
 
 }
@@ -324,12 +440,29 @@ firma:firma
 
 if(error){
 
+console.error("Error al registrar:",error)
+
+/* 23505 = violación de UNIQUE (ya registrado) */
+if(error.code==="23505"){
+mensaje.innerHTML="<div class='error'>Este DNI ya se encuentra registrado en esta capacitación.</div>"
+}else{
 mensaje.innerHTML="<div class='error'>Error al registrar.</div>"
+}
+
+rehabilitar()
 return
 
 }
 
 mostrarVideo()
+
+}catch(err){
+
+console.error("Excepción al registrar:",err)
+mensaje.innerHTML="<div class='error'>Error de conexión. Intente nuevamente.</div>"
+rehabilitar()
+
+}
 
 }
 
@@ -339,10 +472,10 @@ function mostrarVideo(){
 
 contenedor.innerHTML=`
 
-<h2>${tituloCapacitacion} – CONEMAT</h2>
-<p><strong>Empresa:</strong> ${empresaNombre}</p>
+<h2>${esc(tituloCapacitacion)} – CONEMAT</h2>
+<p><strong>Empresa:</strong> ${esc(empresaNombre)}</p>
 
-<iframe src="${youtubeEmbed(videoURL)}" allowfullscreen></iframe>
+<iframe src="${esc(youtubeEmbed(videoURL))}" allowfullscreen></iframe>
 
 <div class="success">
 Registro confirmado. Puede visualizar la capacitación.
