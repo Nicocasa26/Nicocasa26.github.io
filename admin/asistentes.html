@@ -73,6 +73,27 @@ background:#dc2626;
 color:white;
 border:none;
 }
+
+.barra-pdf{
+display:flex;
+flex-wrap:wrap;
+align-items:center;
+gap:8px;
+margin-top:10px;
+}
+
+.barra-pdf label{
+font-size:14px;
+font-weight:bold;
+color:#0f172a;
+}
+
+.barra-pdf input[type="date"]{
+padding:5px 8px;
+font-size:14px;
+border:1px solid #ccc;
+border-radius:4px;
+}
 </style>
 
 </head>
@@ -82,8 +103,13 @@ border:none;
 <h2>Asistentes registrados</h2>
 
 <button onclick="volver()">← Volver</button>
+
+<div class="barra-pdf">
+<label for="fechaPDF">Fecha del certificado:</label>
+<input type="date" id="fechaPDF">
 <button onclick="generarPDF()">Generar PDF</button>
 <button onclick="generarPDFEvacuacion()">Generar PDF Evacuación</button>
+</div>
 
 <table>
 <thead>
@@ -114,6 +140,28 @@ let capacitacion="Capacitación"
 /* NAV */
 function volver(){
 window.history.back()
+}
+
+/* ==========================================
+   FECHA DEL CERTIFICADO
+   - Por defecto: hoy.
+   - Si el usuario elige otra en el selector,
+     el PDF sale con esa fecha (dd/mm/aaaa).
+   ========================================== */
+function hoyISO(){
+const d=new Date()
+const mm=String(d.getMonth()+1).padStart(2,"0")
+const dd=String(d.getDate()).padStart(2,"0")
+return `${d.getFullYear()}-${mm}-${dd}`
+}
+
+function obtenerFechaPDF(){
+const input=document.getElementById("fechaPDF")
+const valor=(input && input.value) ? input.value : hoyISO()
+
+// Se arma a mano (sin new Date) para evitar que la zona horaria corra el día
+const [anio,mes,dia]=valor.split("-")
+return `${dia}/${mes}/${anio}`
 }
 
 /* CONTEXTO SEGURO */
@@ -287,7 +335,7 @@ return
 
 const {jsPDF}=window.jspdf
 const doc=new jsPDF()
-const fecha=new Date().toLocaleDateString("es-AR")
+const fecha=obtenerFechaPDF()
 
 const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
 const qrContainer = document.createElement("div")
@@ -430,7 +478,7 @@ return
 
 const {jsPDF}=window.jspdf
 const doc=new jsPDF()
-const fecha=new Date().toLocaleDateString("es-AR")
+const fecha=obtenerFechaPDF()
 
 const urlVerificacion = `https://conemat.com.ar/verificar.html?id=${capacitacionEmpresaId}`
 const qrContainer = document.createElement("div")
@@ -562,6 +610,7 @@ function finalizarDescargaEvac(){
 }
 
 /* INIT */
+document.getElementById("fechaPDF").value = hoyISO()
 cargarContexto()
 cargarAsistentes()
 
